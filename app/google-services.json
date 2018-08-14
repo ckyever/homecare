@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "632496318092",
+    "firebase_url": "https://homecare-93913.firebaseio.com",
+    "project_id": "homecare-93913",
+    "storage_bucket": "homecare-93913.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:632496318092:android:decf5c0f044236e0",
+        "android_client_info": {
+          "package_name": "com.example.sayyaf.homecare"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "632496318092-n3aao4emlko016v4j7i32s8c5432ervt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sayyaf.homecare",
+            "certificate_hash": "7d80755d531c9275b9096e04b8305796c1b23250"
+          }
+        },
+        {
+          "client_id": "632496318092-1r6tvd9614hunl70ut8sl5raa3l5j8j4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDnIRq_oUKOjtSQovGrbiZphbBiTcmqWMw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "632496318092-1r6tvd9614hunl70ut8sl5raa3l5j8j4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
