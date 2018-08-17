@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">HomeCare</string>
+    <string name="titletextcolour">#000000</string>
 </resources>
