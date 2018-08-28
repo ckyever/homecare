@@ -10,13 +10,19 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.UUID;
 
@@ -29,9 +35,11 @@ public class AccountRegisterActivity extends AppCompatActivity implements View.O
     EditText mPasswordEditText;
     EditText mConfirmPasswordEditText;
     TextView mLoginTextView;
+    RadioButton mCaregiver;
+    RadioButton mAssistedPerson;
+    private FirebaseUser fbUser =null;
     public static final String TAG = AccountRegisterActivity.class.getSimpleName();
     private FirebaseAuth mAuth;
-    String uniqueID = UUID.randomUUID().toString();
     TextWatcher textWatcher = new TextWatcher() {
 
         @Override
@@ -50,17 +58,19 @@ public class AccountRegisterActivity extends AppCompatActivity implements View.O
             validateFields();
         }
 
-        private void validateFields() {
-
-            if(mNameEditText.getText().length()>0 && mEmailEditText.getText().length()>0 &&
-                    mPasswordEditText.getText().length()>0 &&
-                    mConfirmPasswordEditText.getText().length()>0){
-                mCreateUserButton.setEnabled(true);
-            }else{
-                mCreateUserButton.setEnabled(false);
-            }
-        }
     };
+
+    private void validateFields() {
+
+        if(mNameEditText.getText().length()>0 && mEmailEditText.getText().length()>0 &&
+                mPasswordEditText.getText().length()>0 &&
+                mConfirmPasswordEditText.getText().length()>0 && (mCaregiver.isChecked() ||
+                mAssistedPerson.isChecked())){
+            mCreateUserButton.setEnabled(true);
+        }else{
+            mCreateUserButton.setEnabled(false);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,10 +83,27 @@ public class AccountRegisterActivity extends AppCompatActivity implements View.O
         mPasswordEditText = (EditText)findViewById(R.id.passwordEditText);
         mConfirmPasswordEditText = (EditText)findViewById(R.id.confirmPasswordEditText);
         mLoginTextView = (TextView) findViewById(R.id.loginTextView);
+        mCaregiver = (RadioButton) findViewById(R.id.caregiver);
+        mAssistedPerson = (RadioButton) findViewById(R.id.assistedPerson);
         mAuth = FirebaseAuth.getInstance();
 
         mLoginTextView.setOnClickListener(this);
         mCreateUserButton.setOnClickListener(this);
+        mAssistedPerson.setOnClickListener(
+                new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                validateFields();
+            }
+        });
+
+        mCaregiver.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        validateFields();
+                    }
+                });
 
         mCreateUserButton.setEnabled(false);
 
@@ -90,18 +117,22 @@ public class AccountRegisterActivity extends AppCompatActivity implements View.O
     @Override
     public void onClick(View view) {
 
+        Intent intent = new Intent(AccountRegisterActivity.this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
         if (view == mLoginTextView) {
-            Intent intent = new Intent(AccountRegisterActivity.this, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();
         }
 
         if (view == mCreateUserButton) {
             createNewUser();
+            startActivity(intent);
+            finish();
         }
 
     }
+
 
 
     private void createNewUser() {
@@ -109,21 +140,39 @@ public class AccountRegisterActivity extends AppCompatActivity implements View.O
         final String email = mEmailEditText.getText().toString().trim();
         String password = mPasswordEditText.getText().toString().trim();
         String confirmPassword = mConfirmPasswordEditText.getText().toString().trim();
+        final boolean isCaregiver = mCaregiver.isChecked();
+        final DatabaseReference  myRef = FirebaseDatabase.getInstance().getReference("caregiver");
+        final User newUser;
 
-        //if(password.equals(confirmPassword)) {
-            mAuth.createUserWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(AccountRegisterActivity.this, new OnCompleteListener<AuthResult>() {
+        if(isCaregiver) {
+            newUser = new Caregiver(name, email, isCaregiver);
+        }
+
+        else {
+            newUser = new Assisted(name, email, isCaregiver);
+
+        }
+
+        if(password.equals(confirmPassword)) {
+            mAuth.createUserWithEmailAndPassword(email, password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+
                         @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
+                        public void onSuccess(AuthResult auth) {
                                 Log.d(TAG, "Authentication successful");
-                            } else {
-                                Toast.makeText(AccountRegisterActivity.this, "Authentication failed.",
-                                        Toast.LENGTH_SHORT).show();
+                                fbUser =FirebaseAuth.getInstance().getCurrentUser();
+                                String userId = fbUser.getUid();
+                                myRef.child(userId);
+                                myRef.child(userId).setValue(newUser);
                             }
-                        }
-                    });
-       // }
+                        }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(AccountRegisterActivity.this, "Authentication failed. Please try again later",
+                            Toast.LENGTH_SHORT).show();
+                }
+            });
+
+        }
     }
 
 

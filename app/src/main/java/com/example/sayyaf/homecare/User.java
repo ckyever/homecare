@@ -4,12 +4,13 @@ public class User {
 
     private String name;
     private String email;
-    private long phone;
+    //private long phone;
+    private boolean isCaregiver;
 
-    public User(String name, String email, long phone) {
+    public User(String name, String email, boolean isCaregiver) {
         this.name = name;
         this.email = email;
-        this.phone = phone;
+        this.isCaregiver = isCaregiver;
     }
 
     public String getName() {
@@ -28,11 +29,13 @@ public class User {
         this.email = email;
     }
 
+    /*
     public long getPhone() {
         return phone;
     }
 
     public void setPhone(long phone) {
         this.phone = phone;
-    }
+    } */
+
 }

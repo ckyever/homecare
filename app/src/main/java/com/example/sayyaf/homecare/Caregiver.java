@@ -7,8 +7,8 @@ public class Caregiver extends User {
 
     private List<Assisted> assisted = new ArrayList<>();
 
-    public Caregiver(String name, String email, long phone) {
-        super(name, email, phone);
+    public Caregiver(String name, String email, boolean isCaregiver) {
+        super(name, email, isCaregiver);
     }
 
     public void setAssisted(List<Assisted> assisted) {
