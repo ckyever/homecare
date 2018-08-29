@@ -7,6 +7,8 @@ public class ChatMessage {
     private String messageSender;
     private long messageTime;
 
+    public ChatMessage() {}
+
     public ChatMessage(String messageText, String messageSender) {
         this.messageText = messageText;
         this.messageSender = messageSender;
@@ -28,4 +30,6 @@ public class ChatMessage {
     public void setMessageSender(String messageSender) {
         this.messageSender = messageSender;
     }
+
+    public long getMessageTime() {return messageTime; }
 }
