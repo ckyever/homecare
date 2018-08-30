@@ -11,15 +11,18 @@
     <TextView
         android:id="@+id/contactName"
         android:layout_width="match_parent"
-        android:layout_height="50sp"
+        android:layout_height="40sp"
         android:layout_marginBottom="10sp"
         android:layout_marginEnd="10sp"
         android:layout_marginStart="10sp"
         android:layout_marginTop="10sp"
+        android:paddingLeft="5sp"
+        android:paddingRight="5sp"
         android:gravity="center_vertical"
-        android:textSize="25sp"
+        android:textSize="20sp"
         android:text=" Contact Name"
         android:textFontWeight="25sp"
+        android:textColor="@android:color/white"
         android:background="@android:color/darker_gray"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -37,7 +40,8 @@
         app:layout_constraintTop_toBottomOf="@id/contactName"
         app:layout_constraintBottom_toTopOf="@id/textInputs"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:transcriptMode="alwaysScroll"/>
 
     <Button
         android:id="@+id/voiceCall"
@@ -65,14 +69,15 @@
     <EditText
         android:id="@+id/textInputs"
         android:layout_width="0sp"
-        android:layout_height="50sp"
+        android:layout_height="45sp"
         android:paddingLeft="5sp"
         android:paddingRight="5sp"
         android:layout_marginBottom="5sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/voiceCall"
         app:layout_constraintEnd_toStartOf="@id/sendMsg"
-        android:hint=" Write your message" />
+        android:hint=" Write your message"
+        android:background="@android:color/white"/>
 
 </android.support.constraint.ConstraintLayout>
 

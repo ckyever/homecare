@@ -53,10 +53,16 @@ public class VoiceCallActivity extends AppCompatActivity implements View.OnClick
         switch (button_id) {
             case R.id.endCall:
                 Intent goToChat = new Intent(VoiceCallActivity.this, ChatActivity.class);
-                goToChat.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(goToChat);
                 finish();
                 break;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent goToChat = new Intent(VoiceCallActivity.this, ChatActivity.class);
+        startActivity(goToChat);
+        finish();
     }
 }
