@@ -2,6 +2,8 @@ package com.example.sayyaf.homecare;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -9,6 +11,10 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -20,8 +26,13 @@ import com.google.android.gms.maps.GoogleMap.OnMyLocationClickListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMyLocationButtonClickListener,
         OnMyLocationClickListener, OnMapReadyCallback {
@@ -32,20 +43,24 @@ public class MapsActivity extends FragmentActivity implements OnMyLocationButton
     private static final int LOCATION_REQUEST_CODE = 1000;
     private static final float STREET_ZOOM = 15;
 
-
     private GoogleMap mMap;
     private Boolean mLocationPermissionsGranted = false;
     private FusedLocationProviderClient mFusedLocationClient;
     private Location currentLocation;
     private LatLng currentLatLng;
 
+    private EditText mInputSearchEditText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
+        mInputSearchEditText = (EditText) findViewById(R.id.inputSearch);
+
         // Get location permissions then initialise the map
         getLocationPermission();
+
     }
 
     /**
@@ -118,6 +133,9 @@ public class MapsActivity extends FragmentActivity implements OnMyLocationButton
         mMap = googleMap;
 
         getDeviceLocation();
+        mMap.getUiSettings().setZoomControlsEnabled(true);
+
+        initialiseSearch();
     }
 
     /**
@@ -175,5 +193,43 @@ public class MapsActivity extends FragmentActivity implements OnMyLocationButton
         // Return false so that we don't consume the event and the default behavior still occurs
         // (the camera animates to the user's current position).
         return false;
+    }
+
+    private void initialiseSearch() {
+
+        mInputSearchEditText.setImeActionLabel("Search", EditorInfo.IME_ACTION_SEARCH);
+        mInputSearchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    geoLocate();
+                }
+                return false;
+            }
+        });
+    }
+
+    private void geoLocate() {
+
+        String searchString = mInputSearchEditText.getText().toString();
+
+        Geocoder geocoder = new Geocoder(MapsActivity.this);
+        List<Address> list = new ArrayList<>();
+        try {
+            list = geocoder.getFromLocationName(searchString, 1);
+        } catch (IOException e) {
+            // e.printStackTrace();
+            Log.e(TAG, "geoLocation: IOException" + e.getMessage());
+        }
+
+        if (list.size() > 0) {
+            Address address = list.get(0);
+
+            Log.d(TAG, "geoLocate: found a location: " + address.toString());
+
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(address.getLatitude(), address.getLongitude()), STREET_ZOOM));
+            MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(address.getLatitude(), address.getLongitude())).title(address.getAddressLine(0));
+            mMap.addMarker(markerOptions);
+        }
     }
 }
