@@ -155,20 +155,9 @@ public class AccountRegisterActivity extends AppCompatActivity implements View.O
         String confirmPassword = mConfirmPasswordEditText.getText().toString().trim();
         //Flag to check if user is caregiver or assisted person
         final boolean isCaregiver = mCaregiver.isChecked();
-        final DatabaseReference  myRef;
-        final User newUser;
+        final DatabaseReference  myRef= FirebaseDatabase.getInstance().getReference("User");
+        final User newUser =  new User(name, email, isCaregiver);
 
-        /*Creates the specifiec user instance */
-        if(isCaregiver) {
-            newUser = new Caregiver(name, email, isCaregiver);
-            myRef= FirebaseDatabase.getInstance().getReference("caregiver");
-        }
-
-        else {
-            newUser = new Assisted(name, email, isCaregiver);
-            myRef = FirebaseDatabase.getInstance().getReference("Assisted");
-
-        }
 
         /* Checks password and confirm password match */
         if(!password.equals(confirmPassword)) {
@@ -194,8 +183,16 @@ public class AccountRegisterActivity extends AppCompatActivity implements View.O
                                 Log.d(TAG, "Authentication successful");
                                 fbUser =FirebaseAuth.getInstance().getCurrentUser();
                                 String userId = fbUser.getUid();
+                                newUser.setId(userId);
                                 myRef.child(userId);
                                 myRef.child(userId).setValue(newUser);
+                                myRef.child(userId).child("friends").push();
+
+                                myRef.child(userId)
+                                        .child("friends")
+                                        .child("1bPtsSRGLXQJ9BStPiAuiDRqCMx1")
+                                        .setValue("Sayyaf Waseem");
+
 
                             }
                         }).addOnFailureListener(new OnFailureListener() {
