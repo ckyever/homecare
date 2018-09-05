@@ -23,7 +23,8 @@
         android:text=" Contact Name"
         android:textFontWeight="25sp"
         android:textColor="@android:color/white"
-        android:background="@android:color/darker_gray"
+        android:background="@color/colorAccent"
+        android:textStyle="bold"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

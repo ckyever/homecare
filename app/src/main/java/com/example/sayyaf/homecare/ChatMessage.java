@@ -31,5 +31,6 @@ public class ChatMessage {
         this.messageSender = messageSender;
     }
 
-    public long getMessageTime() {return messageTime; }
+    public long getMessageTime() { return messageTime; }
+
 }
