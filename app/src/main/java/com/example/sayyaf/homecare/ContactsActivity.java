@@ -19,6 +19,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 public class ContactsActivity extends AppCompatActivity implements View.OnClickListener {
@@ -27,8 +28,8 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
     private EditText mUserEmail;
     private DatabaseReference userRef;
     private FirebaseAuth mAuth;
-    private FirebaseUser currentUser;
-    private User user;
+    private FirebaseUser currentUserAuth;
+    private User currentUser;
     private String uid;
     public static final String TAG =ContactsActivity.class.getSimpleName();
 
@@ -40,14 +41,47 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
         setContentView(R.layout.activity_contacts);
         mAddUserButton = (Button) findViewById(R.id.addUser);
         mUserEmail = (EditText) findViewById(R.id.contactEmail);
-        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        currentUserAuth = FirebaseAuth.getInstance().getCurrentUser();
         userRef = FirebaseDatabase.getInstance().getReference("User");
         String email = mUserEmail.getText().toString().trim();
-        uid = currentUser.getUid();
+        uid = currentUserAuth.getUid();
         //User caregiverUser = caregiverRef.orderByChild("email").equalTo(email);
-
+        getCurrentUser();
         mAddUserButton.setOnClickListener(this);
     }
+
+    public void getCurrentUser() {
+        Query query = userRef.orderByChild("id").equalTo(uid);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot datasnapshot) {
+
+                for (DataSnapshot snapshot : datasnapshot.getChildren()) {
+                    if (snapshot.exists()) {
+                        currentUser = snapshot.getValue(User.class);
+
+                        if (currentUser == null) {
+                            Toast.makeText(ContactsActivity.this, "NULL user",
+                                    Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                                Log.d(TAG, "Current User id: " + currentUser.getId());
+                                //Log.d(TAG, "SNAPSHOT : " + snapshot.getValue());
+                                //Log.d(TAG, "USER: " + user.getId());
+                    }
+                }
+
+                Toast.makeText(ContactsActivity.this, "User doesn't exist",
+                        Toast.LENGTH_SHORT).show();
+            }
+            @Override
+            public void onCancelled(DatabaseError arg0) {
+
+            }
+        });
+    }
+
 
 
     @Override
@@ -55,43 +89,106 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
 
         final String email = mUserEmail.getText().toString().trim();
         if(view == mAddUserButton) {
-            if(isValidEmail(email)){
-                userRef.child("Users").orderByChild("email")
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        Log.i(TAG, snapshot.getValue().toString());
-                        for(DataSnapshot shot : snapshot.getChildren()) {
-                            if (shot.getValue() != null) {
-                                User user = shot.getValue(User.class);
-                                if(user!=null) {
-                                    System.out.println(user.getName());
-                                }
-                                if(user.getEmail().equals(email))
-                                //mUserEmail.setText("HELLO FRIENDS");
-                                Toast.makeText(ContactsActivity.this, "YES CONTACT",
-                                        Toast.LENGTH_SHORT).show();
-                                return;
-                            }
-
-                        }
-                        Toast.makeText(ContactsActivity.this, "NO CONTACT",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                    @Override
-                    public void onCancelled(DatabaseError arg0) {
-
-                    }
-                });
-
-
-                Toast.makeText(ContactsActivity.this, "Invalid Email",
-                        Toast.LENGTH_SHORT).show();
-            }
+            removeFriend(email);
         }
     }
 
-    public final static boolean isValidEmail(CharSequence target) {
+    public void removeFriend(String email) {
+        if(isValidEmail(email)){
+            Query query = userRef.orderByChild("email").equalTo(email);
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot datasnapshot) {
+
+                    for (DataSnapshot snapshot : datasnapshot.getChildren()) {
+                        if (snapshot.exists()) {
+                            User user = snapshot.getValue(User.class);
+
+                            if (user == null) {
+                                Toast.makeText(ContactsActivity.this, "NULL user",
+                                        Toast.LENGTH_SHORT).show();
+                                continue;
+                            }
+
+                            if(user.isCaregiver() == currentUser.isCaregiver()) {
+                                continue;
+                            }
+
+                            if(currentUser.getFriends().containsKey(user.getId())) {
+                                Toast.makeText(ContactsActivity.this, "Already Friend",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+
+
+                            userRef.child(uid)
+                                    .child("friends")
+                                    .child(user.getId())
+                                    .removeValue();
+
+                            return;
+                        }
+                    }
+
+                    Toast.makeText(ContactsActivity.this, "User doesn't exist",
+                            Toast.LENGTH_SHORT).show();
+                }
+                @Override
+                public void onCancelled(DatabaseError arg0) {
+
+                }
+            });
+        }
+    }
+
+    public void addFriend(String email) {
+        if(isValidEmail(email)){
+            Query query = userRef.orderByChild("email").equalTo(email);
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot datasnapshot) {
+
+                    for (DataSnapshot snapshot : datasnapshot.getChildren()) {
+                        if (snapshot.exists()) {
+                            User user = snapshot.getValue(User.class);
+
+                            if (user == null) {
+                                Toast.makeText(ContactsActivity.this, "NULL user",
+                                        Toast.LENGTH_SHORT).show();
+                                continue;
+                            }
+
+                            if(user.isCaregiver() == currentUser.isCaregiver()) {
+                                continue;
+                            }
+
+                            if(currentUser.getFriends().containsKey(user.getId())) {
+                                Toast.makeText(ContactsActivity.this, "Already Friend",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+
+                            userRef.child(uid).child("friends").push();
+
+                            userRef.child(uid)
+                                    .child("friends")
+                                    .child(user.getId())
+                                    .setValue(user.getEmail());
+
+                            return;
+                        }
+                    }
+
+                    Toast.makeText(ContactsActivity.this, "User doesn't exist",
+                            Toast.LENGTH_SHORT).show();
+                }
+                @Override
+                public void onCancelled(DatabaseError arg0) {
+
+                }
+            });
+        }
+    }
+
+    public static boolean isValidEmail(CharSequence target) {
         if (TextUtils.isEmpty(target)) {
             return false;
         } else {
