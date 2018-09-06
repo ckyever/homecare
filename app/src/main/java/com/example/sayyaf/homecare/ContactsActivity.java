@@ -31,6 +31,7 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
     private FirebaseUser currentUserAuth;
     private User currentUser;
     private String uid;
+    private Button mRemoveUserButton;
     public static final String TAG =ContactsActivity.class.getSimpleName();
 
 
@@ -41,6 +42,8 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
         setContentView(R.layout.activity_contacts);
         mAddUserButton = (Button) findViewById(R.id.addUser);
         mUserEmail = (EditText) findViewById(R.id.contactEmail);
+        mRemoveUserButton = (Button) findViewById(R.id.removeContact);
+
         currentUserAuth = FirebaseAuth.getInstance().getCurrentUser();
         userRef = FirebaseDatabase.getInstance().getReference("User");
         String email = mUserEmail.getText().toString().trim();
@@ -89,6 +92,10 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
 
         final String email = mUserEmail.getText().toString().trim();
         if(view == mAddUserButton) {
+            addFriend(email);
+        }
+
+        else if(view == mRemoveUserButton) {
             removeFriend(email);
         }
     }
@@ -108,15 +115,6 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
                                 Toast.makeText(ContactsActivity.this, "NULL user",
                                         Toast.LENGTH_SHORT).show();
                                 continue;
-                            }
-
-                            if(user.isCaregiver() == currentUser.isCaregiver()) {
-                                continue;
-                            }
-
-                            if(currentUser.getFriends().containsKey(user.getId())) {
-                                Toast.makeText(ContactsActivity.this, "Already Friend",
-                                        Toast.LENGTH_SHORT).show();
                             }
 
 
