@@ -3,6 +3,7 @@ package com.example.sayyaf.homecare;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +11,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+
+import com.google.firebase.database.FirebaseDatabase;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
@@ -24,16 +27,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         if(!setUpChatControllers){
-            ChatActivity.chatController =
-                    new ChatController(new User("", "", false),
-                            new User("Fake name", "", false), "");
+            ChatActivity.setUpChatController(new User("", "", false),
+                    new User("Fake name", "", false),
+                    FirebaseDatabase.getInstance().getReference("testChatDB"));
+
+            /*if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+
+                this.startService(new Intent(this, NotificationService.class));
+            }
+            else {
+                this.startForegroundService(new Intent(this, NotificationService.class));
+            }*/
+
 
             /*chatController = new ChatController(new User("", "", false),
                     new User("Fake name", "", false), "");*/
 
             setUpChatControllers = true;
         }
-
 
     }
 
@@ -55,16 +66,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onStart(){
         super.onStart();
-        ChatActivity.chatController.listenToAdded(this, (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE));
+        ChatActivity.listenToAdded(this,
+                (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE),
+                FirebaseDatabase.getInstance().getReference("testChatDB"));
         //chatController.listenToAdded(this, (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE));
 
     }
 
     @Override
     protected void onPause(){
-        ChatActivity.chatController.cancelAddListening();
+        ChatActivity.cancelAddListening(FirebaseDatabase.getInstance().getReference("testChatDB"));
         //chatController.cancelAddListening();
         super.onPause();
     }
+
+    /*@Override
+    protected void onDestroy(){
+        this.stopService(new Intent(this, NotificationService.class));
+        super.onDestroy();
+    }*/
 
 }

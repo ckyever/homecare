@@ -26,16 +26,21 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.Serializable;
 import java.util.Date;
 
+import static android.app.Notification.VISIBILITY_PUBLIC;
+
 public class ChatController {
 
     private User this_device, contact_person;
-    private String chatDB;
+    //private String chatDB;
+    private DatabaseReference chatDB;
     private FirebaseListAdapter<ChatMessage> contentUpdateAdapter;
 
     private ChildEventListener chatAddedListener;
@@ -47,7 +52,7 @@ public class ChatController {
      *  contact_person: chosen contact person to the user
      *  chatDB: database for the chatting pair
      */
-    public ChatController(User this_device, User contact_person, String chatDB){
+    public ChatController(User this_device, User contact_person, DatabaseReference chatDB){
 
         this.this_device = this_device;
         this.contact_person = contact_person;
@@ -66,8 +71,7 @@ public class ChatController {
             ChatActivity chatActivity, int msg_block_this_device, int msg_block_contact_person){
 
         FirebaseListOptions<ChatMessage> options = new FirebaseListOptions.Builder<ChatMessage>()
-                .setQuery(FirebaseDatabase.getInstance().getReference(
-                        "testChatDB"), ChatMessage.class).setLayout(msg_block_this_device).build();
+                .setQuery(chatDB, ChatMessage.class).setLayout(msg_block_this_device).build();
 
         contentUpdateAdapter = new FirebaseListAdapter<ChatMessage>(options){
             @Override
@@ -121,6 +125,11 @@ public class ChatController {
         contentUpdateAdapter.startListening();
     }
 
+    // stop listen to the chat database (not updating view)
+    public void stopListenToChatChanges(){
+        contentUpdateAdapter.stopListening();
+    }
+
     /*  post message to the chat database
      *  textMsg: holds text input
      */
@@ -137,8 +146,7 @@ public class ChatController {
             // update time that user interacted with message
             lastMsgTime = ct.getMessageTime();
 
-            FirebaseDatabase.getInstance().getReference("testChatDB")
-                    .push().setValue(ct);
+            chatDB.push().setValue(ct);
 
             cleanup(textMsg);
 
@@ -162,8 +170,11 @@ public class ChatController {
         textMsg.setText("");
     }
 
-    // listen to new message sent to user (may move to notification base controller)
-    public void listenToAdded(Activity activity, NotificationManager notificationManager){
+    /* listen to new message sent to user (may move to contact controller)
+     * chatDB: database for the chatting pair
+     */
+    public void listenToAdded(Context context, NotificationManager notificationManager,
+                              DatabaseReference chatDB){
 
         //if(chatAddedListener == null)
             chatAddedListener = new ChildEventListener() {
@@ -175,7 +186,7 @@ public class ChatController {
 
                         if(sendTime > lastMsgTime &&
                                 !username.equals(FirebaseAuth.getInstance().getCurrentUser().getEmail())){
-                            newIncomingNotification(activity, notificationManager,
+                            newIncomingNotification(context, notificationManager,
                                     username,
                                     dataSnapshot.child("messageText").getValue().toString());
 
@@ -205,38 +216,28 @@ public class ChatController {
                 }
             };
 
-        FirebaseDatabase.getInstance().getReference(
-                "testChatDB").orderByKey().limitToLast(1).addChildEventListener(chatAddedListener);
+        chatDB.orderByKey().limitToLast(1).addChildEventListener(chatAddedListener);
     }
 
-    // pause listening to new message sent to user (may move to notification base controller)
-    public void cancelAddListening(){
-        FirebaseDatabase.getInstance().getReference(
-                "testChatDB").removeEventListener(chatAddedListener);
+    /* cancel listening to new message sent to user (may move to contact controller)
+     * chatDB: database for the chatting pair
+     */
+    public void cancelAddListening(DatabaseReference chatDB){
+        chatDB.removeEventListener(chatAddedListener);
     }
 
-    // fire the notification (may move to notification base controller)
+    // fire the notification (may move to contact controller)
     private void newIncomingNotification(
-            Activity activity, NotificationManager notificationManager,
+            Context context, NotificationManager notificationManager,
             String sender, String contents){
 
         NotificationCompat.Builder notificationbulider =
-                new NotificationCompat.Builder(activity, NotificationChannals.getNotificationCH())
+                new NotificationCompat.Builder(context, NotificationChannals.getChatNotificationCH())
                         .setSmallIcon(R.drawable.ic_launcher_background)
                         .setContentTitle("New message from: " + sender)
                         .setContentText(contents)
                         .setDefaults(Notification.DEFAULT_ALL)
                         .setCategory(NotificationCompat.CATEGORY_MESSAGE);
-
-        Intent intent = new Intent(activity, MainActivity.class);
-
-        PendingIntent pendingIntent = PendingIntent.getActivity(
-                activity, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        notificationbulider.setContentIntent(pendingIntent);
-
-        /*NotificationManager nM =
-                (NotificationManager) activity.getSystemService(Context.NOTIFICATION_SERVICE);*/
 
         if(notificationManager != null)
             notificationManager.notify(1, notificationbulider.build());

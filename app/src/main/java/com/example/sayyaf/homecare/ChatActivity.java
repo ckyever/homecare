@@ -1,5 +1,6 @@
 package com.example.sayyaf.homecare;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -28,6 +29,7 @@ import com.firebase.ui.database.FirebaseListAdapter;
 import com.firebase.ui.database.FirebaseListOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Date;
@@ -35,7 +37,7 @@ import java.util.Date;
 public class ChatActivity extends AppCompatActivity implements View.OnClickListener{
 
     private static boolean setUpChatController = false;
-    public static ChatController chatController;
+    private static ChatController chatController;
     //private ChatController chatController;
 
     private EditText textMsg;
@@ -65,6 +67,18 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    public static void setUpChatController(User this_device, User contact_person, DatabaseReference chatDB){
+        chatController = new ChatController(this_device, contact_person, chatDB);
+    }
+
+    public static void listenToAdded(Context context, NotificationManager notificationManager, DatabaseReference chatDB){
+        chatController.listenToAdded(context, notificationManager, chatDB);
+    }
+
+    public static void cancelAddListening(DatabaseReference chatDB){
+        chatController.cancelAddListening(chatDB);
+    }
+
     @Override
     public void onClick(View v) {
        int button_id = v.getId();
@@ -88,6 +102,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     protected void onStart() {
         super.onStart();
         chatController.listenToChatChanges();
+    }
+
+    @Override
+    protected void onPause(){
+        chatController.stopListenToChatChanges();
+        super.onPause();
     }
 
     @Override
