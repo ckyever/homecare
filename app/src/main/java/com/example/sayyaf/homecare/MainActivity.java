@@ -17,7 +17,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import com.google.firebase.database.FirebaseDatabase;
-import butterknife.OnClick;
 
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -73,6 +72,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         if (view == mContacts) {
+            Intent intent = new Intent(MainActivity.this, ContactsActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        }
+
+        if (view == mContactsUpdate) {
             Intent intent = new Intent(MainActivity.this, ContactsActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);

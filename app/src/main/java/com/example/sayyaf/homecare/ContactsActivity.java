@@ -37,7 +37,7 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact_update);
-        mAddUserButton = (Button) findViewById(R.id.addUser);
+        mAddUserButton = (Button) findViewById(R.id.addContact);
         mUserEmail = (EditText) findViewById(R.id.contactEmail);
         mRemoveUserButton = (Button) findViewById(R.id.removeContact);
 
@@ -48,40 +48,8 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
         //User caregiverUser = caregiverRef.orderByChild("email").equalTo(email);
         getCurrentUser();
         mAddUserButton.setOnClickListener(this);
+        mRemoveUserButton.setOnClickListener(this);
     }
-
-    public void getCurrentUser() {
-        Query query = userRef.orderByChild("id").equalTo(uid);
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot datasnapshot) {
-
-                for (DataSnapshot snapshot : datasnapshot.getChildren()) {
-                    if (snapshot.exists()) {
-                        currentUser = snapshot.getValue(User.class);
-
-                        if (currentUser == null) {
-                            Toast.makeText(ContactsActivity.this, "NULL user",
-                                    Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-
-                                Log.d(TAG, "Current User id: " + currentUser.getId());
-                                //Log.d(TAG, "SNAPSHOT : " + snapshot.getValue());
-                                //Log.d(TAG, "USER: " + user.getId());
-                    }
-                }
-
-                Toast.makeText(ContactsActivity.this, "User doesn't exist",
-                        Toast.LENGTH_SHORT).show();
-            }
-            @Override
-            public void onCancelled(DatabaseError arg0) {
-
-            }
-        });
-    }
-
 
 
     @Override
@@ -97,6 +65,40 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
+    public void getCurrentUser() {
+        Query query = userRef.orderByChild("id").equalTo(uid);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot datasnapshot) {
+
+                for (DataSnapshot snapshot : datasnapshot.getChildren()) {
+                    if (snapshot.exists()) {
+                        currentUser = snapshot.getValue(User.class);
+
+                        if (currentUser == null) {
+                            Toast.makeText(ContactsActivity.this, "NULL user",
+                                    Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ContactsActivity.this, "User doesn't exist",
+                                    Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                                Log.d(TAG, "Current User id: " + currentUser.getId());
+                                //Log.d(TAG, "SNAPSHOT : " + snapshot.getValue());
+                                //Log.d(TAG, "USER: " + user.getId());
+                        return;
+                    }
+                }
+
+            }
+            @Override
+            public void onCancelled(DatabaseError arg0) {
+
+            }
+        });
+    }
+
+
     public void removeFriend(String email) {
         if(isValidEmail(email)){
             Query query = userRef.orderByChild("email").equalTo(email);
@@ -109,9 +111,9 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
                             User user = snapshot.getValue(User.class);
 
                             if (user == null) {
-                                Toast.makeText(ContactsActivity.this, "NULL user",
+                                Toast.makeText(ContactsActivity.this, "User doesn't exist",
                                         Toast.LENGTH_SHORT).show();
-                                continue;
+                                return;
                             }
 
 
@@ -123,15 +125,17 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
                             return;
                         }
                     }
-
-                    Toast.makeText(ContactsActivity.this, "User doesn't exist",
-                            Toast.LENGTH_SHORT).show();
                 }
                 @Override
                 public void onCancelled(DatabaseError arg0) {
 
                 }
             });
+        }
+
+        else {
+            Toast.makeText(ContactsActivity.this, "Invalid Email Entered",
+                    Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -147,9 +151,9 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
                             User user = snapshot.getValue(User.class);
 
                             if (user == null) {
-                                Toast.makeText(ContactsActivity.this, "NULL user",
+                                Toast.makeText(ContactsActivity.this, "User doesn't exist",
                                         Toast.LENGTH_SHORT).show();
-                                continue;
+                                return;
                             }
 
                             if(user.isCaregiver() == currentUser.isCaregiver()) {
@@ -171,20 +175,22 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
                             return;
                         }
                     }
-
-                    Toast.makeText(ContactsActivity.this, "User doesn't exist",
-                            Toast.LENGTH_SHORT).show();
                 }
                 @Override
                 public void onCancelled(DatabaseError arg0) {
 
                 }
             });
+        } else {
+            Toast.makeText(ContactsActivity.this, "Invalid Email Entered",
+                    Toast.LENGTH_SHORT).show();
         }
+
     }
 
     public static boolean isValidEmail(CharSequence target) {
         if (TextUtils.isEmpty(target)) {
+
             return false;
         } else {
             return android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
