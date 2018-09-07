@@ -38,8 +38,11 @@ dependencies {
     implementation 'com.firebaseui:firebase-ui-auth:4.0.0'
     implementation 'com.firebaseui:firebase-ui:4.0.0'
     implementation 'com.google.firebase:firebase-database:16.0.1'
-
     implementation 'org.webrtc:google-webrtc:1.0.+'
+    implementation 'com.google.android.gms:play-services-maps:15.0.1'
+    implementation 'com.google.android.gms:play-services-location:15.0.1'
+    implementation 'com.android.support:recyclerview-v7:27.1.1'
+    implementation 'com.android.support:cardview-v7:27.1.1'
 
 }
 

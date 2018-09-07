@@ -11,6 +11,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import butterknife.OnClick;
 
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -20,6 +26,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     // set up chat controllers for once
     private static boolean setUpChatControllers = false;
     //private ChatController chatController;
+    Button mMapButton;
+    Button mContacts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,20 +54,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             setUpChatControllers = true;
         }
 
+        mMapButton = findViewById(R.id.mapButton);
+        mMapButton.setOnClickListener(this);
+
+        mContacts = (Button) findViewById(R.id.optionContacts);
+        mContacts.setOnClickListener(this);
     }
 
     @Override
-    public void onClick(View v) {
-        int button_id = v.getId();
-        Log.i(v.toString(), v.toString());
+    public void onClick(View view) {
+        if(view == mMapButton) {
+            Intent intent = new Intent(MainActivity.this, MapsActivity.class);
+            startActivity(intent);
+        }
 
-        switch (button_id){
-            case R.id.optionContacts:
-                Intent intent = new Intent(MainActivity.this, ChatActivity.class);
-                //intent.putExtra("Chat Controller", chatController);
-                startActivity(intent);
-                finish();
-                break;
+        if (view == mContacts) {
+            Intent intent = new Intent(MainActivity.this, ContactsActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
         }
     }
 

@@ -22,7 +22,7 @@
         app:layout_constraintVertical_bias="0.176" />
 
     <Button
-        android:id="@+id/optionTravel"
+        android:id="@+id/mapButton"
         android:layout_width="128dp"
         android:layout_height="56dp"
         android:layout_marginBottom="8dp"
@@ -30,10 +30,9 @@
         android:layout_marginStart="52dp"
         android:layout_marginTop="8dp"
         android:background="#ACB9E8"
-        android:text="Travel"
-        android:onClick="onClick"
-        app:layout_constraintBottom_toTopOf="@id/optionContacts"
-        app:layout_constraintEnd_toStartOf="@id/optionHelp"
+        android:text="Map"
+        app:layout_constraintBottom_toTopOf="@+id/optionContacts"
+        app:layout_constraintEnd_toStartOf="@+id/optionHelp"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
