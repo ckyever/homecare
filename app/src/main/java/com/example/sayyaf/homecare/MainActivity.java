@@ -13,17 +13,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mMapButton = (Button) findViewById(R.id.mapButton);
+        mMapButton = findViewById(R.id.mapButton);
         mMapButton.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View view) {
-
         if(view == mMapButton) {
             Intent intent = new Intent(MainActivity.this, MapsActivity.class);
             startActivity(intent);
-            finish();
         }
 
     }
