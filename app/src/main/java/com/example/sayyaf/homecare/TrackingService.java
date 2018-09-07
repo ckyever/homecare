@@ -47,7 +47,8 @@ public class TrackingService extends Service {
         PendingIntent broadcastIntent = PendingIntent.getBroadcast(
                 this, 0, new Intent(stop), PendingIntent.FLAG_UPDATE_CURRENT);
         // Create the persistent notification
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this,
+                NotificationChannals.getChatNotificationCH())
                 .setContentTitle(getString(R.string.app_name))
                 .setContentText(getString(R.string.tracking_notif))
                 .setOngoing(true)
@@ -93,7 +94,7 @@ public class TrackingService extends Service {
                 public void onLocationResult(LocationResult locationResult) {
 
                     FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
-                    DatabaseReference mRef = mDatabase.getReference(path);
+                    DatabaseReference mRef = mDatabase.getReference(path); "User".child(uid)
                     Location location = locationResult.getLastLocation();
 
                     if (location != null) {
