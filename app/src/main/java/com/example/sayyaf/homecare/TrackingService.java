@@ -94,7 +94,7 @@ public class TrackingService extends Service {
                 public void onLocationResult(LocationResult locationResult) {
 
                     FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
-                    DatabaseReference mRef = mDatabase.getReference(path); "User".child(uid)
+                    DatabaseReference mRef = mDatabase.getReference(path);
                     Location location = locationResult.getLastLocation();
 
                     if (location != null) {
