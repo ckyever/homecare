@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
@@ -27,6 +28,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.UUID;
 
 
+/** Activity controller for the Account Registration Activity. Handles validation of sign up inputs
+ * and registration to the Firebase Authentication Service and the Firebase Real Time Database
+ *
+ */
 public class AccountRegisterActivity extends AppCompatActivity implements View.OnClickListener {
 
     Button mCreateUserButton;
@@ -40,6 +45,9 @@ public class AccountRegisterActivity extends AppCompatActivity implements View.O
     private FirebaseUser fbUser =null;
     public static final String TAG = AccountRegisterActivity.class.getSimpleName();
     private FirebaseAuth mAuth;
+
+    /* Textwatcher works off asynchronous calls, tracking when the input fields are changed
+        to check if they meet necessary sign up validation */
     TextWatcher textWatcher = new TextWatcher() {
 
         @Override
@@ -60,10 +68,11 @@ public class AccountRegisterActivity extends AppCompatActivity implements View.O
 
     };
 
+    /* Sets standards for minimum requirements  before the sign up button becomes available to user */
     private void validateFields() {
 
         if(mNameEditText.getText().length()>0 && mEmailEditText.getText().length()>0 &&
-                mPasswordEditText.getText().length()>0 &&
+                mPasswordEditText.getText().length()>=6 &&
                 mConfirmPasswordEditText.getText().length()>0 && (mCaregiver.isChecked() ||
                 mAssistedPerson.isChecked())){
             mCreateUserButton.setEnabled(true);
@@ -113,7 +122,7 @@ public class AccountRegisterActivity extends AppCompatActivity implements View.O
         mConfirmPasswordEditText.addTextChangedListener(textWatcher);
     }
 
-
+    /* Handles activity changes based on view clicked */
     @Override
     public void onClick(View view) {
 
@@ -126,36 +135,60 @@ public class AccountRegisterActivity extends AppCompatActivity implements View.O
         }
 
         if (view == mCreateUserButton) {
-            createNewUser();
-            startActivity(intent);
-            finish();
+            if(createNewUser()) {
+                startActivity(intent);
+                finish();
+            }
         }
 
     }
 
 
-
-    private void createNewUser() {
+    /* Method responsible for creating a new user. Only gets called upon basic validation
+    * of all input fields. Then checks for valid email addresses, before attempting to
+    * register the user with the Firebase Authentication Service. If that is successful,
+    * links the user to the Real time database*/
+    private boolean createNewUser() {
         final String name = mNameEditText.getText().toString().trim();
         final String email = mEmailEditText.getText().toString().trim();
         String password = mPasswordEditText.getText().toString().trim();
         String confirmPassword = mConfirmPasswordEditText.getText().toString().trim();
+        //Flag to check if user is caregiver or assisted person
         final boolean isCaregiver = mCaregiver.isChecked();
-        final DatabaseReference  myRef = FirebaseDatabase.getInstance().getReference("caregiver");
+        final DatabaseReference  myRef;
         final User newUser;
 
+        /*Creates the specifiec user instance */
         if(isCaregiver) {
             newUser = new Caregiver(name, email, isCaregiver);
+            myRef= FirebaseDatabase.getInstance().getReference("caregiver");
         }
 
         else {
             newUser = new Assisted(name, email, isCaregiver);
+            myRef = FirebaseDatabase.getInstance().getReference("Assisted");
 
         }
 
-        if(password.equals(confirmPassword)) {
-            mAuth.createUserWithEmailAndPassword(email, password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+        /* Checks password and confirm password match */
+        if(!password.equals(confirmPassword)) {
+            Toast.makeText(AccountRegisterActivity.this, "Password and confirm password don't match",
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        }
 
+        /* Checks that the email address given follows the requisite pattern */
+        if(!isValidEmail(email)) {
+            Toast.makeText(AccountRegisterActivity.this, "Email is invalid",
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        /* If email is valid, adds user to the Authentication service. If that succeeds, adds them
+            to the Real Time database
+         */
+        if(isValidEmail(email)) {
+            mAuth.createUserWithEmailAndPassword(email, password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                         @Override
                         public void onSuccess(AuthResult auth) {
                                 Log.d(TAG, "Authentication successful");
@@ -163,6 +196,7 @@ public class AccountRegisterActivity extends AppCompatActivity implements View.O
                                 String userId = fbUser.getUid();
                                 myRef.child(userId);
                                 myRef.child(userId).setValue(newUser);
+
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -173,6 +207,24 @@ public class AccountRegisterActivity extends AppCompatActivity implements View.O
             });
 
         }
+        return true;
+    }
+
+    public final static boolean isValidEmail(CharSequence target) {
+        if (TextUtils.isEmpty(target)) {
+            return false;
+        } else {
+            return android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
+        }
+    }
+
+
+    boolean isValidPassword(String password, String confirm) {
+
+        if(password.length() >=6 && password.equals(confirm)) {
+            return true;
+        }
+        return false;
     }
 
 

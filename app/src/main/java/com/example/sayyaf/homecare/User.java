@@ -29,6 +29,14 @@ public class User {
         this.email = email;
     }
 
+    public boolean isCaregiver() {
+        return isCaregiver;
+    }
+
+    public void setCaregiver(boolean caregiver) {
+        this.isCaregiver = caregiver;
+    }
+
     /*
     public long getPhone() {
         return phone;
