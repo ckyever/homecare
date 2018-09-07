@@ -1,6 +1,7 @@
 package com.example.sayyaf.homecare;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -60,7 +61,6 @@ public class MapsActivity extends FragmentActivity implements OnMyLocationButton
 
         // Get location permissions then initialise the map
         getLocationPermission();
-
     }
 
     /**
@@ -71,6 +71,10 @@ public class MapsActivity extends FragmentActivity implements OnMyLocationButton
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+    }
+
+    private void startTrackingService() {
+        startService(new Intent(this, TrackingService.class));
     }
 
     /**
@@ -86,8 +90,9 @@ public class MapsActivity extends FragmentActivity implements OnMyLocationButton
                     PackageManager.PERMISSION_GRANTED) {
                 mLocationPermissionsGranted = true;
 
-                // All permissions granted so initialise the map
+                // All permissions granted so initialise the map and start tracking service
                 initMap();
+                startTrackingService();
             }
             else {
                 ActivityCompat.requestPermissions(this, permissions, LOCATION_REQUEST_CODE);
@@ -113,8 +118,9 @@ public class MapsActivity extends FragmentActivity implements OnMyLocationButton
 
                 mLocationPermissionsGranted = true;
 
-                // So now we can initialise the map
+                // So now we can initialise the map and initialise tracking service
                 initMap();
+                startTrackingService();
             }
         }
     }

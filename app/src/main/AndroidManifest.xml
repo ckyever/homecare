@@ -12,7 +12,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
 
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -27,8 +26,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LoginActivity"></activity>
-        <activity android:name=".AccountRegisterActivity"></activity>
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".AccountRegisterActivity" />
 
         <meta-data
             android:name="preloaded_fonts"
@@ -47,8 +46,12 @@
 
         <activity
             android:name=".MapsActivity"
-            android:label="@string/title_activity_maps">
-        </activity>
+            android:label="@string/title_activity_maps"></activity>
+
+        <service
+            android:name=".TrackingService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>
