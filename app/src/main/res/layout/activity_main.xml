@@ -33,10 +33,10 @@
         android:text="Travel"
         app:layout_constraintBottom_toTopOf="@+id/button3"
         app:layout_constraintEnd_toStartOf="@+id/button2"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.142"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.838" />
+        app:layout_constraintVertical_bias="0.671" />
 
     <Button
         android:id="@+id/button2"
@@ -56,7 +56,24 @@
         app:layout_constraintVertical_bias="0.837" />
 
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/contactsUpdate"
+        android:layout_width="128dp"
+        android:layout_height="56dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="8dp"
+        android:background="#ACB9E8"
+        android:text="Add/Remove Contacts"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <Button
+        android:id="@+id/button5"
         android:layout_width="128dp"
         android:layout_height="56dp"
         android:layout_marginBottom="100dp"

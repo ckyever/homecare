@@ -6,19 +6,48 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.firebase.database.FirebaseDatabase;
+
 import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     Button mContacts;
+    Button mContactsUpdate;
 
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mContacts = (Button) findViewById(R.id.button3);
+
+        if(!setUpChatControllers){
+            ChatActivity.setUpChatController(new User("", "", false),
+                    new User("Fake name", "", false),
+                    FirebaseDatabase.getInstance().getReference("testChatDB"));
+
+            /*if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+
+                this.startService(new Intent(this, NotificationService.class));
+            }
+            else {
+                this.startForegroundService(new Intent(this, NotificationService.class));
+            }*/
+
+
+            /*chatController = new ChatController(new User("", "", false),
+                    new User("Fake name", "", false), "");*/
+
+            setUpChatControllers = true;
+        }
+
+        mMapButton = findViewById(R.id.mapButton);
+        mMapButton.setOnClickListener(this);
+
+        mContacts = (Button) findViewById(R.id.optionContacts);
         mContacts.setOnClickListener(this);
+        mContactsUpdate = (Button) findViewById(R.id.contactsUpdate);
+        mContactsUpdate.setOnClickListener(this);
     }
+
 
     @Override
     public void onClick(View view) {
