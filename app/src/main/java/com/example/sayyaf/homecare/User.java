@@ -1,17 +1,30 @@
 package com.example.sayyaf.homecare;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 public class User {
 
+    private String id;
     private String name;
     private String email;
-    //private long phone;
     private boolean isCaregiver;
+    //private List<User> friends;
+    private HashMap<String, String> friends;
 
     public User(String name, String email, boolean isCaregiver) {
         this.name = name;
         this.email = email;
         this.isCaregiver = isCaregiver;
+        //this.friends = new ArrayList<>();
+        this.friends = new HashMap<>();
     }
+
+    public User() {
+
+    }
+
 
     public String getName() {
         return name;
@@ -46,4 +59,23 @@ public class User {
         this.phone = phone;
     } */
 
+    public HashMap<String, String> getFriends() {
+        return friends;
+    }
+
+    public void setFriends(HashMap<String, String> friends) {
+        this.friends = friends;
+    }
+
+    public void addToUserList(User user) {
+        friends.put(user.getName(), user.getEmail());
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 }

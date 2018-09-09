@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/scroll"
     android:layout_width="match_parent"
@@ -83,7 +82,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
                     android:background="@android:color/white"
-                    android:text="Are you a caregiver?"/>
+                    android:text="Are you a caregiver?" />
 
                 <RadioButton
                     android:id="@+id/assistedPerson"
@@ -91,7 +90,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
                     android:background="@android:color/white"
-                    android:text="Are you an assisted person?"/>
+                    android:text="Are you an assisted person?" />
             </RadioGroup>
 
 
@@ -119,11 +118,11 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_above="@+id/linearLayout"
+            android:layout_centerHorizontal="true"
             android:text="Create Account"
             android:textSize="30dp"
-            android:textStyle="bold"
-            android:layout_above="@+id/linearLayout"
-            android:layout_centerHorizontal="true" />
+            android:textStyle="bold" />
 
     </RelativeLayout>
 </ScrollView>

@@ -85,7 +85,6 @@ public class LoginActivity  extends AppCompatActivity implements View.OnClickLis
         }
 
         else {
-
             authenticateUser();
         }
     }

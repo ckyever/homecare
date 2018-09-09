@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "632496318092-br5g24r80v88kcbk6qsh6nq9e28u03ad.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sayyaf.homecare",
+            "certificate_hash": "c968eaf2684f85c46ac791cdeccbcc777bdc5589"
+          }
+        },
+        {
           "client_id": "632496318092-1r6tvd9614hunl70ut8sl5raa3l5j8j4.apps.googleusercontent.com",
           "client_type": 3
         }
