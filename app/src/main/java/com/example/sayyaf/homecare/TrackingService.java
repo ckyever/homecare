@@ -19,6 +19,8 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -37,7 +39,6 @@ public class TrackingService extends Service {
         requestLocationUpdates();
     }
 
-    //TODO: Link up with chat feature for notification channel and add to NotificationCompat.Builder
     /**
      * Creates a persistent notification that tells the user that they are being tracked.
      */
@@ -82,13 +83,17 @@ public class TrackingService extends Service {
         request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         FusedLocationProviderClient client =
                 LocationServices.getFusedLocationProviderClient(this);
-        final String path = "locations/123";
         int permission = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION);
 
+        // Get current user's uid and set path as a locations subtree within user's database path
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String uid = user.getUid();
+        final String path = "User/" + uid + "/location";
+
         if (permission == PackageManager.PERMISSION_GRANTED) {
             // Request location updates and when an update is
-            // received, store the location in Firebase
+            // received, store it under the database path User/uid/location
             client.requestLocationUpdates(request, new LocationCallback() {
                 @Override
                 public void onLocationResult(LocationResult locationResult) {
