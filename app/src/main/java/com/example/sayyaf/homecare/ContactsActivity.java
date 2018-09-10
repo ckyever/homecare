@@ -1,5 +1,6 @@
 package com.example.sayyaf.homecare;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +19,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.Date;
+import java.util.Random;
 
 public class ContactsActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -110,7 +114,9 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
                         if (snapshot.exists()) {
                             User user = snapshot.getValue(User.class);
 
-                            if (user == null) {
+                            if (user == null ||
+                                    currentUser.getFriends() == null
+                                    || !currentUser.getFriends().containsKey(user.getId())) {
                                 Toast.makeText(ContactsActivity.this, "User doesn't exist",
                                         Toast.LENGTH_SHORT).show();
                                 return;
@@ -121,6 +127,23 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
                                     .child("friends")
                                     .child(user.getId())
                                     .removeValue();
+
+                            // remove the common database
+                            FirebaseDatabase.getInstance()
+                                    .getReference("chatDB")
+                                    .child(user.getChatDatabase().get(uid))
+                                    .removeValue();
+
+                            userRef.child(uid)
+                                    .child("chatDatabase")
+                                    .child(user.getId())
+                                    .removeValue();
+
+                            userRef.child(user.getId())
+                                    .child("chatDatabase")
+                                    .child(uid)
+                                    .removeValue();
+                            //
 
                             return;
                         }
@@ -157,12 +180,24 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
                             }
 
                             if(user.isCaregiver() == currentUser.isCaregiver()) {
+                                Toast.makeText(ContactsActivity.this,
+                                        "This person is a " + user.getUserType(),
+                                        Toast.LENGTH_SHORT).show();
                                 continue;
                             }
 
-                            if(currentUser.getFriends().containsKey(user.getId())) {
+
+                            //bug currentUser.getFriends() read as null rather isEmpty
+                            /*if(currentUser.getFriends().containsKey(user.getId())) {
                                 Toast.makeText(ContactsActivity.this, "Already Friend",
                                         Toast.LENGTH_SHORT).show();
+                            }*/
+
+                            if(currentUser.getFriends() != null
+                                && currentUser.getFriends().containsKey(user.getId())) {
+                                Toast.makeText(ContactsActivity.this, "Already Friend",
+                                        Toast.LENGTH_SHORT).show();
+                                return;
                             }
 
                             userRef.child(uid).child("friends").push();
@@ -171,6 +206,24 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
                                     .child("friends")
                                     .child(user.getId())
                                     .setValue(user.getEmail());
+
+                            // add a common database
+                            long date = new Date().getTime();
+
+                            userRef.child(uid).child("chatDatabase").push();
+
+                            userRef.child(uid)
+                                    .child("chatDatabase")
+                                    .child(user.getId())
+                                    .setValue(uid + date + user.getId());
+
+                            userRef.child(user.getId()).child("chatDatabase").push();
+
+                            userRef.child(user.getId())
+                                    .child("chatDatabase")
+                                    .child(uid)
+                                    .setValue(uid + date + user.getId());
+                            //
 
                             return;
                         }
@@ -195,6 +248,14 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
         } else {
             return android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent goToMenu = new Intent(ContactsActivity.this, MainActivity.class);
+        goToMenu.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(goToMenu);
+        finish();
     }
 
 }

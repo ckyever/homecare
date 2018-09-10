@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ContactChatActivity"
+    tools:layout_editor_absoluteY="25dp"
+    android:background="@color/colorPrimary">
+
+    <TextView
+        android:id="@+id/contact"
+        android:layout_width="match_parent"
+        android:layout_height="40sp"
+        android:layout_marginBottom="10sp"
+        android:layout_marginEnd="10sp"
+        android:layout_marginStart="10sp"
+        android:layout_marginTop="10sp"
+        android:paddingLeft="5sp"
+        android:paddingRight="5sp"
+        android:gravity="center_vertical"
+        android:textSize="20sp"
+        android:text=" Contacts"
+        android:textFontWeight="25sp"
+        android:textColor="@android:color/white"
+        android:background="@color/colorAccent"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ListView
+        android:id="@+id/contactView"
+        android:layout_width="match_parent"
+        android:layout_height="0sp"
+        android:dividerHeight="5sp"
+        android:layout_marginBottom="10sp"
+        android:layout_marginEnd="10sp"
+        android:layout_marginStart="10sp"
+        android:layout_marginTop="10sp"
+        app:layout_constraintTop_toBottomOf="@id/contact"
+        app:layout_constraintBottom_toTopOf="@id/textInputs"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+
+    <Button
+        android:id="@+id/startChat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="chat"
+        android:onClick="onClick"
+        android:textSize="15sp"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <EditText
+        android:id="@+id/textInputs"
+        android:layout_width="0sp"
+        android:layout_height="45sp"
+        android:paddingLeft="5sp"
+        android:paddingRight="5sp"
+        android:layout_marginBottom="5sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/startChat"
+        android:hint=" Type email to start chat"
+        android:background="@android:color/white"/>
+
+
+
+</android.support.constraint.ConstraintLayout>
+
+    <!--
+
+    <ListView
+        android:id="@+id/contactView"
+        android:layout_width="match_parent"
+        android:layout_height="0sp"
+        android:dividerHeight="5sp"
+        android:layout_marginBottom="10sp"
+        android:layout_marginEnd="10sp"
+        android:layout_marginStart="10sp"
+        android:layout_marginTop="10sp"
+        app:layout_constraintTop_toBottomOf="@id/contact"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+     -->

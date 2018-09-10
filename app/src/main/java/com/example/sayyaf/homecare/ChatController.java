@@ -79,8 +79,8 @@ public class ChatController {
 
                 ChatMessage ct = this.getItem(position);
 
-                if(ct.getMessageSender().equals(/*this_device.getName()*/
-                        FirebaseAuth.getInstance().getCurrentUser().getEmail())){
+                if(ct.getMessageSender().equals(this_device.getName()
+                        /*FirebaseAuth.getInstance().getCurrentUser().getEmail()*/)){
                     v = LayoutInflater.from(chatActivity.getApplicationContext()).
                             inflate(msg_block_this_device/*R.layout.msg_block_sender*/, viewGroup, false);
                 }
@@ -96,7 +96,7 @@ public class ChatController {
             }
 
             @Override
-            protected void populateView(android.view.View v, ChatMessage ct, int position) {
+            protected void populateView(View v, ChatMessage ct, int position) {
 
                 // referencing text views
                 TextView messageText = (TextView) v.findViewById(R.id.messageText);
@@ -140,8 +140,8 @@ public class ChatController {
             // upload msg to db
 
             ChatMessage ct = new ChatMessage(trimmedContent(textMsg),
-                    FirebaseAuth.getInstance().getCurrentUser().getEmail()
-                    /*this_device.getName()*/);
+                    /*FirebaseAuth.getInstance().getCurrentUser().getEmail()*/
+                    this_device.getName());
 
             // update time that user interacted with message
             lastMsgTime = ct.getMessageTime();
@@ -173,7 +173,7 @@ public class ChatController {
     /* listen to new message sent to user (may move to contact controller)
      * chatDB: database for the chatting pair
      */
-    public void listenToAdded(Context context, NotificationManager notificationManager,
+    /*public void listenToAdded(Context context, NotificationManager notificationManager,
                               DatabaseReference chatDB){
 
         //if(chatAddedListener == null)
@@ -217,17 +217,17 @@ public class ChatController {
             };
 
         chatDB.orderByKey().limitToLast(1).addChildEventListener(chatAddedListener);
-    }
+    }*/
 
     /* cancel listening to new message sent to user (may move to contact controller)
      * chatDB: database for the chatting pair
      */
-    public void cancelAddListening(DatabaseReference chatDB){
+    /*public void cancelAddListening(DatabaseReference chatDB){
         chatDB.removeEventListener(chatAddedListener);
-    }
+    }*/
 
     // fire the notification (may move to contact controller)
-    private void newIncomingNotification(
+    /*private void newIncomingNotification(
             Context context, NotificationManager notificationManager,
             String sender, String contents){
 
@@ -241,7 +241,7 @@ public class ChatController {
 
         if(notificationManager != null)
             notificationManager.notify(1, notificationbulider.build());
-    }
+    }*/
 
     // show peer's user name
     public void displayReceiverName(TextView contactName) {
@@ -257,7 +257,7 @@ public class ChatController {
 
     // move to menu
     public void returnToMenu(ChatActivity chatActivity){
-        Intent goToMenu = new Intent(chatActivity, MainActivity.class);
+        Intent goToMenu = new Intent(chatActivity, ContactChatActivity.class);
         chatActivity.startActivity(goToMenu);
         chatActivity.finish();
     }

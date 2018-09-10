@@ -34,11 +34,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if(!setUpChatControllers){
-            ChatActivity.setUpChatController(new User("", "", false),
-                    new User("Fake name", "", false),
-                    FirebaseDatabase.getInstance().getReference("testChatDB"));
-
             /*if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
 
                 this.startService(new Intent(this, NotificationService.class));
@@ -50,9 +45,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             /*chatController = new ChatController(new User("", "", false),
                     new User("Fake name", "", false), "");*/
-
-            setUpChatControllers = true;
-        }
 
         mMapButton = findViewById(R.id.mapButton);
         mMapButton.setOnClickListener(this);
@@ -72,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         if (view == mContacts) {
-            Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+            Intent intent = new Intent(MainActivity.this, ContactChatActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();
@@ -86,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    @Override
+    /*@Override
     protected void onStart(){
         super.onStart();
         ChatActivity.listenToAdded(this,
@@ -101,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ChatActivity.cancelAddListening(FirebaseDatabase.getInstance().getReference("testChatDB"));
         //chatController.cancelAddListening();
         super.onPause();
-    }
+    }*/
 
     /*@Override
     protected void onDestroy(){

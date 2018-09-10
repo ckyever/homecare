@@ -71,13 +71,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         chatController = new ChatController(this_device, contact_person, chatDB);
     }
 
-    public static void listenToAdded(Context context, NotificationManager notificationManager, DatabaseReference chatDB){
+    /*public static void listenToAdded(Context context, NotificationManager notificationManager, DatabaseReference chatDB){
         chatController.listenToAdded(context, notificationManager, chatDB);
     }
 
     public static void cancelAddListening(DatabaseReference chatDB){
         chatController.cancelAddListening(chatDB);
-    }
+    }*/
 
     @Override
     public void onClick(View v) {

@@ -33,7 +33,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.663" />
 
-
     <Button
         android:id="@+id/removeContact"
         android:layout_width="match_parent"

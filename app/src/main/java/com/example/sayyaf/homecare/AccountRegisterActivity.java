@@ -184,14 +184,8 @@ public class AccountRegisterActivity extends AppCompatActivity implements View.O
                                 fbUser =FirebaseAuth.getInstance().getCurrentUser();
                                 String userId = fbUser.getUid();
                                 newUser.setId(userId);
-                                myRef.child(userId);
+                                //myRef.child(userId);
                                 myRef.child(userId).setValue(newUser);
-                                myRef.child(userId).child("friends").push();
-
-                                myRef.child(userId)
-                                        .child("friends")
-                                        .child("1bPtsSRGLXQJ9BStPiAuiDRqCMx1")
-                                        .setValue("Sayyaf Waseem");
 
 
                             }
