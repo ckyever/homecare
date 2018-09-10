@@ -3,4 +3,5 @@
     <string name="titletextcolour">#000000</string>
     <string name="title_activity_maps">Map</string>
     <string name="tracking_notif">Tracking, tap to cancel</string>
+    <string name="title_activity_tracking">Map</string>
 </resources>
