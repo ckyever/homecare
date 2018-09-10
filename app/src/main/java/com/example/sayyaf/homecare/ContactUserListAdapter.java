@@ -33,12 +33,9 @@ public class ContactUserListAdapter extends ArrayAdapter<User>{
         this.ref = ref;
     }
 
-    public void addUser(User user){
-        users.add(user);
-    }
-
     public void addUser(ArrayList<User> users){
         this.users = users;
+        notifyDataSetChanged();
     }
 
     @Override

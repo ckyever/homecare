@@ -32,7 +32,8 @@ public class ContactChatActivity extends AppCompatActivity implements View.OnCli
     private User friend;
 
     private EditText textInputs;
-    private Button startChat;
+    private Button searchUser;
+    private Button refreshList;
     private ArrayList<User> friends;
     private ListView contactView;
     private ContactUserListAdapter contactUserListAdapter;
@@ -44,7 +45,8 @@ public class ContactChatActivity extends AppCompatActivity implements View.OnCli
         setContentView(R.layout.activity_contact);
 
         textInputs = (EditText) findViewById(R.id.textInputs);
-        startChat = (Button) findViewById(R.id.startChat);
+        searchUser = (Button) findViewById(R.id.searchUser);
+        refreshList = (Button) findViewById(R.id.refreshList);
         contactView = (ListView) findViewById(R.id.contactView);
 
         ref = FirebaseDatabase.getInstance().getReference();
@@ -52,17 +54,13 @@ public class ContactChatActivity extends AppCompatActivity implements View.OnCli
         getCurrentUser();
         friends = new ArrayList<User>();
 
-        //wait for
+        //wait for database fetch complete
         getFriends(new ContactUserListCallback(){
             @Override
             public void onCallback(ArrayList<User> friends){
-                showFriends();
-
                 contactUserListAdapter =
                         new ContactUserListAdapter(ContactChatActivity.this, R.layout.contact_block,
                                 friends, this_device, ref);
-
-                //contactUserListAdapter.addUser(friends);
 
                 contactView.setAdapter(contactUserListAdapter);
 
@@ -74,14 +72,43 @@ public class ContactChatActivity extends AppCompatActivity implements View.OnCli
     @Override
     public void onClick(View v) {
 
-        final String email = textInputs.getText().toString().trim();
+        String starter = textInputs.getText().toString().trim();
 
-        if(v == startChat){
-            checkUser(email);
+        if(v == searchUser){
+            //checkUser(email);
+            if(starter == null || starter.isEmpty()) return;
+
+            getFriends(new ContactUserListCallback(){
+                @Override
+                public void onCallback(ArrayList<User> friends){
+
+                    contactUserListAdapter =
+                            new ContactUserListAdapter(ContactChatActivity.this, R.layout.contact_block,
+                                    friends, this_device, ref);
+
+                    contactView.setAdapter(contactUserListAdapter);
+
+                }
+            }, starter);
+        }
+
+        if(v == refreshList){
+            getFriends(new ContactUserListCallback(){
+                @Override
+                public void onCallback(ArrayList<User> friends){
+                    contactUserListAdapter =
+                            new ContactUserListAdapter(ContactChatActivity.this, R.layout.contact_block,
+                                    friends, this_device, ref);
+
+                    contactView.setAdapter(contactUserListAdapter);
+
+                }
+            });
         }
 
     }
 
+    // debug getting data
     public void showFriends(){
         if(friends == null){
             System.out.println("null");
@@ -115,10 +142,16 @@ public class ContactChatActivity extends AppCompatActivity implements View.OnCli
     }
 
     public void getFriends(ContactUserListCallback contactUserListCallback){
+        getFriends(contactUserListCallback, null);
+    }
+
+    public void getFriends(ContactUserListCallback contactUserListCallback, String starter){
         ref.child("User").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
+
+                    friends = new ArrayList<User>();
 
                     for (DataSnapshot s : dataSnapshot.getChildren()) {
                         if(s.exists()){
@@ -126,18 +159,31 @@ public class ContactChatActivity extends AppCompatActivity implements View.OnCli
 
                             if (fd.getChatDatabase() != null){
                                 if(fd.getChatDatabase().containsKey(this_device.getId())){
-                                    friends.add(fd);
+                                    if(starter == null)
+                                        friends.add(fd);
+                                    else if(fd.getName().startsWith(starter)
+                                            || fd.getEmail().startsWith(starter))
+                                        friends.add(fd);
                                 }
                             }
                         }
 
                     }
+
+                    if(friends.isEmpty()){
+                        Toast.makeText(ContactChatActivity.this,
+                                "No result",
+                                Toast.LENGTH_SHORT).show();
+                    }
+
+                    contactUserListCallback.onCallback(friends);
                 }
-
-                contactUserListCallback.onCallback(friends);
+                else{
+                    Toast.makeText(ContactChatActivity.this,
+                            "No result",
+                            Toast.LENGTH_SHORT).show();
+                }
             }
-
-
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -146,8 +192,10 @@ public class ContactChatActivity extends AppCompatActivity implements View.OnCli
         });
     }
 
-    private void checkUser(String email) {
-        Query query = ref.child("User").orderByChild("email")
+    private void checkUser(String starter) {
+
+
+        /*Query query = ref.child("User").orderByChild("email")
                 .equalTo(email);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -173,7 +221,7 @@ public class ContactChatActivity extends AppCompatActivity implements View.OnCli
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-        });
+        });*/
     }
 
 
