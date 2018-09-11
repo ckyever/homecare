@@ -202,6 +202,7 @@ public class MapsActivity extends FragmentActivity implements OnMyLocationButton
     }
 
     private void initialiseSearch() {
+        // Search the location that has been input in the search bar
 
         mInputSearchEditText.setImeActionLabel("Search", EditorInfo.IME_ACTION_SEARCH);
         mInputSearchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -216,6 +217,7 @@ public class MapsActivity extends FragmentActivity implements OnMyLocationButton
     }
 
     private void geoLocate() {
+        // Place a marker and move the camera to the location that has been searched
 
         String searchString = mInputSearchEditText.getText().toString();
 
@@ -227,12 +229,13 @@ public class MapsActivity extends FragmentActivity implements OnMyLocationButton
             // e.printStackTrace();
             Log.e(TAG, "geoLocation: IOException" + e.getMessage());
         }
-
+        // If the location searched returns at least one result
         if (list.size() > 0) {
             Address address = list.get(0);
 
             Log.d(TAG, "geoLocate: found a location: " + address.toString());
 
+            // Place marker and move camera
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(address.getLatitude(), address.getLongitude()), STREET_ZOOM));
             MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(address.getLatitude(), address.getLongitude())).title(address.getAddressLine(0));
             mMap.addMarker(markerOptions);
