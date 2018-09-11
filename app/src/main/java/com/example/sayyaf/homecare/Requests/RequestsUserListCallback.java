@@ -1,4 +1,4 @@
-package com.example.sayyaf.homecare.Requests;
+package com.example.sayyaf.homecare.requests;
 
 import com.example.sayyaf.homecare.User;
 

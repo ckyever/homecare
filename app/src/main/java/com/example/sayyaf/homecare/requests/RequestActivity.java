@@ -1,4 +1,4 @@
-package com.example.sayyaf.homecare.Requests;
+package com.example.sayyaf.homecare.requests;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,8 +10,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.sayyaf.homecare.ContactUserListAdapter;
-import com.example.sayyaf.homecare.ContactUserListCallback;
 import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.User;
@@ -25,28 +23,28 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-public class RequestsActivity extends AppCompatActivity implements View.OnClickListener {
+public class RequestActivity extends AppCompatActivity implements View.OnClickListener {
 
     private DatabaseReference ref;
-    private User this_device;
+    private User currentUser;
 
-    private EditText textInputs;
-    private Button searchUser;
-    private Button refreshList;
+    private EditText requestSearch;
+    private Button searchUserRequest;
+    private Button refreshRequestList;
     private ArrayList<User> requests;
-    private ListView contactView;
-    private ContactUserListAdapter contactUserListAdapter;
+    private ListView requestsView;
+    private RequestUserListAdapter requestUserListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_contact);
+        setContentView(R.layout.activity_requests);
 
-        textInputs = (EditText) findViewById(R.id.textInputs);
-        searchUser = (Button) findViewById(R.id.searchUser);
-        refreshList = (Button) findViewById(R.id.refreshList);
-        contactView = (ListView) findViewById(R.id.contactView);
+        requestSearch = (EditText) findViewById(R.id.requestSearch);
+        searchUserRequest = (Button) findViewById(R.id.searchUserRequest);
+        refreshRequestList = (Button) findViewById(R.id.refreshRequestList);
+        requestsView = (ListView) findViewById(R.id.requestsView);
 
         ref = FirebaseDatabase.getInstance().getReference();
 
@@ -54,14 +52,14 @@ public class RequestsActivity extends AppCompatActivity implements View.OnClickL
         requests = new ArrayList<User>();
 
         //wait for database fetch complete
-        getrequests(new ContactUserListCallback(){
+        getrequests(new RequestsUserListCallback(){
             @Override
             public void onCallback(ArrayList<User> requests){
-                contactUserListAdapter =
-                        new ContactUserListAdapter(RequestsActivity.this, R.layout.contact_block,
-                                requests, this_device, ref);
+                requestUserListAdapter =
+                        new RequestUserListAdapter(RequestActivity.this, R.layout.request_block,
+                                requests, currentUser, ref);
 
-                contactView.setAdapter(contactUserListAdapter);
+                requestsView.setAdapter(requestUserListAdapter);
 
             }
         });
@@ -71,35 +69,35 @@ public class RequestsActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public void onClick(View v) {
 
-        String starter = textInputs.getText().toString().trim();
+        String starter = requestSearch.getText().toString().trim();
 
-        if(v == searchUser){
+        if(v == requestSearch){
             //checkUser(email);
             if(starter == null || starter.isEmpty()) return;
 
-            getrequests(new ContactUserListCallback(){
+            getrequests(new RequestsUserListCallback(){
                 @Override
                 public void onCallback(ArrayList<User> requests){
 
-                    contactUserListAdapter =
-                            new ContactUserListAdapter(RequestsActivity.this, R.layout.contact_block,
-                                    requests, this_device, ref);
+                    requestUserListAdapter =
+                            new RequestUserListAdapter(RequestActivity.this, R.layout.request_block,
+                                    requests, currentUser, ref);
 
-                    contactView.setAdapter(contactUserListAdapter);
+                    requestsView.setAdapter(requestUserListAdapter);
 
                 }
             }, starter);
         }
 
-        if(v == refreshList){
-            getrequests(new ContactUserListCallback(){
+        if(v == refreshRequestList){
+            getrequests(new RequestsUserListCallback(){
                 @Override
                 public void onCallback(ArrayList<User> requests){
-                    contactUserListAdapter =
-                            new ContactUserListAdapter(RequestsActivity.this, R.layout.contact_block,
-                                    requests, this_device, ref);
+                    requestUserListAdapter =
+                            new RequestUserListAdapter(RequestActivity.this, R.layout.request_block,
+                                    requests, currentUser, ref);
 
-                    contactView.setAdapter(contactUserListAdapter);
+                    requestsView.setAdapter(requestUserListAdapter);
 
                 }
             });
@@ -128,7 +126,7 @@ public class RequestsActivity extends AppCompatActivity implements View.OnClickL
             public void onDataChange(@NonNull DataSnapshot datasnapshot) {
                 for (DataSnapshot s : datasnapshot.getChildren()) {
                     if (s.exists()) {
-                        this_device = s.getValue(User.class);
+                        currentUser = s.getValue(User.class);
                     }
                 }
 
@@ -140,24 +138,24 @@ public class RequestsActivity extends AppCompatActivity implements View.OnClickL
         });
     }
 
-    public void getrequests(ContactUserListCallback contactUserListCallback){
-        getrequests(contactUserListCallback, null);
+    public void getrequests(RequestsUserListCallback requestsUserListCallback){
+        getrequests(requestsUserListCallback, null);
     }
 
-    public void getrequests(ContactUserListCallback contactUserListCallback, String starter){
+    public void getrequests(RequestsUserListCallback requestsUserListCallback, String starter){
         ref.child("User").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
 
-                    requests = new ArrayList<User>();
+                    requests = new ArrayList<>();
 
                     for (DataSnapshot s : dataSnapshot.getChildren()) {
                         if(s.exists()){
                             User fd = s.getValue(User.class);
 
-                            if (fd.getChatDatabase() != null){
-                                if(fd.getChatDatabase().containsKey(this_device.getId())){
+                            if (fd.getRequests() != null){
+                                if(fd.getRequests().containsKey(currentUser.getId())){
                                     if(starter == null)
                                         requests.add(fd);
                                     else if(fd.getName().startsWith(starter)
@@ -170,15 +168,15 @@ public class RequestsActivity extends AppCompatActivity implements View.OnClickL
                     }
 
                     if(requests.isEmpty()){
-                        Toast.makeText(RequestsActivity.this,
+                        Toast.makeText(RequestActivity.this,
                                 "No result",
                                 Toast.LENGTH_SHORT).show();
                     }
 
-                    contactUserListCallback.onCallback(requests);
+                    requestsUserListCallback.onCallback(requests);
                 }
                 else{
-                    Toast.makeText(RequestsActivity.this,
+                    Toast.makeText(RequestActivity.this,
                             "No result",
                             Toast.LENGTH_SHORT).show();
                 }
@@ -194,9 +192,12 @@ public class RequestsActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onBackPressed() {
-        Intent goToMenu = new Intent(RequestsActivity.this, MainActivity.class);
+        Intent goToMenu = new Intent(RequestActivity.this, MainActivity.class);
         goToMenu.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(goToMenu);
         finish();
     }
+
+
+
 }
