@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button mMapButton;
     Button mContacts;
     Button mContactsUpdate;
+    Button mTrackingButton;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +54,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mContacts.setOnClickListener(this);
         mContactsUpdate = (Button) findViewById(R.id.contactsUpdate);
         mContactsUpdate.setOnClickListener(this);
+
+        mTrackingButton = findViewById(R.id.trackingButton);
+        mTrackingButton.setOnClickListener(this);
     }
 
 
@@ -75,6 +79,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();
+        }
+
+        if(view == mTrackingButton) {
+            Intent intent = new Intent(MainActivity.this, TrackingActivity.class);
+            startActivity(intent);
         }
     }
 

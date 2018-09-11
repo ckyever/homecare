@@ -22,6 +22,20 @@
         app:layout_constraintVertical_bias="0.176" />
 
     <Button
+        android:id="@+id/trackingButton"
+        android:layout_width="128dp"
+        android:layout_height="56dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="252dp"
+        android:background="#ACB9E8"
+        android:text="Tracking"
+        app:layout_constraintBottom_toTopOf="@+id/mapButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.575" />
+
+    <Button
         android:id="@+id/mapButton"
         android:layout_width="128dp"
         android:layout_height="56dp"
