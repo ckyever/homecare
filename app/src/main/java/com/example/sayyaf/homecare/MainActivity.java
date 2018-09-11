@@ -16,6 +16,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+
+import com.example.sayyaf.homecare.requests.RequestActivity;
 import com.google.firebase.database.FirebaseDatabase;
 
 import com.google.firebase.database.FirebaseDatabase;
@@ -29,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button mMapButton;
     Button mContacts;
     Button mContactsUpdate;
+    Button mFriendRequests;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +56,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mContacts.setOnClickListener(this);
         mContactsUpdate = (Button) findViewById(R.id.contactsUpdate);
         mContactsUpdate.setOnClickListener(this);
+
+        mFriendRequests = (Button) findViewById(R.id.friendRequests);
+        mFriendRequests.setOnClickListener(this);
     }
 
 
@@ -72,6 +78,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if (view == mContactsUpdate) {
             Intent intent = new Intent(MainActivity.this, ContactsActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        }
+
+        if (view == mFriendRequests) {
+            Intent intent = new Intent(MainActivity.this, RequestActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();
