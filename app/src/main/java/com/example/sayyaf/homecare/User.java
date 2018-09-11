@@ -14,6 +14,7 @@ public class User {
     private HashMap<String, String> friends;
     private HashMap<String, String> chatDatabase;
     private HashMap<String, String> requests;
+    private HashMap<String, String> requestsSent;
 
     public User(String name, String email, boolean isCaregiver) {
         this.name = name;
@@ -23,6 +24,7 @@ public class User {
         this.friends = new HashMap<>();
         this.chatDatabase = new HashMap<>();
         this.requests = new HashMap<>();
+        this.requestsSent = new HashMap<>();
     }
 
     public User() {
@@ -100,5 +102,13 @@ public class User {
 
     public void setRequests(HashMap<String, String> requests) {
         this.requests = requests;
+    }
+
+    public HashMap<String, String> getRequestsSent() {
+        return requestsSent;
+    }
+
+    public void setRequestsSent(HashMap<String, String> requestsSent) {
+        this.requestsSent = requestsSent;
     }
 }

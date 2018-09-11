@@ -30,8 +30,6 @@ public class RequestActivity extends AppCompatActivity {
     private DatabaseReference ref;
     private User currentUser;
 
-    private EditText requestSearch;
-    private Button searchUserRequest;
     private Button refreshRequestList;
     private ArrayList<User> friends;
     private HashMap<String, String> requests;
@@ -47,8 +45,6 @@ public class RequestActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_requests);
 
-        requestSearch = (EditText) findViewById(R.id.requestSearch);
-        searchUserRequest = (Button) findViewById(R.id.searchUserRequest);
         refreshRequestList = (Button) findViewById(R.id.refreshRequestList);
         requestsView = (ListView) findViewById(R.id.requestsView);
 
