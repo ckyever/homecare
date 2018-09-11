@@ -33,6 +33,7 @@ public class ContactUserListAdapter extends ArrayAdapter<User>{
         this.ref = ref;
     }
 
+    // not work probably due to database read behavior
     public void addUser(ArrayList<User> users){
         this.users = users;
         notifyDataSetChanged();
@@ -41,24 +42,28 @@ public class ContactUserListAdapter extends ArrayAdapter<User>{
     @Override
     public View getView(int i, View v, ViewGroup viewGroup) {
 
+        // location the UI contact block
         LayoutInflater inflater = (LayoutInflater) activity.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
 
         v = inflater.inflate(R.layout.contact_block, null);
 
-        //getting view in row_data
+        // mapping contact block with database
         TextView username = (TextView) v.findViewById(R.id.username);
         TextView contactEmail = (TextView) v.findViewById(R.id.contactEmail);
         Button chatButton = (Button) v.findViewById(R.id.chatButton);
 
         username.setText(users.get(i).getName());
         contactEmail.setText(users.get(i).getEmail());
+
         chatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String chatDB = users.get(i).getChatDatabase().get(this_device.getId());
 
+                // look up the common chat room in chat activtity
                 ChatActivity.setUpChatController(this_device, users.get(i), ref.child("chatDB").child(chatDB));
 
+                // go to chat page
                 Intent intent = new Intent(activity, ChatActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 activity.startActivity(intent);

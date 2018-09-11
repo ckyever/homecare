@@ -44,6 +44,7 @@ public class ContactChatActivity extends AppCompatActivity implements View.OnCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact);
 
+        // look for the UI elements
         textInputs = (EditText) findViewById(R.id.textInputs);
         searchUser = (Button) findViewById(R.id.searchUser);
         refreshList = (Button) findViewById(R.id.refreshList);
@@ -54,8 +55,10 @@ public class ContactChatActivity extends AppCompatActivity implements View.OnCli
         getCurrentUser();
         friends = new ArrayList<User>();
 
-        //wait for database fetch complete
+        // get all added contacts
         getFriends(new ContactUserListCallback(){
+
+            // wait for database fetch complete and update the listing
             @Override
             public void onCallback(ArrayList<User> friends){
                 contactUserListAdapter =
@@ -74,14 +77,17 @@ public class ContactChatActivity extends AppCompatActivity implements View.OnCli
 
         String starter = textInputs.getText().toString().trim();
 
+        // search user by name or email (added contacts)
         if(v == searchUser){
-            //checkUser(email);
+
+            // ignore empty input
             if(starter == null || starter.isEmpty()) return;
 
             getFriends(new ContactUserListCallback(){
                 @Override
                 public void onCallback(ArrayList<User> friends){
 
+                    // wait for database fetch complete and update the listing
                     contactUserListAdapter =
                             new ContactUserListAdapter(ContactChatActivity.this, R.layout.contact_block,
                                     friends, this_device, ref);
@@ -92,10 +98,13 @@ public class ContactChatActivity extends AppCompatActivity implements View.OnCli
             }, starter);
         }
 
+        // refresh the contact listing (show all added contacts)
         if(v == refreshList){
             getFriends(new ContactUserListCallback(){
                 @Override
                 public void onCallback(ArrayList<User> friends){
+
+                    // wait for database fetch complete and update the listing
                     contactUserListAdapter =
                             new ContactUserListAdapter(ContactChatActivity.this, R.layout.contact_block,
                                     friends, this_device, ref);
@@ -121,6 +130,7 @@ public class ContactChatActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
+    // get user of this device
     public void getCurrentUser() {
         Query query = ref.child("User").orderByChild("id")
                 .equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid());
@@ -141,10 +151,12 @@ public class ContactChatActivity extends AppCompatActivity implements View.OnCli
         });
     }
 
+    // get all added contacts
     public void getFriends(ContactUserListCallback contactUserListCallback){
         getFriends(contactUserListCallback, null);
     }
 
+    // get added contacts base on the search
     public void getFriends(ContactUserListCallback contactUserListCallback, String starter){
         ref.child("User").addValueEventListener(new ValueEventListener() {
             @Override
@@ -160,9 +172,11 @@ public class ContactChatActivity extends AppCompatActivity implements View.OnCli
                             if (fd.getChatDatabase() != null){
                                 if(fd.getChatDatabase().containsKey(this_device.getId())){
                                     if(starter == null)
+                                        // add all friends
                                         friends.add(fd);
                                     else if(fd.getName().startsWith(starter)
                                             || fd.getEmail().startsWith(starter))
+                                        // 
                                         friends.add(fd);
                                 }
                             }
@@ -170,6 +184,7 @@ public class ContactChatActivity extends AppCompatActivity implements View.OnCli
 
                     }
 
+                    // no friends match the starting input letters
                     if(friends.isEmpty()){
                         Toast.makeText(ContactChatActivity.this,
                                 "No result",
@@ -179,6 +194,7 @@ public class ContactChatActivity extends AppCompatActivity implements View.OnCli
                     contactUserListCallback.onCallback(friends);
                 }
                 else{
+                    // user do not have a added friend
                     Toast.makeText(ContactChatActivity.this,
                             "No result",
                             Toast.LENGTH_SHORT).show();
@@ -192,53 +208,9 @@ public class ContactChatActivity extends AppCompatActivity implements View.OnCli
         });
     }
 
-    private void checkUser(String starter) {
-
-
-        /*Query query = ref.child("User").orderByChild("email")
-                .equalTo(email);
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot s : dataSnapshot.getChildren()) {
-                    if (s.exists()) {
-                        friend = s.getValue(User.class);
-
-                        if(friend.getChatDatabase() == null
-                                || !friend.getChatDatabase().containsKey(this_device.getId())) {
-                            Toast.makeText(ContactChatActivity.this,
-                                    "This person is not added as a friend",
-                                    Toast.LENGTH_SHORT).show();
-                        }else{
-
-                            goToChat(friend.getChatDatabase().get(this_device.getId()));
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });*/
-    }
-
-
-    public void goToChat(String chatDB){
-
-        ChatActivity.setUpChatController(this_device,
-                friend,
-                ref.child("chatDB").child(chatDB));
-
-        Intent intent = new Intent(ContactChatActivity.this, ChatActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
-    }
-
     @Override
     public void onBackPressed() {
+        // back to menu page
         Intent goToMenu = new Intent(ContactChatActivity.this, MainActivity.class);
         goToMenu.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(goToMenu);

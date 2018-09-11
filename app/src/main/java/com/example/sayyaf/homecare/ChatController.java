@@ -43,8 +43,8 @@ public class ChatController {
     private DatabaseReference chatDB;
     private FirebaseListAdapter<ChatMessage> contentUpdateAdapter;
 
-    private ChildEventListener chatAddedListener;
-    private long lastMsgTime;
+    private ChildEventListener chatAddedListener; // use for notification
+    private long lastMsgTime; // use for notification
 
 
     /*  set up chat control for user-contact person pair (on user adding)
@@ -58,8 +58,8 @@ public class ChatController {
         this.contact_person = contact_person;
         this.chatDB = chatDB;
 
-        chatAddedListener = null;
-        lastMsgTime = 0;
+        // chatAddedListener = null;
+        // lastMsgTime = 0;
 
     }
 
@@ -81,10 +81,14 @@ public class ChatController {
 
                 if(ct.getMessageSender().equals(this_device.getName()
                         /*FirebaseAuth.getInstance().getCurrentUser().getEmail()*/)){
+
+                    // use UI element represent the sent is from this device
                     v = LayoutInflater.from(chatActivity.getApplicationContext()).
                             inflate(msg_block_this_device/*R.layout.msg_block_sender*/, viewGroup, false);
                 }
                 else{
+
+                    // use UI element represent the sent is from the other user
                     v = LayoutInflater.from(chatActivity.getApplicationContext()).
                             inflate(msg_block_contact_person/*R.layout.msg_block*/, viewGroup, false);
 
@@ -248,14 +252,14 @@ public class ChatController {
         contactName.setText(contact_person.getName());
     }
 
-    // move to voice chat
+    // go to voice chat page
     public void startVoiceChat(ChatActivity chatActivity){
         Intent goToCallPage = new Intent(chatActivity, VoiceCallActivity.class);
         chatActivity.startActivity(goToCallPage);
         chatActivity.finish();
     }
 
-    // move to menu
+    // move back to contct page
     public void returnToMenu(ChatActivity chatActivity){
         Intent goToMenu = new Intent(chatActivity, ContactChatActivity.class);
         chatActivity.startActivity(goToMenu);

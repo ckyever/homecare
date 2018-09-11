@@ -50,6 +50,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
+        // look for the UI elements
         textMsg = (EditText) findViewById(R.id.textInputs);
         msgView = (ListView) findViewById(R.id.msgView);
         contactName = (TextView) findViewById(R.id.contactName);
@@ -57,16 +58,22 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         /*chatController =
                     (ChatController) getIntent().getSerializableExtra("Chat Controller");*/
 
+        // show the chat peer name
         chatController.displayReceiverName(contactName);
 
+        // setup listener between chat database and the UI elements
         chatController.initialiseContentUpdateAdapter(this,
                 R.layout.msg_block_sender, R.layout.msg_block);
 
+        // setup listener between chat database and user view
         chatController.setContentUpdateAdapter(msgView);
+
+        // activatily listen to chat database change
         chatController.listenToChatChanges();
 
     }
 
+    // set up chat pair from the account list
     public static void setUpChatController(User this_device, User contact_person, DatabaseReference chatDB){
         chatController = new ChatController(this_device, contact_person, chatDB);
     }
@@ -100,18 +107,21 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onStart() {
+        // listen to chat database changes and update the view
         super.onStart();
         chatController.listenToChatChanges();
     }
 
     @Override
     protected void onPause(){
+        // stop listen to chat database and update view
         chatController.stopListenToChatChanges();
         super.onPause();
     }
 
     @Override
     public void onBackPressed() {
+        // go back to the contact page
         chatController.returnToMenu(this);
     }
 
