@@ -9,6 +9,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -20,6 +21,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.maps.android.ui.IconGenerator;
 
 import java.util.HashMap;
 
@@ -69,8 +71,9 @@ public class TrackingActivity extends FragmentActivity implements OnMapReadyCall
                 // of their location
                 for (DataSnapshot userSnapshot: dataSnapshot.getChildren()) {
                     // Gets their uid to find database path to their location
-                    String locationPath = "User/" + userSnapshot.getKey() + "/location";
-                    subscribeToUpdates(locationPath);
+                    String assistedUid = userSnapshot.getKey();
+                    String locationPath = "User/" + assistedUid + "/location";
+                    subscribeToUpdates(locationPath, assistedUid);
                 }
             }
 
@@ -82,41 +85,66 @@ public class TrackingActivity extends FragmentActivity implements OnMapReadyCall
         });
     }
 
-    private void subscribeToUpdates(String locationPath) {
+    private void subscribeToUpdates(String locationPath, String uid) {
         DatabaseReference mRef = FirebaseDatabase.getInstance().getReference(locationPath);
         mRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.d(TAG, "Setting marker for: " + locationPath);
-                setMarker(dataSnapshot);
+                Log.d(TAG, "Getting marker name: " + locationPath);
+                getMarkerName(dataSnapshot, uid);
             }
 
             @Override
             public void onCancelled(DatabaseError error) {
-                Log.d(TAG, "Failed to read data.", error.toException());
+                Log.d(TAG, "Failed to read location.", error.toException());
             }
         });
     }
 
-    private void setMarker(DataSnapshot dataSnapshot) {
-        // When a location update is received, put or update
-        // its value in mMarkers, which contains all the markers
-        // for locations received, so that we can build the
-        // boundaries required to show them all on the map at once
-        String key = dataSnapshot.getKey();
+    // Retrieves name to be used to identify the marker
+    private void getMarkerName(DataSnapshot locationSnapshot, String uid) {
+        String namePath = "User/" + uid + "/name";
+        DatabaseReference mRef = FirebaseDatabase.getInstance().getReference(namePath);
+        mRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String name = (String) dataSnapshot.getValue();
+                Log.d(TAG, "Setting marker for: " + name);
+                setMarker(locationSnapshot, uid, name);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d(TAG, "Failed to read name.");
+            }
+        });
+    }
+
+    private void setMarker(DataSnapshot dataSnapshot, String key, String name) {
         HashMap<String, Object> value = (HashMap<String, Object>) dataSnapshot.getValue();
         double lat = Double.parseDouble(value.get("latitude").toString());
         double lng = Double.parseDouble(value.get("longitude").toString());
         LatLng location = new LatLng(lat, lng);
+
+        // Icon factory for custom marker icons and ability to show multiple info windows
+        IconGenerator iconFactory = new IconGenerator(this);
+
+        // New marker, so place it
         if (!mMarkers.containsKey(key)) {
-            mMarkers.put(key, mMap.addMarker(new MarkerOptions().title(key).position(location)));
-        } else {
+            Marker mMarker = mMap.addMarker(new MarkerOptions().position(location));
+            mMarkers.put(key, mMarker);
+            mMarker.setIcon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(name)));
+        }
+
+        // Existing marker, update its location
+        else {
             mMarkers.get(key).setPosition(location);
         }
+
+        // Build boundaries so we can show all markers at once
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
         for (Marker marker : mMarkers.values()) {
             builder.include(marker.getPosition());
-            marker.showInfoWindow();
         }
         mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 300));
     }
