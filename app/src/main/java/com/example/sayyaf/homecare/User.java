@@ -13,7 +13,6 @@ public class User {
     //private List<User> friends;
     private HashMap<String, String> friends;
     private HashMap<String, String> chatDatabase;
-    private HashMap<String, String> requests;
 
     public User(String name, String email, boolean isCaregiver) {
         this.name = name;
@@ -22,7 +21,6 @@ public class User {
         //this.friends = new ArrayList<>();
         this.friends = new HashMap<>();
         this.chatDatabase = new HashMap<>();
-        this.requests = new HashMap<>();
     }
 
     public User() {
@@ -88,17 +86,5 @@ public class User {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public void setChatDatabase(HashMap<String, String> chatDatabase) {
-        this.chatDatabase = chatDatabase;
-    }
-
-    public HashMap<String, String> getRequests() {
-        return requests;
-    }
-
-    public void setRequests(HashMap<String, String> requests) {
-        this.requests = requests;
     }
 }
