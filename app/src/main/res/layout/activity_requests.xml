@@ -75,8 +75,8 @@
         android:paddingRight="5sp"
         android:layout_marginBottom="5sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/refreshList"
-        app:layout_constraintEnd_toStartOf="@id/searchUser"
+        app:layout_constraintStart_toEndOf="@id/refreshRequestList"
+        app:layout_constraintEnd_toStartOf="@id/searchUserRequest"
         android:hint=" Enter the email "
         android:background="@android:color/white"/>
 

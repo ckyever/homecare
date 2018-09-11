@@ -29,6 +29,7 @@ public class RequestUserListAdapter extends ArrayAdapter<User> implements View.O
     private Button declineButton;
     private String requestId;
     private String requestEmail;
+    private String name;
 
     public RequestUserListAdapter(@NonNull Context context, int resource, ArrayList<User> users,
                                   User currentUser, DatabaseReference ref) {
@@ -52,14 +53,14 @@ public class RequestUserListAdapter extends ArrayAdapter<User> implements View.O
         v = inflater.inflate(R.layout.request_block, null);
 
         //getting view in row_data
-        username = (TextView) v.findViewById(R.id.username);
-        contactEmail = (TextView) v.findViewById(R.id.contactEmail);
+        username = (TextView) v.findViewById(R.id.usernameRequest);
+        contactEmail = (TextView) v.findViewById(R.id.requestEmail);
         acceptButton = (Button) v.findViewById(R.id.acceptRequestButton);
         declineButton = (Button) v.findViewById(R.id.declineRequestButton);
         requestEmail = users.get(i).getEmail();
         requestId = users.get(i).getId();
-
-        username.setText(users.get(i).getName());
+        name = users.get(i).getName();
+        username.setText(name);
         contactEmail.setText(requestEmail);
         acceptButton.setOnClickListener(this);
         declineButton.setOnClickListener(this);
@@ -77,4 +78,5 @@ public class RequestUserListAdapter extends ArrayAdapter<User> implements View.O
         activity.startActivity(intent);
         activity.finish();
     }
+
 }
