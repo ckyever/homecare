@@ -60,25 +60,38 @@
         android:text="Help"
         app:layout_constraintBottom_toTopOf="@id/optionScreenshare"
         app:layout_constraintEnd_toEndOf="@id/optionScreenshare"
-        app:layout_constraintHorizontal_bias="0.937"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@id/optionScreenshare"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.931" />
+        app:layout_constraintVertical_bias="0.953" />
 
     <Button
         android:id="@+id/contactsUpdate"
         android:layout_width="128dp"
         android:layout_height="56dp"
         android:layout_marginBottom="16dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginStart="60dp"
         android:layout_marginTop="16dp"
         android:background="#ACB9E8"
         android:text="Add/Remove Contacts"
-        app:layout_constraintEnd_toEndOf="@id/optionContacts"
-        app:layout_constraintHorizontal_bias="0.02"
-        app:layout_constraintStart_toStartOf="@id/optionContacts"
-        app:layout_constraintTop_toBottomOf="@id/optionContacts"
-        app:layout_constraintVertical_bias="0.915" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.966" />
+
+    <Button
+        android:id="@+id/friendRequests"
+        android:layout_width="128dp"
+        android:layout_height="56dp"
+        android:layout_marginBottom="24dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="8dp"
+        android:background="#ACB9E8"
+        android:text="See Friend Requests"
+        app:layout_constraintBottom_toTopOf="@+id/optionHelp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.562"
+        app:layout_constraintStart_toEndOf="@+id/trackingButton" />
 
     <Button
         android:id="@+id/logoutButton"
@@ -98,7 +111,7 @@
         android:id="@+id/optionContacts"
         android:layout_width="128dp"
         android:layout_height="56dp"
-        android:layout_marginBottom="100dp"
+        android:layout_marginBottom="104dp"
         android:layout_marginStart="56dp"
         android:background="#ACB9E8"
         android:onClick="onClick"
@@ -119,9 +132,9 @@
         android:text="Screenshare"
         app:layout_constraintBottom_toTopOf="@id/optionContacts"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.466"
+        app:layout_constraintHorizontal_bias="0.475"
         app:layout_constraintStart_toEndOf="@id/optionContacts"
         app:layout_constraintTop_toBottomOf="@id/mapButton"
-        app:layout_constraintVertical_bias="0.92" />
+        app:layout_constraintVertical_bias="0.766" />
 
 </android.support.constraint.ConstraintLayout>

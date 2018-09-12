@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.example.sayyaf.homecare.requests.RequestActivity;
 import com.example.sayyaf.homecare.accounts.LoginActivity;
 import com.example.sayyaf.homecare.contacts.ContactChatActivity;
 import com.example.sayyaf.homecare.contacts.ContactsActivity;
@@ -22,8 +23,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button mMapButton;
     Button mContacts;
     Button mContactsUpdate;
+    Button mFriendRequests;
     Button mTrackingButton;
-
     Button logoutButton;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +56,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         logoutButton = findViewById(R.id.logoutButton);
         logoutButton.setOnClickListener(this);
+
+        mFriendRequests = (Button) findViewById(R.id.friendRequests);
+        mFriendRequests.setOnClickListener(this);
+
     }
 
 
@@ -86,6 +91,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if(view == logoutButton){
             logout();
+        }
+
+        if (view == mFriendRequests) {
+            Intent intent = new Intent(MainActivity.this, RequestActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
         }
     }
 

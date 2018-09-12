@@ -124,6 +124,19 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
                                 return;
                             }
 
+                            if(currentUser.getRequestsSent() != null) {
+                                if(currentUser.getRequestsSent().containsKey(user.getId())) {
+                                    userRef.child(uid)
+                                            .child("requestsSent")
+                                            .child(user.getId())
+                                            .removeValue();
+
+                                    userRef.child(user.getId())
+                                            .child("requests")
+                                            .child(uid)
+                                            .removeValue();
+                                }
+                            }
 
                             userRef.child(uid)
                                     .child("friends")
@@ -204,30 +217,31 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
                                 return;
                             }
 
-                            userRef.child(uid).child("friends").push();
+                            else if(currentUser.getRequestsSent() != null
+                                    && currentUser.getRequestsSent().containsKey(user.getId())) {
+                                Toast.makeText(ContactsActivity.this, "Request Already Sent",
+                                        Toast.LENGTH_SHORT).show();
+                                return;
+                            }
 
+                            userRef.child(uid).child("requestsSent").push();
                             userRef.child(uid)
-                                    .child("friends")
+                                    .child("requestsSent")
                                     .child(user.getId())
                                     .setValue(user.getEmail());
 
-                            // add a common database
-                            long date = new Date().getTime();
-
-                            userRef.child(uid).child("chatDatabase").push();
-
-                            userRef.child(uid)
-                                    .child("chatDatabase")
-                                    .child(user.getId())
-                                    .setValue(uid + date + user.getId());
-
-                            userRef.child(user.getId()).child("chatDatabase").push();
+                            userRef.child(user.getId())
+                                    .child("requests")
+                                    .push();
 
                             userRef.child(user.getId())
-                                    .child("chatDatabase")
+                                    .child("requests")
                                     .child(uid)
-                                    .setValue(uid + date + user.getId());
-                            //
+                                    .setValue(currentUser.getEmail());
+
+
+                            Toast.makeText(ContactsActivity.this, "Request Sent",
+                                    Toast.LENGTH_SHORT).show();
 
                             backToMenu();
 

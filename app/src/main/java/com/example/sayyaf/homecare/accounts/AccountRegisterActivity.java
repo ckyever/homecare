@@ -95,22 +95,8 @@ public class AccountRegisterActivity extends AppCompatActivity implements View.O
 
         mLoginTextView.setOnClickListener(this);
         mCreateUserButton.setOnClickListener(this);
-        mAssistedPerson.setOnClickListener(
-                new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                validateFields();
-            }
-        });
-
-        mCaregiver.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        validateFields();
-                    }
-                });
-
+        mAssistedPerson.setOnClickListener(this);
+        mCaregiver.setOnClickListener(this);
         mCreateUserButton.setEnabled(false);
 
         mNameEditText.addTextChangedListener(textWatcher);
@@ -136,6 +122,10 @@ public class AccountRegisterActivity extends AppCompatActivity implements View.O
                 startActivity(intent);
                 finish();
             }
+        }
+
+        if (view == mAssistedPerson || view == mCaregiver) {
+            validateFields();
         }
 
     }

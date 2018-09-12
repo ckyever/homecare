@@ -21,7 +21,6 @@
         android:gravity="center_vertical"
         android:textSize="20sp"
         android:text=" Contacts"
-        android:textFontWeight="25sp"
         android:textColor="@android:color/white"
         android:background="@color/colorAccent"
         android:textStyle="bold"
