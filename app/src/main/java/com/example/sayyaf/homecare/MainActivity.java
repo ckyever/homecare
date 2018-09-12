@@ -119,4 +119,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onDestroy();
     }*/
 
+    public void onBackPressed() {
+        finish();
+    }
+
 }

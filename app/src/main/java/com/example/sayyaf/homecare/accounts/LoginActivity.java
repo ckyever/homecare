@@ -114,4 +114,11 @@ public class LoginActivity  extends AppCompatActivity implements View.OnClickLis
         });
 
     }
+
+    public void onBackPressed() {
+        Intent intent = new Intent(LoginActivity.this, AccountRegisterActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
 }
