@@ -1,16 +1,12 @@
-package com.example.sayyaf.homecare;
+package com.example.sayyaf.homecare.communication;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.TextView;
 
-import org.webrtc.AudioSource;
-import org.webrtc.AudioTrack;
-import org.webrtc.MediaConstraints;
-import org.webrtc.PeerConnectionFactory;
+import com.example.sayyaf.homecare.R;
 
 public class VoiceCallActivity extends AppCompatActivity implements View.OnClickListener{
 

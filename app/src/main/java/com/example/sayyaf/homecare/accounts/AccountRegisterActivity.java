@@ -1,4 +1,4 @@
-package com.example.sayyaf.homecare;
+package com.example.sayyaf.homecare.accounts;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,17 +15,14 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
+import com.example.sayyaf.homecare.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
-import java.util.UUID;
 
 
 /** Activity controller for the Account Registration Activity. Handles validation of sign up inputs

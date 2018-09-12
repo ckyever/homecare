@@ -1,4 +1,4 @@
-package com.example.sayyaf.homecare;
+package com.example.sayyaf.homecare.accounts;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +12,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.sayyaf.homecare.MainActivity;
+import com.example.sayyaf.homecare.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthResult;

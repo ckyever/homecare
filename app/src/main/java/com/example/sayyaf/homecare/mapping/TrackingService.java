@@ -1,4 +1,4 @@
-package com.example.sayyaf.homecare;
+package com.example.sayyaf.homecare.mapping;
 
 import android.Manifest;
 import android.app.PendingIntent;
@@ -14,6 +14,8 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
+import com.example.sayyaf.homecare.notifications.NotificationChannels;
+import com.example.sayyaf.homecare.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -49,7 +51,7 @@ public class TrackingService extends Service {
                 this, 0, new Intent(stop), PendingIntent.FLAG_UPDATE_CURRENT);
         // Create the persistent notification
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this,
-                NotificationChannals.getChatNotificationCH())
+                NotificationChannels.getChatNotificationCH())
                 .setContentTitle(getString(R.string.app_name))
                 .setContentText(getString(R.string.tracking_notif))
                 .setOngoing(true)

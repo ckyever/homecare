@@ -1,4 +1,4 @@
-package com.example.sayyaf.homecare;
+package com.example.sayyaf.homecare.contacts;
 
 import android.app.Activity;
 import android.content.Context;
@@ -11,10 +11,12 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.sayyaf.homecare.R;
+import com.example.sayyaf.homecare.accounts.User;
+import com.example.sayyaf.homecare.communication.ChatActivity;
 import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class ContactUserListAdapter extends ArrayAdapter<User>{
 

@@ -1,17 +1,6 @@
-package com.example.sayyaf.homecare;
+package com.example.sayyaf.homecare.communication;
 
-import android.app.Activity;
-import android.app.AlarmManager;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
-import android.os.SystemClock;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,21 +9,13 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.sayyaf.homecare.contacts.ContactChatActivity;
+import com.example.sayyaf.homecare.R;
+import com.example.sayyaf.homecare.accounts.User;
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.firebase.ui.database.FirebaseListOptions;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
-
-import java.io.Serializable;
-import java.util.Date;
-
-import static android.app.Notification.VISIBILITY_PUBLIC;
 
 public class ChatController {
 
@@ -236,7 +217,7 @@ public class ChatController {
             String sender, String contents){
 
         NotificationCompat.Builder notificationbulider =
-                new NotificationCompat.Builder(context, NotificationChannals.getChatNotificationCH())
+                new NotificationCompat.Builder(context, NotificationChannels.getChatNotificationCH())
                         .setSmallIcon(R.drawable.ic_launcher_background)
                         .setContentTitle("New message from: " + sender)
                         .setContentText(contents)

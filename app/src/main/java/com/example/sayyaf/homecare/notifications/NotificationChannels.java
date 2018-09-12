@@ -1,11 +1,11 @@
-package com.example.sayyaf.homecare;
+package com.example.sayyaf.homecare.notifications;
 
 import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.os.Build;
 
-public class NotificationChannals extends Application {
+public class NotificationChannels extends Application {
     private static String chatNotificationCH = "chat notification";
     // private static String testForegroundCH = "foreground keeper";
     // private static String emergencyCH = "emergency notification";

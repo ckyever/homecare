@@ -1,10 +1,11 @@
-package com.example.sayyaf.homecare;
+package com.example.sayyaf.homecare.mapping;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
+import com.example.sayyaf.homecare.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;

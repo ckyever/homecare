@@ -1,4 +1,4 @@
-package com.example.sayyaf.homecare;
+package com.example.sayyaf.homecare.contacts;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +11,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.sayyaf.homecare.MainActivity;
+import com.example.sayyaf.homecare.R;
+import com.example.sayyaf.homecare.accounts.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -21,7 +24,6 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.Date;
-import java.util.Random;
 
 public class ContactsActivity extends AppCompatActivity implements View.OnClickListener {
 

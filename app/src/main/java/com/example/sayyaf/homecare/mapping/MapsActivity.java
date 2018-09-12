@@ -1,4 +1,4 @@
-package com.example.sayyaf.homecare;
+package com.example.sayyaf.homecare.mapping;
 
 import android.Manifest;
 import android.content.Intent;
@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.sayyaf.homecare.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -74,7 +75,7 @@ public class MapsActivity extends FragmentActivity implements OnMyLocationButton
     }
 
     private void startTrackingService() {
-        startService(new Intent(this, TrackingService.class));
+        startService(new Intent(this, com.example.sayyaf.homecare.mapping.TrackingService.class));
     }
 
     /**

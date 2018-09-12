@@ -5,7 +5,7 @@
     android:id="@+id/scroll"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context="com.example.sayyaf.homecare.AccountRegisterActivity">
+    tools:context="com.example.sayyaf.homecare.accounts.AccountRegisterActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"

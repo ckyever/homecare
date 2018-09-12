@@ -1,4 +1,4 @@
-package com.example.sayyaf.homecare;
+package com.example.sayyaf.homecare.notifications;
 
 import android.app.Notification;
 import android.app.NotificationManager;
