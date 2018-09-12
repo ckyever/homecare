@@ -8,15 +8,26 @@ import java.util.Date;
 public class RequestController {
 
     public static void acceptRequest(DatabaseReference ref, String email, String id, User currentUser) {
+
+        // add user to both users friend list
         addFriendForCurrentUser(ref, email, id, currentUser);
         addFriendForRequestSender(ref, id, currentUser);
+
+        // use time as one of the chat database identifier
+        long time = new Date().getTime();
+
+        // add common chat room name to both users chat database list
+        addChatDatabaseRequestSender(ref, id, currentUser, time);
+        addChatDatabaseCurrentUser(ref, id, currentUser, time);
+
+        // clear up pending requests and sents
         removeRequest(ref, id, currentUser);
         removeSentRequest(ref, id, currentUser);
-        addChatDatabaseRequestSender(ref, id, currentUser);
-        addChatDatabaseCurrentUser(ref, id, currentUser);
     }
 
     public static void declineRequest(DatabaseReference ref, String id, User currentUser) {
+
+        // clear up pending requests and sents
         removeRequest(ref, id, currentUser);
         removeSentRequest(ref, id, currentUser);
     }
@@ -63,8 +74,7 @@ public class RequestController {
     }
 
     private static void addChatDatabaseCurrentUser(DatabaseReference ref, String otherId,
-                                                   User currentUser) {
-        long date = new Date().getTime();
+                                                   User currentUser, long time) {
 
         ref.child("User")
                 .child(currentUser.getId())
@@ -75,13 +85,11 @@ public class RequestController {
                 .child(currentUser.getId())
                 .child("chatDatabase")
                 .child(otherId)
-                .setValue(currentUser.getId() + date + otherId);
+                .setValue(currentUser.getId() + time + otherId);
     }
 
     private static void addChatDatabaseRequestSender(DatabaseReference ref, String otherId,
-                                                     User currentUser) {
-
-        long date = new Date().getTime();
+                                                     User currentUser, long time) {
 
         ref.child("User")
                 .child(otherId)
@@ -92,7 +100,7 @@ public class RequestController {
                 .child(otherId)
                 .child("chatDatabase")
                 .child(currentUser.getId())
-                .setValue(currentUser.getId()+ date + otherId);
+                .setValue(currentUser.getId()+ time + otherId);
     }
 
 }

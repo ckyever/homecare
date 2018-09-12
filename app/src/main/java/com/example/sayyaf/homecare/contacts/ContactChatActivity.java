@@ -75,7 +75,7 @@ public class ContactChatActivity extends AppCompatActivity implements View.OnCli
         if(v == searchUser){
 
             // ignore empty input
-            if(vaildateInput(starter)) return;
+            if(!vaildateInput(starter)) return;
 
             getFriends(new ContactUserListCallback(){
                 @Override

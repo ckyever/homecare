@@ -116,14 +116,6 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
                         if (snapshot.exists()) {
                             User user = snapshot.getValue(User.class);
 
-                            if (user == null ||
-                                    currentUser.getChatDatabase() == null
-                                    || !currentUser.getChatDatabase().containsKey(user.getId())) {
-                                Toast.makeText(ContactsActivity.this, "User doesn't exist",
-                                        Toast.LENGTH_SHORT).show();
-                                return;
-                            }
-
                             if(currentUser.getRequestsSent() != null) {
                                 if(currentUser.getRequestsSent().containsKey(user.getId())) {
                                     userRef.child(uid)
@@ -135,7 +127,21 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
                                             .child("requests")
                                             .child(uid)
                                             .removeValue();
+
+                                    Toast.makeText(ContactsActivity.this,
+                                            "Friend request is removed",
+                                            Toast.LENGTH_SHORT).show();
+
+                                    return;
                                 }
+                            }
+
+                            if (user == null ||
+                                    currentUser.getChatDatabase() == null
+                                    || !currentUser.getChatDatabase().containsKey(user.getId())) {
+                                Toast.makeText(ContactsActivity.this, "User doesn't exist",
+                                        Toast.LENGTH_SHORT).show();
+                                return;
                             }
 
                             userRef.child(uid)
@@ -143,8 +149,15 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
                                     .child(user.getId())
                                     .removeValue();
 
+                            userRef.child(user.getId())
+                                    .child("friends")
+                                    .child(uid)
+                                    .removeValue();
+
                             // remove the common database
-                            FirebaseDatabase.getInstance()
+                            removeCommonChatroom(user);
+
+                            /*FirebaseDatabase.getInstance()
                                     .getReference("chatDB")
                                     .child(user.getChatDatabase().get(uid))
                                     .removeValue();
@@ -157,8 +170,12 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
                             userRef.child(user.getId())
                                     .child("chatDatabase")
                                     .child(uid)
-                                    .removeValue();
+                                    .removeValue();*/
+
                             //
+                            Toast.makeText(ContactsActivity.this,
+                                    "Remove friend and common chat is done",
+                                    Toast.LENGTH_SHORT).show();
 
                             backToMenu();
 
@@ -262,6 +279,23 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
         } else {
             return android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
         }
+    }
+
+    private void removeCommonChatroom(User fd){
+        FirebaseDatabase.getInstance()
+                .getReference("chatDB")
+                .child(fd.getChatDatabase().get(uid))
+                .removeValue();
+
+        userRef.child(uid)
+                .child("chatDatabase")
+                .child(fd.getId())
+                .removeValue();
+
+        userRef.child(fd.getId())
+                .child("chatDatabase")
+                .child(uid)
+                .removeValue();
     }
 
     private void backToMenu(){
