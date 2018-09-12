@@ -5,5 +5,5 @@ import com.example.sayyaf.homecare.User;
 import java.util.ArrayList;
 
 public interface FriendsUserListCallback {
-    void onFriendsCallback(ArrayList<User> requests);
+    public void onFriendsCallback(ArrayList<User> requests, User currentUser);
 }

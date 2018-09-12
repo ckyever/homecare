@@ -17,15 +17,14 @@ import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
 
-public class RequestUserListAdapter extends ArrayAdapter<User> implements View.OnClickListener {
+public class RequestUserListAdapter extends ArrayAdapter<User> {
 
     private Activity activity;
     private ArrayList<User> users;
     private User currentUser;
     private DatabaseReference ref;
     private Button acceptButton;
-    private String requestEmail;
-    private String requestId;
+    private Button declineButton;
 
 
     public RequestUserListAdapter(@NonNull Context context, int resource, ArrayList<User> users,
@@ -48,31 +47,38 @@ public class RequestUserListAdapter extends ArrayAdapter<User> implements View.O
         LayoutInflater inflater = (LayoutInflater) activity.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
 
         v = inflater.inflate(R.layout.request_block, null);
-
         //getting view in row_data
         TextView username = (TextView) v.findViewById(R.id.usernameRequest);
         TextView contactEmail = (TextView) v.findViewById(R.id.contactEmailRequest);
         acceptButton = (Button) v.findViewById(R.id.acceptButton);
-        Button declineButton = (Button) v.findViewById(R.id.declineButton);
+        declineButton = (Button) v.findViewById(R.id.declineButton);
 
-        requestEmail = users.get(i).getEmail();
-        requestId = users.get(i).getId();
+        String requestEmail = users.get(i).getEmail();
+        String requestId = users.get(i).getId();
         String name = users.get(i).getName();
-
         username.setText(name);
-        User user = users.get(i);
         contactEmail.setText(requestEmail);
-        acceptButton.setOnClickListener(this);
-        declineButton.setOnClickListener(this);
+
+        acceptButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                RequestController.acceptRequest(ref, requestEmail, requestId, currentUser);
+                refreshView();
+            }
+        });
+
+        declineButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                RequestController.declineRequest(ref, requestId, currentUser);
+                refreshView();
+            }
+        });
         return v;
     }
 
-    @Override
-    public void onClick(View view) {
-        if(view == acceptButton) {
-            RequestController.acceptRequest(ref, requestEmail, requestId, currentUser);
-        }
 
+    private void refreshView() {
         Intent intent = new Intent(activity, RequestActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         activity.startActivity(intent);

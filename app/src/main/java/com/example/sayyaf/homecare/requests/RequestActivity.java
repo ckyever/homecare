@@ -29,19 +29,14 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class RequestActivity extends AppCompatActivity {
+public class RequestActivity extends AppCompatActivity implements RequestsUserListCallback {
 
     private DatabaseReference ref;
     private User this_device;
-    private User friend;
 
-    private EditText textInputs;
-    private Button searchUser;
-    private Button refreshList;
     private ArrayList<User> friends;
     private ListView requestsView;
     private RequestUserListAdapter requestUserListAdapter;
-    private HashMap<String, String> requests;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,39 +44,30 @@ public class RequestActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_requests);
 
-        textInputs = (EditText) findViewById(R.id.requestName);
-        searchUser = (Button) findViewById(R.id.searchUserRequest);
-        refreshList = (Button) findViewById(R.id.refreshRequestList);
         requestsView = (ListView) findViewById(R.id.requestsView);
 
         ref = FirebaseDatabase.getInstance().getReference();
         friends = new ArrayList<User>();
+        getCurrentUser(null);
 
-        //wait for database fetch complete
-        getCurrentUser(new RequestsUserListCallback() {
-            @Override
-            public void onRequestsCallback(User currentUser) {
-                getRequests(currentUser, new FriendsUserListCallback(){
-                    @Override
-                    public void onFriendsCallback(ArrayList<User> requests){
-                        requestUserListAdapter =
-                                new RequestUserListAdapter(RequestActivity.this, R.layout.request_block,
-                                        requests, currentUser, ref);
+    }
 
-                        requestsView.setAdapter(requestUserListAdapter);
+    @Override
+    public void onRequestsCallback(User currentUser) {
+        getRequests(currentUser);
+    }
 
-                    }
-
-                });
-
-            }
-        });
+    @Override
+    public void onFriendsCallback(ArrayList<User> requests, User currentUser){
+        requestUserListAdapter =
+                new RequestUserListAdapter(RequestActivity.this, R.layout.request_block,
+                        requests, currentUser, ref);
+        requestsView.setAdapter(requestUserListAdapter);
 
     }
 
 
-
-    public void getCurrentUser(RequestsUserListCallback requestsUserListCallback) {
+    public void getCurrentUser(String starter) {
         Query query = ref.child("User").orderByChild("id")
                 .equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid());
         query.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -90,10 +76,12 @@ public class RequestActivity extends AppCompatActivity {
                 for (DataSnapshot s : datasnapshot.getChildren()) {
                     if (s.exists()) {
                         this_device = s.getValue(User.class);
-                        requestsUserListCallback.onRequestsCallback(this_device);
+                        onRequestsCallback(this_device);
                     }
                 }
             }
+
+
             @Override
             public void onCancelled(DatabaseError arg0) {
 
@@ -101,11 +89,8 @@ public class RequestActivity extends AppCompatActivity {
         });
     }
 
-    public void getRequests(User currentUser, FriendsUserListCallback friendsUserListCallback){
-        getRequests(currentUser, friendsUserListCallback, null);
-    }
 
-    public void getRequests(User currentUser, FriendsUserListCallback friendsUserListCallback, String starter){
+    public void getRequests(User currentUser){
         ref.child("User").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -117,31 +102,22 @@ public class RequestActivity extends AppCompatActivity {
                         if(s.exists()){
                             User fd = s.getValue(User.class);
 
-                            if (currentUser.getRequests() != null){
-                                if(currentUser.getRequests().containsKey(fd.getId())){
-                                    if(starter == null)
-                                        friends.add(fd);
-                                    else if(fd.getName().startsWith(starter)
-                                            || fd.getEmail().startsWith(starter))
-                                        friends.add(fd);
-                                }
+                            if (currentUser.getRequests() != null &&
+                                    currentUser.getRequests().containsKey(fd.getId())){
+
+                                    friends.add(fd);
                             }
                         }
 
                     }
 
-                    if(friends.isEmpty()){
+                    if(!friends.isEmpty()){
+                        onFriendsCallback(friends, currentUser);
+                    } else{
                         Toast.makeText(RequestActivity.this,
-                                "No result",
+                                "No Pending Requests",
                                 Toast.LENGTH_SHORT).show();
                     }
-
-                   friendsUserListCallback.onFriendsCallback(friends);
-                }
-                else{
-                    Toast.makeText(RequestActivity.this,
-                            "No result",
-                            Toast.LENGTH_SHORT).show();
                 }
             }
 
