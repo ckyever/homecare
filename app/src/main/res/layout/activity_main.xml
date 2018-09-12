@@ -25,30 +25,27 @@
         android:id="@+id/trackingButton"
         android:layout_width="128dp"
         android:layout_height="56dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="252dp"
+        android:layout_marginBottom="12dp"
+        android:layout_marginEnd="8dp"
         android:background="#ACB9E8"
         android:text="Tracking"
-        app:layout_constraintBottom_toTopOf="@id/mapButton"
-        app:layout_constraintStart_toStartOf="@id/mapButton"
-        app:layout_constraintEnd_toEndOf="@id/mapButton"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.575" />
+        app:layout_constraintBottom_toTopOf="@+id/mapButton"
+        app:layout_constraintEnd_toEndOf="@+id/mapButton"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/mapButton" />
 
     <Button
         android:id="@+id/mapButton"
         android:layout_width="128dp"
         android:layout_height="56dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginTop="252dp"
         android:background="#ACB9E8"
         android:text="Map"
         app:layout_constraintBottom_toTopOf="@id/optionContacts"
         app:layout_constraintEnd_toEndOf="@id/optionContacts"
-        app:layout_constraintHorizontal_bias="0.02"
-        app:layout_constraintStart_toStartOf="@id/optionContacts"
-        app:layout_constraintVertical_bias="0.671" />
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@id/optionContacts" />
 
     <Button
         android:id="@+id/optionHelp"
@@ -63,61 +60,57 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@id/optionScreenshare"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.953" />
+        app:layout_constraintVertical_bias="0.97" />
 
     <Button
         android:id="@+id/contactsUpdate"
         android:layout_width="128dp"
         android:layout_height="56dp"
-        android:layout_marginBottom="16dp"
-        android:layout_marginStart="60dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginBottom="40dp"
+        android:layout_marginStart="36dp"
         android:background="#ACB9E8"
         android:text="Add/Remove Contacts"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.966" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/friendRequests"
         android:layout_width="128dp"
         android:layout_height="56dp"
-        android:layout_marginBottom="24dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="12dp"
         android:layout_marginStart="8dp"
         android:background="#ACB9E8"
         android:text="See Friend Requests"
         app:layout_constraintBottom_toTopOf="@+id/optionHelp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.562"
-        app:layout_constraintStart_toEndOf="@+id/trackingButton" />
+        app:layout_constraintEnd_toEndOf="@+id/optionHelp"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/optionHelp" />
 
     <Button
         android:id="@+id/logoutButton"
         android:layout_width="128dp"
         android:layout_height="56dp"
-        android:layout_marginBottom="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:background="#ACB9E8"
         android:text="Logout"
-        app:layout_constraintStart_toStartOf="@id/optionScreenshare"
-        app:layout_constraintHorizontal_bias="0.02"
         app:layout_constraintEnd_toEndOf="@id/optionScreenshare"
-        app:layout_constraintTop_toBottomOf="@id/optionScreenshare"
-        app:layout_constraintVertical_bias="0.915" />
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@id/optionScreenshare"
+        app:layout_constraintTop_toBottomOf="@id/optionScreenshare" />
 
     <Button
         android:id="@+id/optionContacts"
         android:layout_width="128dp"
         android:layout_height="56dp"
-        android:layout_marginBottom="104dp"
-        android:layout_marginStart="56dp"
+        android:layout_marginBottom="108dp"
+        android:layout_marginEnd="8dp"
         android:background="#ACB9E8"
         android:onClick="onClick"
         android:text="Contacts"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintEnd_toEndOf="@+id/contactsUpdate"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/contactsUpdate" />
 
     <Button
         android:id="@+id/optionScreenshare"
@@ -132,7 +125,7 @@
         android:text="Screenshare"
         app:layout_constraintBottom_toTopOf="@id/optionContacts"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.475"
+        app:layout_constraintHorizontal_bias="0.681"
         app:layout_constraintStart_toEndOf="@id/optionContacts"
         app:layout_constraintTop_toBottomOf="@id/mapButton"
         app:layout_constraintVertical_bias="0.766" />
