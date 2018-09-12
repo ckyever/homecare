@@ -6,5 +6,5 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public interface RequestsUserListCallback {
-    void onRequestsCallback(HashMap<String, String>  requestsStored, String id);
+    void onRequestsCallback(User currentUser);
 }

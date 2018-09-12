@@ -51,9 +51,9 @@ public class RequestUserListAdapter extends ArrayAdapter<User> implements View.O
 
         //getting view in row_data
         TextView username = (TextView) v.findViewById(R.id.usernameRequest);
-        TextView contactEmail = (TextView) v.findViewById(R.id.requestEmail);
-        acceptButton = (Button) v.findViewById(R.id.acceptRequestButton);
-        Button declineButton = (Button) v.findViewById(R.id.declineRequestButton);
+        TextView contactEmail = (TextView) v.findViewById(R.id.contactEmailRequest);
+        acceptButton = (Button) v.findViewById(R.id.acceptButton);
+        Button declineButton = (Button) v.findViewById(R.id.declineButton);
 
         requestEmail = users.get(i).getEmail();
         requestId = users.get(i).getId();
