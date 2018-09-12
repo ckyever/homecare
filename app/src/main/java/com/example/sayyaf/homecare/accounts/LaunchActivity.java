@@ -1,0 +1,31 @@
+package com.example.sayyaf.homecare.accounts;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+
+import com.example.sayyaf.homecare.MainActivity;
+import com.google.firebase.auth.FirebaseAuth;
+
+public class LaunchActivity extends AppCompatActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        //setContentView(R.layout.empty);
+
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        if (auth.getCurrentUser() != null) {
+            // already signed in
+            Intent goToMenu = new Intent(this, MainActivity.class);
+            goToMenu.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(goToMenu);
+            finish();
+        } else {
+            // not signed in
+            Intent goToLogIn = new Intent(this, LoginActivity.class);
+            goToLogIn.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(goToLogIn);
+            finish();
+        }
+    }
+}

@@ -6,10 +6,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.example.sayyaf.homecare.accounts.LoginActivity;
 import com.example.sayyaf.homecare.contacts.ContactChatActivity;
 import com.example.sayyaf.homecare.contacts.ContactsActivity;
 import com.example.sayyaf.homecare.mapping.MapsActivity;
 import com.example.sayyaf.homecare.mapping.TrackingActivity;
+import com.google.firebase.auth.FirebaseAuth;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
@@ -21,6 +23,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button mContacts;
     Button mContactsUpdate;
     Button mTrackingButton;
+
+    Button logoutButton;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +52,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mTrackingButton = findViewById(R.id.trackingButton);
         mTrackingButton.setOnClickListener(this);
+
+        logoutButton = findViewById(R.id.logoutButton);
+        logoutButton.setOnClickListener(this);
     }
 
 
@@ -76,6 +83,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Intent intent = new Intent(MainActivity.this, TrackingActivity.class);
             startActivity(intent);
         }
+
+        if(view == logoutButton){
+            logout();
+        }
+    }
+
+    private void logout(){
+        // logout from firebase
+        FirebaseAuth.getInstance().signOut();
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        startActivity(intent);
     }
 
     /*@Override

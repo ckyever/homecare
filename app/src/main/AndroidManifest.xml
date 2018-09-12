@@ -35,6 +35,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <activity
+            android:name=".accounts.LaunchActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:windowSoftInputMode="stateHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
         <activity android:name=".MainActivity">
         </activity>
         <activity android:name=".contacts.ContactsActivity">
@@ -46,11 +56,6 @@
         <activity android:name=".communication.VoiceCallActivity">
         </activity>
         <activity android:name=".accounts.LoginActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name=".accounts.AccountRegisterActivity" />
         <activity
