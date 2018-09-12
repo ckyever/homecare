@@ -128,39 +128,6 @@ public class RequestActivity extends AppCompatActivity implements RequestsUserLi
         });
     }
 
-    private void checkUser(String starter) {
-
-
-        /*Query query = ref.child("User").orderByChild("email")
-                .equalTo(email);
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot s : dataSnapshot.getChildren()) {
-                    if (s.exists()) {
-                        friend = s.getValue(User.class);
-
-                        if(friend.getChatDatabase() == null
-                                || !friend.getChatDatabase().containsKey(this_device.getId())) {
-                            Toast.makeText(RequestActivity.this,
-                                    "This person is not added as a friend",
-                                    Toast.LENGTH_SHORT).show();
-                        }else{
-
-                            goToChat(friend.getChatDatabase().get(this_device.getId()));
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });*/
-    }
-
-
 
     @Override
     public void onBackPressed() {
