@@ -35,7 +35,7 @@ public class ContactUserListAdapter extends ArrayAdapter<User>{
         this.ref = ref;
     }
 
-    // not work probably due to database read behavior
+    // not work probably due to database read behavior (will probably be removed)
     public void addUser(ArrayList<User> users){
         this.users = users;
         notifyDataSetChanged();
@@ -54,9 +54,11 @@ public class ContactUserListAdapter extends ArrayAdapter<User>{
         TextView contactEmail = (TextView) v.findViewById(R.id.contactEmail);
         Button chatButton = (Button) v.findViewById(R.id.chatButton);
 
+        // display name and email
         username.setText(users.get(i).getName());
         contactEmail.setText(users.get(i).getEmail());
 
+        // assoicate button to private chat page
         chatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

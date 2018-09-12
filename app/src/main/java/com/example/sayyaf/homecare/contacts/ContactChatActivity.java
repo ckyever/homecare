@@ -54,16 +54,12 @@ public class ContactChatActivity extends AppCompatActivity implements View.OnCli
         friends = new ArrayList<User>();
 
         // get all added contacts
-        getFriends(new ContactUserListCallback(){
-
-            // wait for database fetch complete and update the listing
+        getAllFriends(new ContactUserListCallback(){
             @Override
             public void onCallback(ArrayList<User> friends){
-                contactUserListAdapter =
-                        new ContactUserListAdapter(ContactChatActivity.this, R.layout.contact_block,
-                                friends, this_device, ref);
 
-                contactView.setAdapter(contactUserListAdapter);
+                // wait for database fetch complete and update the listing
+                resetView(friends);
 
             }
         });
@@ -79,18 +75,14 @@ public class ContactChatActivity extends AppCompatActivity implements View.OnCli
         if(v == searchUser){
 
             // ignore empty input
-            if(starter == null || starter.isEmpty()) return;
+            if(vaildateInput(starter)) return;
 
             getFriends(new ContactUserListCallback(){
                 @Override
                 public void onCallback(ArrayList<User> friends){
 
                     // wait for database fetch complete and update the listing
-                    contactUserListAdapter =
-                            new ContactUserListAdapter(ContactChatActivity.this, R.layout.contact_block,
-                                    friends, this_device, ref);
-
-                    contactView.setAdapter(contactUserListAdapter);
+                    resetView(friends);
 
                 }
             }, starter, true);
@@ -98,17 +90,12 @@ public class ContactChatActivity extends AppCompatActivity implements View.OnCli
 
         // refresh the contact listing (show all added contacts)
         if(v == refreshList){
-            getFriends(new ContactUserListCallback(){
+            getAllFriends(new ContactUserListCallback(){
                 @Override
                 public void onCallback(ArrayList<User> friends){
 
                     // wait for database fetch complete and update the listing
-                    contactUserListAdapter =
-                            new ContactUserListAdapter(ContactChatActivity.this, R.layout.contact_block,
-                                    friends, this_device, ref);
-
-                    contactView.setAdapter(contactUserListAdapter);
-
+                    resetView(friends);
                 }
             });
         }
@@ -150,11 +137,15 @@ public class ContactChatActivity extends AppCompatActivity implements View.OnCli
     }
 
     // get all added contacts
-    public void getFriends(ContactUserListCallback contactUserListCallback){
+    public void getAllFriends(ContactUserListCallback contactUserListCallback){
         getFriends(contactUserListCallback, null, false);
     }
 
-    // get added contacts base on the search
+    /* get added contacts base on the search
+     * contactUserListCallback: interface to do works until database fetching complete
+     * starter: starting letters or username or email (show all friends if it is null)
+     * showResult: showing the query result from matching the starter
+     */
     public void getFriends(ContactUserListCallback contactUserListCallback, String starter, boolean showResult){
         ref.child("User").addValueEventListener(new ValueEventListener() {
             @Override
@@ -172,9 +163,8 @@ public class ContactChatActivity extends AppCompatActivity implements View.OnCli
                                     if(starter == null)
                                         // add all friends
                                         friends.add(fd);
-                                    else if(fd.getName().startsWith(starter)
-                                            || fd.getEmail().startsWith(starter))
-                                        // 
+                                    else if(matchstartingletters(fd.getName(), fd.getEmail(), starter))
+                                        // add friend matches query
                                         friends.add(fd);
                                 }
                             }
@@ -207,6 +197,26 @@ public class ContactChatActivity extends AppCompatActivity implements View.OnCli
             }
         });
     }
+
+    // reset view after database query
+    private void resetView(ArrayList<User> friends){
+        contactUserListAdapter =
+                new ContactUserListAdapter(ContactChatActivity.this, R.layout.contact_block,
+                        friends, this_device, ref);
+
+        contactView.setAdapter(contactUserListAdapter);
+    }
+
+    // check input is vaild
+    private boolean vaildateInput(String input){
+        return !input.trim().isEmpty();
+    }
+
+    // check input match starting letters of username or email
+    private boolean matchstartingletters(String username, String email, String starter){
+        return username.startsWith(starter) || email.startsWith(starter);
+    }
+
 
     @Override
     public void onBackPressed() {

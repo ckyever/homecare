@@ -117,8 +117,8 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
                             User user = snapshot.getValue(User.class);
 
                             if (user == null ||
-                                    currentUser.getFriends() == null
-                                    || !currentUser.getFriends().containsKey(user.getId())) {
+                                    currentUser.getChatDatabase() == null
+                                    || !currentUser.getChatDatabase().containsKey(user.getId())) {
                                 Toast.makeText(ContactsActivity.this, "User doesn't exist",
                                         Toast.LENGTH_SHORT).show();
                                 return;
@@ -146,6 +146,8 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
                                     .child(uid)
                                     .removeValue();
                             //
+
+                            backToMenu();
 
                             return;
                         }
@@ -227,6 +229,8 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
                                     .setValue(uid + date + user.getId());
                             //
 
+                            backToMenu();
+
                             return;
                         }
                     }
@@ -252,12 +256,16 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    @Override
-    public void onBackPressed() {
+    private void backToMenu(){
         Intent goToMenu = new Intent(ContactsActivity.this, MainActivity.class);
         goToMenu.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(goToMenu);
         finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        backToMenu();
     }
 
 }

@@ -89,7 +89,8 @@ public class TrackingActivity extends FragmentActivity implements OnMapReadyCall
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Log.d(TAG, "Getting marker name: " + locationPath);
-                getMarkerName(dataSnapshot, uid);
+                if (dataSnapshot.exists())
+                    getMarkerName(dataSnapshot, uid);
             }
 
             @Override
@@ -110,9 +111,12 @@ public class TrackingActivity extends FragmentActivity implements OnMapReadyCall
         mRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String name = (String) dataSnapshot.getValue();
-                Log.d(TAG, "Setting marker for: " + name);
-                setMarker(locationSnapshot, uid, name);
+                if (dataSnapshot.exists()){
+                    String name = (String) dataSnapshot.getValue();
+                    Log.d(TAG, "Setting marker for: " + name);
+                    setMarker(locationSnapshot, uid, name);
+                }
+
             }
 
             @Override
