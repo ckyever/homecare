@@ -61,11 +61,14 @@ public class TrackingActivity extends FragmentActivity implements OnMapReadyCall
         mRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot userSnapshot: dataSnapshot.getChildren()) {
-                    // Gets their uid to find database path to their location
-                    String assistedUid = userSnapshot.getKey();
-                    String locationPath = "User/" + assistedUid + "/location";
-                    subscribeToLocation(locationPath, assistedUid);
+                // Check current user has friends first
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                        // Gets their uid to find database path to their location
+                        String assistedUid = userSnapshot.getKey();
+                        String locationPath = "User/" + assistedUid + "/location";
+                        subscribeToLocation(locationPath, assistedUid);
+                    }
                 }
             }
 
