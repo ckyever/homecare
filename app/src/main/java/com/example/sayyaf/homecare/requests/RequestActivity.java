@@ -65,6 +65,7 @@ public class RequestActivity extends AppCompatActivity {
                                         requests, currentUser, ref);
 
                         requestsView.setAdapter(requestUserListAdapter);
+<<<<<<< HEAD
                     }
                 });
             }
@@ -87,6 +88,34 @@ public class RequestActivity extends AppCompatActivity {
         }
     }
 
+=======
+
+                    }
+
+                });
+
+            }
+        });
+        Log.d(TAG, "Requests after" + requests);
+
+        //wait for database fetch complete
+    }
+
+
+    // debug getting data
+    public void showrequests(){
+        if(requests == null){
+            System.out.println("null");
+        }
+        else if(requests.isEmpty()) {
+            System.out.println("empty");
+        }
+        else{
+            for(User u : friends) System.out.println(u.getName());
+        }
+    }
+
+>>>>>>> parent of 19dff13... Attempted bug fixing of requestuserlistadapter
     public void getCurrentUser(RequestsUserListCallback requestsUserListCallback) {
         Query query = ref.child("User").orderByChild("id")
                 .equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid());
@@ -126,15 +155,35 @@ public class RequestActivity extends AppCompatActivity {
                     for (DataSnapshot s : dataSnapshot.getChildren()) {
                         if (s.exists()) {
                             User fd = s.getValue(User.class);
+<<<<<<< HEAD
                             if (requests!=null && requests.containsKey(fd.getId())) {
+=======
+                            if (requests.containsKey(fd.getId())) {
+                                if (starter == null) {
+                                    friends.add(fd);
+                                } else if (fd.getName().startsWith(starter)
+                                        || fd.getEmail().startsWith(starter))
+>>>>>>> parent of 19dff13... Attempted bug fixing of requestuserlistadapter
                                     friends.add(fd);
                             }
                         }
                     }
 
+<<<<<<< HEAD
                     if (!friends.isEmpty()) {
                         requestsUserListCallback.onFriendsCallback(friends);
+=======
+                    if (friends.isEmpty()) {
+                        Toast.makeText(RequestActivity.this,
+                                "No result",
+                                Toast.LENGTH_SHORT).show();
+>>>>>>> parent of 19dff13... Attempted bug fixing of requestuserlistadapter
                     }
+                    requestsUserListCallback.onFriendsCallback(friends);
+                } else {
+                    Toast.makeText(RequestActivity.this,
+                            "No result",
+                            Toast.LENGTH_SHORT).show();
                 }
             }
 

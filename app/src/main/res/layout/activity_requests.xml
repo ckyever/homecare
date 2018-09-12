@@ -21,7 +21,7 @@
         android:paddingRight="5sp"
         android:gravity="center_vertical"
         android:textSize="20sp"
-        android:text=" Requests"
+        android:text=" Contacts"
         android:textColor="@android:color/white"
         android:background="@color/colorAccent"
         android:textStyle="bold"
