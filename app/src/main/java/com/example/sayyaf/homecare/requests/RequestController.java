@@ -25,19 +25,16 @@ public class RequestController {
 
             long date = new Date().getTime();
 
-            ref.child("User")
-                    .child(currentUser.getId())
+            ref.child(currentUser.getId())
                     .child("chatDatabase")
                     .push();
 
-            ref.child("User")
-                    .child(currentUser.getId())
+            ref.child(currentUser.getId())
                     .child("chatDatabase")
                     .child(id)
                     .setValue(currentUser.getId() + date + id);
 
-            ref.child("User")
-                    .child(id)
+            ref.child(id)
                     .child("chatDatabase")
                     .push();
 
