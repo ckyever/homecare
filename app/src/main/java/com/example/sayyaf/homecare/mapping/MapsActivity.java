@@ -162,7 +162,7 @@ public class MapsActivity extends FragmentActivity implements OnMyLocationButton
                     @Override
                     public void onComplete(@NonNull Task task) {
                         // Successfully found device location
-                        if (task.isSuccessful()) {
+                        if (task.isSuccessful() && task.getResult() != null) {
                             currentLocation = (Location) location.getResult();
                             currentLatLng = new LatLng(currentLocation.getLatitude(),
                                     currentLocation.getLongitude());
