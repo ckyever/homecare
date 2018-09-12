@@ -25,20 +25,17 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class RequestActivity extends AppCompatActivity implements RequestsUserListCallback,
-    FriendsUserListCallback {
+public class RequestActivity extends AppCompatActivity {
 
     private DatabaseReference ref;
     private User currentUser;
 
     private Button refreshRequestList;
-    private ListView requestsView;
-    private RequestUserListAdapter requestUserListAdapter;
-
     private ArrayList<User> friends;
     private HashMap<String, String> requests;
+    private ListView requestsView;
+    private RequestUserListAdapter requestUserListAdapter;
     private String uid;
-
     public static final String TAG = RequestActivity.class.getSimpleName();
 
 
@@ -52,47 +49,62 @@ public class RequestActivity extends AppCompatActivity implements RequestsUserLi
         requestsView = (ListView) findViewById(R.id.requestsView);
 
         ref = FirebaseDatabase.getInstance().getReference();
-        uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         friends = new ArrayList<User>();
         requests = new HashMap<>();
 
-        getCurrentUser();
+        getCurrentUser(new RequestsUserListCallback() {
+            @Override
+            public void onRequestsCallback(HashMap<String, String> requestsStored, String id) {
+                requests = requestsStored;
+                uid = id;
+                getrequests(requests, new FriendsUserListCallback(){
+                    @Override
+                    public void onFriendsCallback(ArrayList<User> requests){
+                        requestUserListAdapter =
+                                new RequestUserListAdapter(RequestActivity.this, R.layout.request_block,
+                                        requests, currentUser, ref);
+
+                        requestsView.setAdapter(requestUserListAdapter);
+                    }
+                });
+            }
+        });
+
+        //wait for database fetch complete
     }
 
-        @Override
-        public void onRequestsCallback(HashMap<String, String> requestsStored, String id) {
-            getrequests(requestsStored);
 
+    // debug getting data
+    public void showrequests(){
+        if(requests == null){
+            System.out.println("null");
         }
-
-    @Override
-    public void onFriendsCallback(ArrayList<User> requests){
-        requestUserListAdapter =
-                new RequestUserListAdapter(RequestActivity.this, R.layout.request_block,
-                        requests, currentUser, ref);
-
-        requestsView.setAdapter(requestUserListAdapter);
-
+        else if(requests.isEmpty()) {
+            System.out.println("empty");
+        }
+        else{
+            for(User u : friends) System.out.println(u.getName());
+        }
     }
 
-
-    public void getCurrentUser() {
-        Query query = ref.child("User")
-                .orderByChild("id")
-                .equalTo(uid);
-
+    public void getCurrentUser(RequestsUserListCallback requestsUserListCallback) {
+        Query query = ref.child("User").orderByChild("id")
+                .equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid());
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot datasnapshot) {
                 for (DataSnapshot s : datasnapshot.getChildren()) {
                     if (s.exists()) {
                         currentUser = s.getValue(User.class);
+                        uid = currentUser.getId();
                         requests = currentUser.getRequests();
-                        onRequestsCallback(currentUser.getRequests(),
+                        Log.d(TAG, "Requests before" + requests);
+                        requestsUserListCallback.onRequestsCallback(currentUser.getRequests(),
                                 currentUser.getId());
                     }
 
                 }
+
             }
             @Override
             public void onCancelled(DatabaseError arg0) {
@@ -101,7 +113,11 @@ public class RequestActivity extends AppCompatActivity implements RequestsUserLi
         });
     }
 
-    public void getrequests(HashMap<String, String> requests){
+    public void getrequests(HashMap<String, String> requests, FriendsUserListCallback requestsUserListCallback){
+        getrequests(requests, requestsUserListCallback, null);
+    }
+
+    public void getrequests(HashMap<String, String> requests, FriendsUserListCallback requestsUserListCallback, String starter){
         ref.child("User").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -111,13 +127,13 @@ public class RequestActivity extends AppCompatActivity implements RequestsUserLi
                         if (s.exists()) {
                             User fd = s.getValue(User.class);
                             if (requests!=null && requests.containsKey(fd.getId())) {
-                                friends.add(fd);
+                                    friends.add(fd);
                             }
                         }
                     }
-                    Log.d(TAG, "Friends before" +friends);
-                    if(!friends.isEmpty()) {
-                        onFriendsCallback(friends);
+
+                    if (!friends.isEmpty()) {
+                        requestsUserListCallback.onFriendsCallback(friends);
                     }
                 }
             }
@@ -128,7 +144,7 @@ public class RequestActivity extends AppCompatActivity implements RequestsUserLi
             }
         });
     }
-    
+
 
     @Override
     public void onBackPressed() {

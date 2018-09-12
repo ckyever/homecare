@@ -23,13 +23,10 @@ public class RequestUserListAdapter extends ArrayAdapter<User> implements View.O
     private ArrayList<User> users;
     private User currentUser;
     private DatabaseReference ref;
-    private TextView username;
-    private TextView contactEmail;
     private Button acceptButton;
-    private Button declineButton;
-    private String requestId;
     private String requestEmail;
-    private String name;
+    private String requestId;
+
 
     public RequestUserListAdapter(@NonNull Context context, int resource, ArrayList<User> users,
                                   User currentUser, DatabaseReference ref) {
@@ -53,14 +50,17 @@ public class RequestUserListAdapter extends ArrayAdapter<User> implements View.O
         v = inflater.inflate(R.layout.request_block, null);
 
         //getting view in row_data
-        username = (TextView) v.findViewById(R.id.usernameRequest);
-        contactEmail = (TextView) v.findViewById(R.id.requestEmail);
+        TextView username = (TextView) v.findViewById(R.id.usernameRequest);
+        TextView contactEmail = (TextView) v.findViewById(R.id.requestEmail);
         acceptButton = (Button) v.findViewById(R.id.acceptRequestButton);
-        declineButton = (Button) v.findViewById(R.id.declineRequestButton);
+        Button declineButton = (Button) v.findViewById(R.id.declineRequestButton);
+
         requestEmail = users.get(i).getEmail();
         requestId = users.get(i).getId();
-        name = users.get(i).getName();
+        String name = users.get(i).getName();
+
         username.setText(name);
+        User user = users.get(i);
         contactEmail.setText(requestEmail);
         acceptButton.setOnClickListener(this);
         declineButton.setOnClickListener(this);
