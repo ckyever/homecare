@@ -208,5 +208,13 @@ public class AccountRegisterActivity extends AppCompatActivity implements View.O
         return false;
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent goToMenu = new Intent(AccountRegisterActivity.this, LoginActivity.class);
+        goToMenu.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(goToMenu);
+        finish();
+    }
+
 
 }

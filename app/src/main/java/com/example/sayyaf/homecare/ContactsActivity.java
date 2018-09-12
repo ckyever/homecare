@@ -137,6 +137,12 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
                                 }
                             }
 
+                            else if(email.equals(currentUser.getEmail())) {
+                                Toast.makeText(ContactsActivity.this, "Cannot remove request to yourself",
+                                        Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
                             userRef.child(uid)
                                     .child("friends")
                                     .child(user.getId())
@@ -193,20 +199,6 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
                                 return;
                             }
 
-                            if(user.isCaregiver() == currentUser.isCaregiver()) {
-                                Toast.makeText(ContactsActivity.this,
-                                        "This person is a " + user.getUserType(),
-                                        Toast.LENGTH_SHORT).show();
-                                continue;
-                            }
-
-
-                            //bug currentUser.getFriends() read as null rather isEmpty
-                            /*if(currentUser.getFriends().containsKey(user.getId())) {
-                                Toast.makeText(ContactsActivity.this, "Already Friend",
-                                        Toast.LENGTH_SHORT).show();
-                            }*/
-
                             if(currentUser.getFriends() != null
                                 && currentUser.getFriends().containsKey(user.getId())) {
                                 Toast.makeText(ContactsActivity.this, "Already Friend",
@@ -217,6 +209,19 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
                             else if(currentUser.getRequestsSent() != null
                                     && currentUser.getRequestsSent().containsKey(user.getId())) {
                                 Toast.makeText(ContactsActivity.this, "Request Already Sent",
+                                        Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
+                            else if(currentUser.getRequests() != null
+                                    && currentUser.getRequests().containsKey(user.getId())) {
+                                Toast.makeText(ContactsActivity.this, "User has sent you a pending request",
+                                        Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
+                            else if(email.equals(currentUser.getEmail())) {
+                                Toast.makeText(ContactsActivity.this, "Cannot send a friend request to yourself",
                                         Toast.LENGTH_SHORT).show();
                                 return;
                             }

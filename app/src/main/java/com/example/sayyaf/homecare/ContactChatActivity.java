@@ -157,8 +157,8 @@ public class ContactChatActivity extends AppCompatActivity implements View.OnCli
                         if(s.exists()){
                             User fd = s.getValue(User.class);
 
-                            if (fd.getChatDatabase() != null){
-                                if(fd.getChatDatabase().containsKey(this_device.getId())){
+                            if (fd.getFriends() != null){
+                                if(fd.getFriends().containsKey(this_device.getId())){
                                     if(starter == null)
                                         friends.add(fd);
                                     else if(fd.getName().startsWith(starter)
