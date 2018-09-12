@@ -197,18 +197,11 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
                             }
 
                             if(user.isCaregiver() == currentUser.isCaregiver()) {
-                                Toast.makeText(ContactsActivity.this,
-                                        "This person is a " + user.getUserType(),
+                                Toast.makeText(ContactsActivity.this, "User doesn't exist",
                                         Toast.LENGTH_SHORT).show();
-                                continue;
+                                return;
                             }
 
-
-                            //bug currentUser.getFriends() read as null rather isEmpty
-                            /*if(currentUser.getFriends().containsKey(user.getId())) {
-                                Toast.makeText(ContactsActivity.this, "Already Friend",
-                                        Toast.LENGTH_SHORT).show();
-                            }*/
 
                             if(currentUser.getFriends() != null
                                 && currentUser.getFriends().containsKey(user.getId())) {
@@ -248,6 +241,7 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
                             return;
                         }
                     }
+
                 }
                 @Override
                 public void onCancelled(DatabaseError arg0) {
