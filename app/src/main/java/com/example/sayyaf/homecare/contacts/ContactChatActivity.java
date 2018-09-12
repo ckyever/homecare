@@ -93,7 +93,7 @@ public class ContactChatActivity extends AppCompatActivity implements View.OnCli
                     contactView.setAdapter(contactUserListAdapter);
 
                 }
-            }, starter);
+            }, starter, true);
         }
 
         // refresh the contact listing (show all added contacts)
@@ -151,11 +151,11 @@ public class ContactChatActivity extends AppCompatActivity implements View.OnCli
 
     // get all added contacts
     public void getFriends(ContactUserListCallback contactUserListCallback){
-        getFriends(contactUserListCallback, null);
+        getFriends(contactUserListCallback, null, false);
     }
 
     // get added contacts base on the search
-    public void getFriends(ContactUserListCallback contactUserListCallback, String starter){
+    public void getFriends(ContactUserListCallback contactUserListCallback, String starter, boolean showResult){
         ref.child("User").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -183,7 +183,7 @@ public class ContactChatActivity extends AppCompatActivity implements View.OnCli
                     }
 
                     // no friends match the starting input letters
-                    if(friends.isEmpty()){
+                    if(friends.isEmpty() && showResult){
                         Toast.makeText(ContactChatActivity.this,
                                 "No result",
                                 Toast.LENGTH_SHORT).show();
@@ -193,9 +193,11 @@ public class ContactChatActivity extends AppCompatActivity implements View.OnCli
                 }
                 else{
                     // user do not have a added friend
-                    Toast.makeText(ContactChatActivity.this,
-                            "No result",
-                            Toast.LENGTH_SHORT).show();
+                    if(showResult)
+                        Toast.makeText(ContactChatActivity.this,
+                                "No added contacts",
+                                Toast.LENGTH_SHORT).show();
+
                 }
             }
 

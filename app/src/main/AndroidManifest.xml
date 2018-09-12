@@ -49,9 +49,13 @@
         </activity>
         <activity android:name=".contacts.ContactsActivity">
         </activity>
-        <activity android:name=".contacts.ContactChatActivity">
+        <activity
+            android:name=".contacts.ContactChatActivity"
+            android:windowSoftInputMode="stateHidden">
         </activity>
-        <activity android:name=".communication.ChatActivity">
+        <activity
+            android:name=".communication.ChatActivity"
+            android:windowSoftInputMode="stateHidden">
         </activity>
         <activity android:name=".communication.VoiceCallActivity">
         </activity>
