@@ -1,8 +1,10 @@
 package com.example.sayyaf.homecare;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -13,18 +15,23 @@ import com.example.sayyaf.homecare.contacts.ContactsActivity;
 import com.example.sayyaf.homecare.mapping.MapsActivity;
 import com.example.sayyaf.homecare.mapping.TrackingActivity;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     // set up chat controllers for once
     private static boolean setUpChatControllers = false;
+    private static final String TAG = "MainActivity";
     //private ChatController chatController;
     Button mMapButton;
     Button mContacts;
     Button mContactsUpdate;
     Button mFriendRequests;
-    Button mTrackingButton;
     Button logoutButton;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,9 +58,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mContactsUpdate = (Button) findViewById(R.id.contactsUpdate);
         mContactsUpdate.setOnClickListener(this);
 
-        mTrackingButton = findViewById(R.id.trackingButton);
-        mTrackingButton.setOnClickListener(this);
-
         logoutButton = findViewById(R.id.logoutButton);
         logoutButton.setOnClickListener(this);
 
@@ -65,9 +69,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
+
         if(view == mMapButton) {
-            Intent intent = new Intent(MainActivity.this, MapsActivity.class);
-            startActivity(intent);
+            mapLauncher();
         }
 
         if (view == mContacts) {
@@ -82,11 +86,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();
-        }
-
-        if(view == mTrackingButton) {
-            Intent intent = new Intent(MainActivity.this, TrackingActivity.class);
-            startActivity(intent);
         }
 
         if(view == logoutButton){
@@ -133,6 +132,39 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void onBackPressed() {
         finish();
+    }
+
+    // Launches the TrackingActivity if current user is a caregiver and the MapsActivity if current
+    // user is an assisted person
+    private void mapLauncher() {
+        String path = "User/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/caregiver";
+        DatabaseReference mRef = FirebaseDatabase.getInstance().getReference(path);
+        mRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    Boolean result = (Boolean) dataSnapshot.getValue();
+                    // User is a caregiver
+                    if (result) {
+                        Intent intent = new Intent(MainActivity.this,
+                                TrackingActivity.class);
+                        startActivity(intent);
+                    }
+                    // User is an assisted person
+                    else {
+                        Intent intent = new Intent(MainActivity.this,
+                                MapsActivity.class);
+                        startActivity(intent);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.w(TAG, "Failed to get caregiver boolean", databaseError.toException());
+            }
+        });
+
     }
 
 }
