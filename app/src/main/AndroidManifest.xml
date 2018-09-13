@@ -47,7 +47,7 @@
 
         <activity android:name=".MainActivity">
         </activity>
-        <activity android:name=".contacts.ContactsActivity">
+        <activity android:name=".contacts.ContactUpdateActivity">
         </activity>
         <activity android:name=".requests.RequestActivity">
         </activity>

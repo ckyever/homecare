@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.User;
+import com.example.sayyaf.homecare.requests.RequestController;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -23,19 +24,19 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.Date;
-
-public class ContactsActivity extends AppCompatActivity implements View.OnClickListener {
+/**
+ *  Activity to handle the sending of friend requests and the removal of friends
+ **/
+public class ContactUpdateActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Button mAddUserButton;
     private EditText mUserEmail;
-    private DatabaseReference userRef;
-    private FirebaseAuth mAuth;
+    private DatabaseReference ref;
     private FirebaseUser currentUserAuth;
     private User currentUser;
     private String uid;
     private Button mRemoveUserButton;
-    public static final String TAG =ContactsActivity.class.getSimpleName();
+    public static final String TAG =ContactUpdateActivity.class.getSimpleName();
 
 
 
@@ -48,10 +49,8 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
         mRemoveUserButton = (Button) findViewById(R.id.removeContact);
 
         currentUserAuth = FirebaseAuth.getInstance().getCurrentUser();
-        userRef = FirebaseDatabase.getInstance().getReference("User");
-        String email = mUserEmail.getText().toString().trim();
+        ref = FirebaseDatabase.getInstance().getReference();
         uid = currentUserAuth.getUid();
-        //User caregiverUser = caregiverRef.orderByChild("email").equalTo(email);
         getCurrentUser();
         mAddUserButton.setOnClickListener(this);
         mRemoveUserButton.setOnClickListener(this);
@@ -62,6 +61,7 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View view) {
 
         final String email = mUserEmail.getText().toString().trim();
+        //Call the requisite protocol based on view clicked
         if(view == mAddUserButton) {
             addFriend(email);
         }
@@ -71,8 +71,10 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
+    //Returns the user currently signed into the app
     public void getCurrentUser() {
-        Query query = userRef.orderByChild("id").equalTo(uid);
+        //Finds the user in the realtime database based on ID stored in Firebase Authentication Service
+        Query query = ref.child("User").orderByChild("id").equalTo(uid);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot datasnapshot) {
@@ -82,9 +84,9 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
                         currentUser = snapshot.getValue(User.class);
 
                         if (currentUser == null) {
-                            Toast.makeText(ContactsActivity.this, "NULL user",
+                            Toast.makeText(ContactUpdateActivity.this, "NULL user",
                                     Toast.LENGTH_SHORT).show();
-                            Toast.makeText(ContactsActivity.this, "User doesn't exist",
+                            Toast.makeText(ContactUpdateActivity.this, "User doesn't exist",
                                     Toast.LENGTH_SHORT).show();
                             return;
                         }
@@ -107,7 +109,7 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
 
     public void removeFriend(String email) {
         if(isValidEmail(email)){
-            Query query = userRef.orderByChild("email").equalTo(email);
+            Query query = ref.child("User").orderByChild("email").equalTo(email);
             query.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot datasnapshot) {
@@ -119,49 +121,28 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
                             if (user == null ||
                                     currentUser.getChatDatabase() == null
                                     || !currentUser.getChatDatabase().containsKey(user.getId())) {
-                                Toast.makeText(ContactsActivity.this, "User doesn't exist",
+                                Toast.makeText(ContactUpdateActivity.this, "User doesn't exist",
                                         Toast.LENGTH_SHORT).show();
                                 return;
                             }
 
                             if(currentUser.getRequestsSent() != null) {
                                 if(currentUser.getRequestsSent().containsKey(user.getId())) {
-                                    userRef.child(uid)
+                                    ref.child("User").child(uid)
                                             .child("requestsSent")
                                             .child(user.getId())
                                             .removeValue();
 
-                                    userRef.child(user.getId())
+                                    ref.child("User").child(user.getId())
                                             .child("requests")
                                             .child(uid)
                                             .removeValue();
+                                    return;
                                 }
                             }
 
-                            userRef.child(uid)
-                                    .child("friends")
-                                    .child(user.getId())
-                                    .removeValue();
-
-                            // remove the common database
-                            FirebaseDatabase.getInstance()
-                                    .getReference("chatDB")
-                                    .child(user.getChatDatabase().get(uid))
-                                    .removeValue();
-
-                            userRef.child(uid)
-                                    .child("chatDatabase")
-                                    .child(user.getId())
-                                    .removeValue();
-
-                            userRef.child(user.getId())
-                                    .child("chatDatabase")
-                                    .child(uid)
-                                    .removeValue();
-                            //
-
+                            RequestController.removeUser(ref, user.getId(), uid);
                             backToMenu();
-
                             return;
                         }
                     }
@@ -174,14 +155,14 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
         }
 
         else {
-            Toast.makeText(ContactsActivity.this, "Invalid Email Entered",
+            Toast.makeText(ContactUpdateActivity.this, "Invalid Email Entered",
                     Toast.LENGTH_SHORT).show();
         }
     }
 
     public void addFriend(String email) {
         if(isValidEmail(email)){
-            Query query = userRef.orderByChild("email").equalTo(email);
+            Query query = ref.child("User").orderByChild("email").equalTo(email);
             query.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot datasnapshot) {
@@ -190,50 +171,30 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
                         if (snapshot.exists()) {
                             User user = snapshot.getValue(User.class);
 
-                            if (user == null) {
-                                Toast.makeText(ContactsActivity.this, "User doesn't exist",
+                            if (user == null || user.isCaregiver() == currentUser.isCaregiver()) {
+                                Toast.makeText(ContactUpdateActivity.this, "User doesn't exist",
                                         Toast.LENGTH_SHORT).show();
                                 return;
                             }
 
-                            if(user.isCaregiver() == currentUser.isCaregiver()) {
-                                Toast.makeText(ContactsActivity.this, "User doesn't exist",
-                                        Toast.LENGTH_SHORT).show();
-                                return;
-                            }
-
-
-                            if(currentUser.getFriends() != null
+                            else if(currentUser.getFriends() != null
                                 && currentUser.getFriends().containsKey(user.getId())) {
-                                Toast.makeText(ContactsActivity.this, "Already Friend",
+                                Toast.makeText(ContactUpdateActivity.this, "Already Friend",
                                         Toast.LENGTH_SHORT).show();
                                 return;
                             }
 
                             else if(currentUser.getRequestsSent() != null
                                     && currentUser.getRequestsSent().containsKey(user.getId())) {
-                                Toast.makeText(ContactsActivity.this, "Request Already Sent",
+                                Toast.makeText(ContactUpdateActivity.this, "Request Already Sent",
                                         Toast.LENGTH_SHORT).show();
                                 return;
                             }
+                           
+                            RequestController.addSentRequest(ref.child("User"), user.getId(), user.getEmail(), uid);
+                            RequestController.addReceiverRequest(ref.child("User"), user.getId(), currentUser.getEmail(), uid);
 
-                            userRef.child(uid).child("requestsSent").push();
-                            userRef.child(uid)
-                                    .child("requestsSent")
-                                    .child(user.getId())
-                                    .setValue(user.getEmail());
-
-                            userRef.child(user.getId())
-                                    .child("requests")
-                                    .push();
-
-                            userRef.child(user.getId())
-                                    .child("requests")
-                                    .child(uid)
-                                    .setValue(currentUser.getEmail());
-
-
-                            Toast.makeText(ContactsActivity.this, "Request Sent",
+                            Toast.makeText(ContactUpdateActivity.this, "Request Sent",
                                     Toast.LENGTH_SHORT).show();
 
                             backToMenu();
@@ -249,7 +210,7 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
                 }
             });
         } else {
-            Toast.makeText(ContactsActivity.this, "Invalid Email Entered",
+            Toast.makeText(ContactUpdateActivity.this, "Invalid Email Entered",
                     Toast.LENGTH_SHORT).show();
         }
 
@@ -264,8 +225,9 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
+
     private void backToMenu(){
-        Intent goToMenu = new Intent(ContactsActivity.this, MainActivity.class);
+        Intent goToMenu = new Intent(ContactUpdateActivity.this, MainActivity.class);
         goToMenu.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(goToMenu);
         finish();

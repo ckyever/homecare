@@ -9,7 +9,7 @@ import android.widget.Button;
 import com.example.sayyaf.homecare.requests.RequestActivity;
 import com.example.sayyaf.homecare.accounts.LoginActivity;
 import com.example.sayyaf.homecare.contacts.ContactChatActivity;
-import com.example.sayyaf.homecare.contacts.ContactsActivity;
+import com.example.sayyaf.homecare.contacts.ContactUpdateActivity;
 import com.example.sayyaf.homecare.mapping.MapsActivity;
 import com.example.sayyaf.homecare.mapping.TrackingActivity;
 import com.google.firebase.auth.FirebaseAuth;
@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         if (view == mContactsUpdate) {
-            Intent intent = new Intent(MainActivity.this, ContactsActivity.class);
+            Intent intent = new Intent(MainActivity.this, ContactUpdateActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();
