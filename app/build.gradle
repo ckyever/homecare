@@ -43,6 +43,7 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:27.1.1'
     implementation 'com.android.support:cardview-v7:27.1.1'
     implementation 'com.google.maps.android:android-maps-utils:0.5+'
+    implementation 'com.android.support:design:28.0.0-rc02'
 }
 
 apply plugin: 'com.google.gms.google-services'

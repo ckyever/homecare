@@ -3,6 +3,7 @@ package com.example.sayyaf.homecare.mapping;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.example.sayyaf.homecare.R;
@@ -25,7 +26,7 @@ import com.google.maps.android.ui.IconGenerator;
 
 import java.util.HashMap;
 
-public class TrackingActivity extends FragmentActivity implements OnMapReadyCallback {
+public class TrackingActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final String TAG = "TrackingActivity";
     private static final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();

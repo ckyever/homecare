@@ -52,8 +52,8 @@ public class TrackingService extends Service {
         // Create the persistent notification
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this,
                 NotificationChannels.getChatNotificationCH())
-                .setContentTitle(getString(R.string.app_name))
-                .setContentText(getString(R.string.tracking_notif))
+                .setContentTitle(getString(R.string.tracking_title))
+                .setContentText(getString(R.string.tracking_notification))
                 .setOngoing(true)
                 .setContentIntent(broadcastIntent)
                 .setSmallIcon(R.drawable.ic_tracking);
