@@ -20,6 +20,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+/** Class for handling user login to app
+ */
 public class LoginActivity  extends AppCompatActivity implements View.OnClickListener{
     TextView mRegisterTextView;
     EditText mEmailEditText;
@@ -46,6 +48,7 @@ public class LoginActivity  extends AppCompatActivity implements View.OnClickLis
 
     }
 
+    //Asynchronous method which watches for changes to EditText View
     TextWatcher textWatcher = new TextWatcher() {
 
         @Override
@@ -66,6 +69,7 @@ public class LoginActivity  extends AppCompatActivity implements View.OnClickLis
 
     };
 
+    //Checks that a user has entered values for both username and password
     private void validateFields() {
 
         if(mEmailEditText.getText().length() > 0 && mPasswordEditText.getText().length() > 0) {
@@ -79,6 +83,7 @@ public class LoginActivity  extends AppCompatActivity implements View.OnClickLis
     @Override
     public void onClick(View view) {
 
+        //Redirects user to the account registration activity
         if(view == mRegisterTextView) {
             Intent intent = new Intent(LoginActivity.this, AccountRegisterActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -86,14 +91,20 @@ public class LoginActivity  extends AppCompatActivity implements View.OnClickLis
             finish();
         }
 
+        //Authenticates the given user details in preparation for signin
         else {
             authenticateUser();
         }
     }
 
+    /** Method exists to authenticate the user details. If authentication successful, user is
+     * signed in
+     */
     private void authenticateUser() {
         String email = mEmailEditText.getText().toString();
         String password = mPasswordEditText.getText().toString();
+
+        //Firebase Authentication service use to check for successful sign in
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnSuccessListener(this, new OnSuccessListener<AuthResult>() {
                     @Override

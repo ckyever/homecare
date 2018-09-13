@@ -131,10 +131,11 @@ public class AccountRegisterActivity extends AppCompatActivity implements View.O
     }
 
 
-    /* Method responsible for creating a new user. Only gets called upon basic validation
-    * of all input fields. Then checks for valid email addresses, before attempting to
-    * register the user with the Firebase Authentication Service. If that is successful,
-    * links the user to the Real time database*/
+    /** Method responsible for creating a new user. Only gets called upon basic validation
+        * of all input fields. Then checks for valid email addresses, before attempting to
+        * register the user with the Firebase Authentication Service. If that is successful,
+        * links the user to the Real time database
+        */
     private boolean createNewUser() {
         final String name = mNameEditText.getText().toString().trim();
         final String email = mEmailEditText.getText().toString().trim();
@@ -188,22 +189,11 @@ public class AccountRegisterActivity extends AppCompatActivity implements View.O
         return true;
     }
 
-    public final static boolean isValidEmail(CharSequence target) {
-        if (TextUtils.isEmpty(target)) {
-            return false;
-        } else {
-            return android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
-        }
+    public static boolean isValidEmail(CharSequence target) {
+        return !TextUtils.isEmpty(target) &&
+                android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
     }
 
-
-    boolean isValidPassword(String password, String confirm) {
-
-        if(password.length() >=6 && password.equals(confirm)) {
-            return true;
-        }
-        return false;
-    }
 
     public void onBackPressed() {
         Intent intent = new Intent(AccountRegisterActivity.this, LoginActivity.class);
