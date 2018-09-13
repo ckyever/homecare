@@ -1,6 +1,7 @@
 package com.example.sayyaf.homecare;
 
 import android.content.Intent;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.example.sayyaf.homecare.notifications.NotificationService;
 import com.example.sayyaf.homecare.requests.RequestActivity;
 import com.example.sayyaf.homecare.accounts.LoginActivity;
 import com.example.sayyaf.homecare.contacts.ContactChatActivity;
@@ -38,13 +40,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-            /*if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
 
                 this.startService(new Intent(this, NotificationService.class));
             }
             else {
                 this.startForegroundService(new Intent(this, NotificationService.class));
-            }*/
+            }
 
 
             /*chatController = new ChatController(new User("", "", false),
@@ -103,6 +105,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void logout(){
         // logout from firebase
         FirebaseAuth.getInstance().signOut();
+        this.stopService(new Intent(this, NotificationService.class));
         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
         startActivity(intent);
     }

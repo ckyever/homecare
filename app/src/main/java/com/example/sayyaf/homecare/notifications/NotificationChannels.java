@@ -7,7 +7,7 @@ import android.os.Build;
 
 public class NotificationChannels extends Application {
     private static String chatNotificationCH = "chat notification";
-    // private static String testForegroundCH = "foreground keeper";
+    private static String testForegroundCH = "foreground keeper";
     // private static String emergencyCH = "emergency notification";
 
     @Override
@@ -19,7 +19,7 @@ public class NotificationChannels extends Application {
     public static String getChatNotificationCH(){
         return chatNotificationCH;
     }
-    //public static String getTestForegroundCH() { return testForegroundCH; }
+    public static String getTestForegroundCH() { return testForegroundCH; }
     // public static String getEmergencyCH(){ return emergencyCH; }
 
     private void createNotificationChannels() {
@@ -32,18 +32,18 @@ public class NotificationChannels extends Application {
 
             channel1.setDescription("This is a chat notification channal");
 
-            /*NotificationChannel channel3 = new NotificationChannel(
+            NotificationChannel channel3 = new NotificationChannel(
                     testForegroundCH,
                     "KEEP",
                     NotificationManager.IMPORTANCE_HIGH);
 
-            channel3.setDescription("This is a foreground keeper");*/
+            channel3.setDescription("This is a foreground keeper");
 
             NotificationManager manager =
                     (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
             manager.createNotificationChannel(channel1);
-            //manager.createNotificationChannel(channel3);
+            manager.createNotificationChannel(channel3);
 
 
             /*NotificationChannel channel2 = new NotificationChannel(
@@ -53,8 +53,6 @@ public class NotificationChannels extends Application {
 
             channel2.setDescription("This is an emergency notification channal");
 
-            NotificationManager manager =
-                    (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             manager.createNotificationChannel(channel2);*/
 
         }
