@@ -6,18 +6,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
-import com.example.sayyaf.homecare.accounts.User;
 import com.example.sayyaf.homecare.accounts.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -28,12 +21,14 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
+
+/** Class for handling the acceptance or rejection of received friend requests
+ */
 public class RequestActivity extends AppCompatActivity implements RequestsUserListCallback {
 
     private DatabaseReference ref;
-    private User this_device;
+    private User currentUser;
 
     private ArrayList<User> friends;
     private ListView requestsView;
@@ -44,12 +39,10 @@ public class RequestActivity extends AppCompatActivity implements RequestsUserLi
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_requests);
-
         requestsView = (ListView) findViewById(R.id.requestsView);
-
         ref = FirebaseDatabase.getInstance().getReference();
-        friends = new ArrayList<User>();
-        getCurrentUser(null);
+        friends = new ArrayList<>();
+        getCurrentUser();
 
     }
 
@@ -58,6 +51,11 @@ public class RequestActivity extends AppCompatActivity implements RequestsUserLi
         getRequests(currentUser);
     }
 
+    /** If requests found, send the list of senders into a list adapter to be readied for
+     * use by the ListView
+     * @param requests a list of users who have sent requests to the current user
+     * @param currentUser the user currently signed in
+     */
     @Override
     public void onFriendsCallback(ArrayList<User> requests, User currentUser){
         requestUserListAdapter =
@@ -67,8 +65,8 @@ public class RequestActivity extends AppCompatActivity implements RequestsUserLi
 
     }
 
-
-    public void getCurrentUser(String starter) {
+    //Assign User attributes of the user currently signed into the app
+    public void getCurrentUser() {
         Query query = ref.child("User").orderByChild("id")
                 .equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid());
         query.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -76,8 +74,8 @@ public class RequestActivity extends AppCompatActivity implements RequestsUserLi
             public void onDataChange(@NonNull DataSnapshot datasnapshot) {
                 for (DataSnapshot s : datasnapshot.getChildren()) {
                     if (s.exists()) {
-                        this_device = s.getValue(User.class);
-                        onRequestsCallback(this_device);
+                        currentUser = s.getValue(User.class);
+                        onRequestsCallback(currentUser);
                     }
                 }
             }
@@ -85,41 +83,40 @@ public class RequestActivity extends AppCompatActivity implements RequestsUserLi
 
             @Override
             public void onCancelled(DatabaseError arg0) {
-
             }
         });
     }
 
-
+    /**
+     * Get a list of the users who have sent friend requests to the current user
+     * @param currentUser the user currently signed into the app
+     */
     public void getRequests(User currentUser){
         ref.child("User").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
 
-                    friends = new ArrayList<User>();
-
+                    //Arraylist to store the request senders
+                    friends = new ArrayList<>();
                     for (DataSnapshot s : dataSnapshot.getChildren()) {
                         if(s.exists()){
                             User fd = s.getValue(User.class);
 
+                            /*Check if the user has requests, and the user fd from database
+                            sent a request
+                             */
                             if (currentUser.getRequests() != null &&
-                                    currentUser.getRequests().containsKey(fd.getId())){
-
+                                    currentUser.getRequests().containsKey(fd.getId())) {
                                     friends.add(fd);
                             }
                         }
 
                     }
 
+                    /* If there are any requests found, create a callback */
                     if(!friends.isEmpty()){
                         onFriendsCallback(friends, currentUser);
-                    } else{
-
-                        // bug on keep showing the message
-                        /*Toast.makeText(RequestActivity.this,
-                                "No Pending Requests",
-                                Toast.LENGTH_SHORT).show();*/
                     }
                 }
             }

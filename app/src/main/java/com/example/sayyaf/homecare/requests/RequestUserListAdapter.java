@@ -13,11 +13,13 @@ import android.widget.TextView;
 
 import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.User;
-import com.example.sayyaf.homecare.accounts.User;
 import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
 
+
+/** Class to handle adapting lists for use by ListView
+ */
 public class RequestUserListAdapter extends ArrayAdapter<User> {
 
     private Activity activity;
@@ -37,12 +39,9 @@ public class RequestUserListAdapter extends ArrayAdapter<User> {
         this.ref = ref;
     }
 
-    // not work probably due to database read behavior
-    public void addUser(ArrayList<User> users){
-        this.users = users;
-        notifyDataSetChanged();
-    }
-
+    /* When in ListView, bind data of the user whose request is being shown in the current block
+        to the elements of that block
+     */
     @Override
     public View getView(int i, View v, ViewGroup viewGroup) {
 
@@ -64,6 +63,7 @@ public class RequestUserListAdapter extends ArrayAdapter<User> {
         username.setText(name);
         contactEmail.setText(requestEmail);
 
+        //On click, current user has chosen to accept friend request
         acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -72,6 +72,7 @@ public class RequestUserListAdapter extends ArrayAdapter<User> {
             }
         });
 
+        //On click, current user has chosen to decline friend request
         declineButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
