@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">HomeCare</string>
-    <string name="titletextcolour">#000000</string>
-    <string name="title_activity_maps">Map</string>
-    <string name="tracking_notif">Tracking, tap to cancel</string>
-    <string name="title_activity_tracking">Map</string>
+    <string name="title_activity_maps">Navigation</string>
+    <string name="tracking_title">Caregivers can view your location</string>
+    <string name="tracking_notification">Tap to disable tracking</string>
+    <string name="title_activity_tracking">Tracking</string>
 </resources>

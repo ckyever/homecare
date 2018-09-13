@@ -117,33 +117,31 @@ public class ContactUpdateActivity extends AppCompatActivity implements View.OnC
                     for (DataSnapshot snapshot : datasnapshot.getChildren()) {
                         if (snapshot.exists()) {
                             User user = snapshot.getValue(User.class);
-
-                            if (user == null ||
-                                    currentUser.getChatDatabase() == null
-                                    || !currentUser.getChatDatabase().containsKey(user.getId())) {
-                                Toast.makeText(ContactUpdateActivity.this, "User doesn't exist",
+                            if (user == null || (currentUser.getRequestsSent() == null &&
+                                    (currentUser.getFriends() == null ||
+                                            !currentUser.getFriends().containsKey(user.getId())))) {
+                                Toast.makeText(ContactUpdateActivity.this, "Friend doesn't exist",
                                         Toast.LENGTH_SHORT).show();
                                 return;
                             }
+                            if(currentUser.getRequestsSent()!= null &&
+                                    currentUser.getRequestsSent().containsKey(user.getId())) {
 
-                            if(currentUser.getRequestsSent() != null) {
-                                if(currentUser.getRequestsSent().containsKey(user.getId())) {
-                                    ref.child("User").child(uid)
-                                            .child("requestsSent")
-                                            .child(user.getId())
-                                            .removeValue();
+                                RequestController.removeRequest(ref, currentUser.getId(), user);
+                                RequestController.removeSentRequest(ref, currentUser.getId(), user);
 
-                                    ref.child("User").child(user.getId())
-                                            .child("requests")
-                                            .child(uid)
-                                            .removeValue();
-                                    return;
-                                }
+                                Toast.makeText(ContactUpdateActivity.this,
+                                        "Friend request is removed",
+                                        Toast.LENGTH_SHORT).show();
                             }
 
-                            RequestController.removeUser(ref, user.getId(), uid);
-                            backToMenu();
-                            return;
+                            else if(currentUser.getFriends().containsKey(user.getId())) {
+                                RequestController.removeUser(ref, currentUser, user);
+                                Toast.makeText(ContactUpdateActivity.this,
+                                        "Friend has been removed",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                            refresh();
                         }
                     }
                 }
@@ -191,15 +189,14 @@ public class ContactUpdateActivity extends AppCompatActivity implements View.OnC
                                 return;
                             }
                            
-                            RequestController.addSentRequest(ref.child("User"), user.getId(), user.getEmail(), uid);
-                            RequestController.addReceiverRequest(ref.child("User"), user.getId(), currentUser.getEmail(), uid);
+                            RequestController.addSentRequest(ref, user.getId(), user.getEmail(), uid);
+                            RequestController.addReceiverRequest(ref, user.getId(), currentUser.getEmail(), uid);
 
                             Toast.makeText(ContactUpdateActivity.this, "Request Sent",
                                     Toast.LENGTH_SHORT).show();
 
                             backToMenu();
 
-                            return;
                         }
                     }
 
@@ -225,11 +222,17 @@ public class ContactUpdateActivity extends AppCompatActivity implements View.OnC
         }
     }
 
-
     private void backToMenu(){
         Intent goToMenu = new Intent(ContactUpdateActivity.this, MainActivity.class);
         goToMenu.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(goToMenu);
+        finish();
+    }
+
+    private void refresh(){
+        Intent refreshCurrent = new Intent(ContactUpdateActivity.this, ContactUpdateActivity.class);
+        refreshCurrent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(refreshCurrent);
         finish();
     }
 

@@ -115,9 +115,11 @@ public class RequestActivity extends AppCompatActivity implements RequestsUserLi
                     if(!friends.isEmpty()){
                         onFriendsCallback(friends, currentUser);
                     } else{
-                        Toast.makeText(RequestActivity.this,
+
+                        // bug on keep showing the message
+                        /*Toast.makeText(RequestActivity.this,
                                 "No Pending Requests",
-                                Toast.LENGTH_SHORT).show();
+                                Toast.LENGTH_SHORT).show();*/
                     }
                 }
             }

@@ -37,6 +37,7 @@ public class RequestUserListAdapter extends ArrayAdapter<User> {
         this.ref = ref;
     }
 
+    // not work probably due to database read behavior
     public void addUser(ArrayList<User> users){
         this.users = users;
         notifyDataSetChanged();
@@ -48,6 +49,7 @@ public class RequestUserListAdapter extends ArrayAdapter<User> {
         LayoutInflater inflater = (LayoutInflater) activity.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
 
         v = inflater.inflate(R.layout.request_block, null);
+
         //getting view in row_data
         TextView username = (TextView) v.findViewById(R.id.usernameRequest);
         TextView contactEmail = (TextView) v.findViewById(R.id.contactEmailRequest);
@@ -57,6 +59,8 @@ public class RequestUserListAdapter extends ArrayAdapter<User> {
         String requestEmail = users.get(i).getEmail();
         String requestId = users.get(i).getId();
         String name = users.get(i).getName();
+
+        // display name and email
         username.setText(name);
         contactEmail.setText(requestEmail);
 
