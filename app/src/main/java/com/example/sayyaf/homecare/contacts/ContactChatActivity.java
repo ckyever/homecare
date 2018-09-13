@@ -147,7 +147,7 @@ public class ContactChatActivity extends AppCompatActivity implements View.OnCli
      * showResult: showing the query result from matching the starter
      */
     public void getFriends(ContactUserListCallback contactUserListCallback, String starter, boolean showResult){
-        ref.child("User").addValueEventListener(new ValueEventListener() {
+        ref.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
