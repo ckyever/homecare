@@ -15,6 +15,7 @@ import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class NetworkConnection extends BroadcastReceiver {
 
+    private static final int connectionID = 2;
     private boolean connection;
 
     public NetworkConnection(boolean connection){
@@ -22,6 +23,13 @@ public class NetworkConnection extends BroadcastReceiver {
     }
 
     public boolean getConnection(){ return connection; }
+
+    public void cancelNotification(Context context){
+        NotificationManager manager =
+                (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+
+        manager.cancel(connectionID);
+    }
 
     public void onReceive(Context context, Intent intent) {
         /*String action = intent.getAction();
@@ -69,7 +77,7 @@ public class NetworkConnection extends BroadcastReceiver {
                 NotificationManager manager =
                         (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
 
-                manager.notify(2, notificationbulider.build());
+                manager.notify(connectionID, notificationbulider.build());
 
                 connection = current_connection_state;
             }

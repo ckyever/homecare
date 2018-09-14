@@ -20,17 +20,12 @@ import com.example.sayyaf.homecare.R;
 public class NotificationService extends Service {
 
     private boolean connection = false;
+    private BroadcastReceiver connectivityreceiver;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
         super.onStartCommand(intent, flags, startId);
-
-        /*BroadcastReceiver connectivityreceiver = new NetworkConnection(connection);
-
-        registerReceiver(connectivityreceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
-
-        connection = ((NetworkConnection) connectivityreceiver).getConnection();*/
-
         return START_STICKY;
     }
 
@@ -59,7 +54,8 @@ public class NotificationService extends Service {
     }
 
     private void internetStateMonitor(){
-        BroadcastReceiver connectivityreceiver = new NetworkConnection(connection);
+
+        connectivityreceiver = new NetworkConnection(connection);
 
         registerReceiver(connectivityreceiver,
                 new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
@@ -68,9 +64,8 @@ public class NotificationService extends Service {
     }
 
     public void onDestroy() {
-        //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            //stopForeground(true); //true will remove notification
-        //}
+        super.onDestroy();
+        ((NetworkConnection) connectivityreceiver).cancelNotification(this);
     }
 
     @Nullable

@@ -40,17 +40,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-
-                this.startService(new Intent(this, NotificationService.class));
-            }
-            else {
-                this.startForegroundService(new Intent(this, NotificationService.class));
-            }
-
-
-            /*chatController = new ChatController(new User("", "", false),
-                    new User("Fake name", "", false), "");*/
+        // start foreground service
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            this.startService(new Intent(this, NotificationService.class));
+        }
+        else {
+            this.startForegroundService(new Intent(this, NotificationService.class));
+        }
 
         mMapButton = findViewById(R.id.mapButton);
         mMapButton.setOnClickListener(this);
@@ -105,7 +101,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void logout(){
         // logout from firebase
         FirebaseAuth.getInstance().signOut();
+
+        // stop foreground service
         this.stopService(new Intent(this, NotificationService.class));
+
         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
         startActivity(intent);
     }
