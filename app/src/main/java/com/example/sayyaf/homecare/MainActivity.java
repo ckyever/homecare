@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void mapLauncher() {
         String path = "User/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/caregiver";
         DatabaseReference mRef = FirebaseDatabase.getInstance().getReference(path);
-        mRef.addValueEventListener(new ValueEventListener() {
+        mRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {

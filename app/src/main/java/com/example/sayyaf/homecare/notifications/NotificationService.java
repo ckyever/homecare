@@ -2,7 +2,6 @@ package com.example.sayyaf.homecare.notifications;
 
 import android.app.Notification;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -15,6 +14,7 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 
+import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
 
 public class NotificationService extends Service {
@@ -35,7 +35,7 @@ public class NotificationService extends Service {
 
         serviceKeeper();
         internetStateMonitor();
-
+        listenToEmergencyMsg(this);
     }
 
     private void serviceKeeper(){
@@ -63,9 +63,16 @@ public class NotificationService extends Service {
         connection = ((NetworkConnection) connectivityreceiver).getConnection();
     }
 
+    private void listenToEmergencyMsg(Context context){
+        Intent intent = new Intent(context, EmergencyMsgListener.class);
+        context.startService(intent);
+    }
+
+
     public void onDestroy() {
         super.onDestroy();
-        ((NetworkConnection) connectivityreceiver).cancelNotification(this);
+        if(connectivityreceiver != null)
+            ((NetworkConnection) connectivityreceiver).cancelNotification(this);
     }
 
     @Nullable

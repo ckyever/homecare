@@ -85,6 +85,11 @@
             android:enabled="true"
             android:exported="true" />
 
+        <service
+            android:name=".notifications.EmergencyMsgListener"
+            android:enabled="true"
+            android:exported="true" />
+
         <activity
             android:name=".mapping.TrackingActivity"
             android:label="@string/title_activity_tracking"></activity>

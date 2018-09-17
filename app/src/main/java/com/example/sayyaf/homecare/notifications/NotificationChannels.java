@@ -4,11 +4,12 @@ import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.os.Build;
+import android.support.v4.app.NotificationCompat;
 
 public class NotificationChannels extends Application {
     private static String chatNotificationCH = "chat notification";
     private static String testForegroundCH = "foreground keeper";
-    // private static String emergencyCH = "emergency notification";
+    private static String emergencyCH = "emergency notification";
 
     @Override
     public void onCreate(){
@@ -20,7 +21,7 @@ public class NotificationChannels extends Application {
         return chatNotificationCH;
     }
     public static String getTestForegroundCH() { return testForegroundCH; }
-    // public static String getEmergencyCH(){ return emergencyCH; }
+    public static String getEmergencyCH(){ return emergencyCH; }
 
     private void createNotificationChannels() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -28,7 +29,7 @@ public class NotificationChannels extends Application {
             NotificationChannel channel1 = new NotificationChannel(
                     chatNotificationCH,
                     "CHAT",
-                    NotificationManager.IMPORTANCE_HIGH);
+                    NotificationManager.IMPORTANCE_DEFAULT);
 
             channel1.setDescription("This is a chat notification channal");
 
@@ -39,21 +40,22 @@ public class NotificationChannels extends Application {
 
             channel3.setDescription("This is a foreground keeper");
 
-            NotificationManager manager =
-                    (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
-            manager.createNotificationChannel(channel1);
-            manager.createNotificationChannel(channel3);
-
-
-            /*NotificationChannel channel2 = new NotificationChannel(
-                    chatNotificationCH,
+            NotificationChannel channel2 = new NotificationChannel(
+                    emergencyCH,
                     "EMERGENCY",
                     NotificationManager.IMPORTANCE_HIGH);
 
             channel2.setDescription("This is an emergency notification channal");
+            channel2.setLightColor(0xffff0000);
+            channel2.enableLights(true);
+            channel2.setLockscreenVisibility(NotificationCompat.VISIBILITY_PUBLIC);
 
-            manager.createNotificationChannel(channel2);*/
+            NotificationManager manager =
+                    (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+            manager.createNotificationChannel(channel1);
+            manager.createNotificationChannel(channel2);
+            manager.createNotificationChannel(channel3);
 
         }
     }
