@@ -33,6 +33,7 @@ public class CallScreenActivity extends BaseActivity {
     private TextView mCallDuration;
     private TextView mCallState;
     private TextView mCallerName;
+    String string;
 
     private class UpdateCallDurationTask extends TimerTask {
 
@@ -58,6 +59,8 @@ public class CallScreenActivity extends BaseActivity {
         mCallerName.setText(getIntent().getStringExtra("name"));
         mCallState = (TextView) findViewById(R.id.callState);
         Button endCallButton = (Button) findViewById(R.id.hangupButton);
+        string = getIntent().getStringExtra("name");
+
         endCallButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -72,7 +75,7 @@ public class CallScreenActivity extends BaseActivity {
         Call call = getSinchServiceInterface().getCall(mCallId);
         if (call != null) {
             call.addCallListener(new SinchCallListener());
-            mCallerName.setText(call.getRemoteUserId());
+            mCallerName.setText(string);
             mCallState.setText(call.getState().toString());
         } else {
             Log.e(TAG, "Started with invalid callId, aborting.");
@@ -131,7 +134,7 @@ public class CallScreenActivity extends BaseActivity {
             mAudioPlayer.stopProgressTone();
             setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
             String endMsg = "Call ended: " + call.getDetails().toString();
-            Toast.makeText(CallScreenActivity.this, endMsg, Toast.LENGTH_LONG).show();
+            Toast.makeText(CallScreenActivity.this, "User Unavailable", Toast.LENGTH_LONG).show();
             endCall();
         }
 
