@@ -4,17 +4,23 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.User;
+import com.example.sayyaf.homecare.communication.CallScreenActivity;
 import com.example.sayyaf.homecare.communication.ChatActivity;
+import com.example.sayyaf.homecare.communication.SinchService;
 import com.google.firebase.database.DatabaseReference;
+import com.sinch.android.rtc.MissingPermissionException;
+import com.sinch.android.rtc.calling.Call;
 
 import java.util.ArrayList;
 
@@ -24,6 +30,8 @@ public class ContactUserListAdapter extends ArrayAdapter<User>{
     private ArrayList<User> users;
     private User this_device;
     private DatabaseReference ref;
+    private SinchService.SinchServiceInterface sinchServiceInterface;
+    private Context context;
 
     public ContactUserListAdapter(@NonNull Context context, int resource, ArrayList<User> users,
                                   User this_device, DatabaseReference ref) {
@@ -78,6 +86,26 @@ public class ContactUserListAdapter extends ArrayAdapter<User>{
         return v;
 
 
+    }
+
+    private void callButtonClicked(String username) {
+
+        try {
+            Call call = sinchServiceInterface.callUser(username);
+            if (call == null) {
+                // Service failed for some reason, show a Toast and abort
+                Toast.makeText(context, "Service is not started. Try stopping the service and starting it again before "
+                        + "placing a call.", Toast.LENGTH_LONG).show();
+                return;
+            }
+            String callId = call.getCallId();
+            Intent callScreen = new Intent(context, CallScreenActivity.class);
+            callScreen.putExtra(SinchService.CALL_ID, callId);
+            callScreen.putExtra("name", username);
+            context.startActivity(callScreen);
+        } catch (MissingPermissionException e) {
+            //ActivityCompat.requestPermissions(context, new String[]{e.getRequiredPermission()}, 0);
+        }
 
     }
 }

@@ -35,6 +35,8 @@ public class ContactChatActivity extends AppCompatActivity implements View.OnCli
     private ArrayList<User> friends;
     private ListView contactView;
     private ContactUserListAdapter contactUserListAdapter;
+    public static final String TAG = ContactChatActivity.class.getSimpleName();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
