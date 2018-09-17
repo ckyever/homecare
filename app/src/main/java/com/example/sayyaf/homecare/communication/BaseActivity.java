@@ -18,7 +18,7 @@ import android.widget.Toast;
 
 public abstract class BaseActivity extends Activity implements ServiceConnection {
 
-    private SinchService.SinchServiceInterface mSinchServiceInterface;
+    public SinchService.SinchServiceInterface mSinchServiceInterface;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

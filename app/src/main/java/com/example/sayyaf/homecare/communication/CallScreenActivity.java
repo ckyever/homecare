@@ -55,9 +55,9 @@ public class CallScreenActivity extends BaseActivity {
         mAudioPlayer = new AudioPlayer(this);
         mCallDuration = (TextView) findViewById(R.id.callDuration);
         mCallerName = (TextView) findViewById(R.id.remoteUser);
+        mCallerName.setText(getIntent().getStringExtra("name"));
         mCallState = (TextView) findViewById(R.id.callState);
         Button endCallButton = (Button) findViewById(R.id.hangupButton);
-
         endCallButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {

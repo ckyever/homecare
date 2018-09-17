@@ -52,6 +52,10 @@
         </activity>
         <activity android:name=".requests.RequestActivity">
         </activity>
+        <activity android:name=".communication.CallScreenActivity">
+        </activity>
+        <activity android:name=".communication.IncomingVoiceCallActivity">
+        </activity>
         <activity
             android:name=".contacts.ContactChatActivity"
             android:windowSoftInputMode="stateHidden">

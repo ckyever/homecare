@@ -34,13 +34,16 @@ public class ContactUserListAdapter extends ArrayAdapter<User>{
     private Context context;
 
     public ContactUserListAdapter(@NonNull Context context, int resource, ArrayList<User> users,
-                                  User this_device, DatabaseReference ref) {
+                                  User this_device, DatabaseReference ref,
+                                  SinchService.SinchServiceInterface sinchServiceInterface ) {
         super(context, resource, users);
         //users = new ArrayList<User>();
         this.users = users;
         this.activity = (Activity)context;
         this.this_device = this_device;
         this.ref = ref;
+        this.sinchServiceInterface = sinchServiceInterface;
+        this.context = context;
     }
 
     // not work probably due to database read behavior (will probably be removed)
@@ -61,7 +64,7 @@ public class ContactUserListAdapter extends ArrayAdapter<User>{
         TextView username = (TextView) v.findViewById(R.id.username);
         TextView contactEmail = (TextView) v.findViewById(R.id.contactEmail);
         Button chatButton = (Button) v.findViewById(R.id.chatButton);
-
+        Button voiceCallButton = (Button) v.findViewById(R.id.VoiceCallButton);
         // display name and email
         username.setText(users.get(i).getName());
         contactEmail.setText(users.get(i).getEmail());
@@ -83,15 +86,23 @@ public class ContactUserListAdapter extends ArrayAdapter<User>{
             }
         });
 
+        voiceCallButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                callButtonClicked(users.get(i));
+            }
+        });
+
+
         return v;
 
 
     }
 
-    private void callButtonClicked(String username) {
+    private void callButtonClicked(User user) {
 
         try {
-            Call call = sinchServiceInterface.callUser(username);
+            Call call = sinchServiceInterface.callUser(user.getId());
             if (call == null) {
                 // Service failed for some reason, show a Toast and abort
                 Toast.makeText(context, "Service is not started. Try stopping the service and starting it again before "
@@ -101,7 +112,8 @@ public class ContactUserListAdapter extends ArrayAdapter<User>{
             String callId = call.getCallId();
             Intent callScreen = new Intent(context, CallScreenActivity.class);
             callScreen.putExtra(SinchService.CALL_ID, callId);
-            callScreen.putExtra("name", username);
+            callScreen.putExtra("name", user.getName());
+            callScreen.putExtra("id", user.getId());
             context.startActivity(callScreen);
         } catch (MissingPermissionException e) {
             //ActivityCompat.requestPermissions(context, new String[]{e.getRequiredPermission()}, 0);

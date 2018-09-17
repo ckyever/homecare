@@ -27,8 +27,8 @@ import android.os.RemoteException;
 
 public class SinchService extends Service {
 
-    private static final String APP_KEY = "enter-application-key";
-    private static final String APP_SECRET = "enter-application-secret";
+    private static final String APP_KEY = "6e708d90-e302-4740-a3ab-5a44b08465a7";
+    private static final String APP_SECRET = "8BTddItnUUO9NxqUQZV2dQ==";
     private static final String ENVIRONMENT = "sandbox.sinch.com";
 
     public static final int MESSAGE_PERMISSIONS_NEEDED = 1;

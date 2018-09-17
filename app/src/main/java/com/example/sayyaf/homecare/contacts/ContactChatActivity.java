@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.User;
+import com.example.sayyaf.homecare.communication.BaseActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -23,7 +24,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-public class ContactChatActivity extends AppCompatActivity implements View.OnClickListener {
+public class ContactChatActivity extends BaseActivity implements View.OnClickListener {
 
     private DatabaseReference ref;
     private User this_device;
@@ -204,7 +205,7 @@ public class ContactChatActivity extends AppCompatActivity implements View.OnCli
     private void resetView(ArrayList<User> friends){
         contactUserListAdapter =
                 new ContactUserListAdapter(ContactChatActivity.this, R.layout.contact_block,
-                        friends, this_device, ref);
+                        friends, this_device, ref, getSinchServiceInterface());
 
         contactView.setAdapter(contactUserListAdapter);
     }
