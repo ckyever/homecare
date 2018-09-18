@@ -76,6 +76,7 @@ public class NetworkConnection extends BroadcastReceiver {
                             .setContentTitle(state)
                             .setContentText(content)
                             .setColor(color)
+                            .setVisibility(Notification.VISIBILITY_PUBLIC)
                             .setDefaults(Notification.DEFAULT_ALL)
                             .setCategory(NotificationCompat.CATEGORY_MESSAGE);
 

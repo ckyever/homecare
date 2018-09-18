@@ -2,6 +2,7 @@ package com.example.sayyaf.homecare.notifications;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -41,13 +42,19 @@ public class NotificationService extends Service {
     private void serviceKeeper(){
         NotificationCompat.Builder notificationbulider = null;
 
+        Intent intent = new Intent(this, MainActivity.class);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
         notificationbulider =
                 new NotificationCompat.Builder(this, NotificationChannels.getTestForegroundCH())
                         .setSmallIcon(R.drawable.ic_launcher_background)
                         .setContentTitle("Welcome to HomeCare")
                         .setContentText("You have logged in")
                         .setDefaults(Notification.DEFAULT_ALL)
+                        .setVisibility(Notification.VISIBILITY_PUBLIC)
                         .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                        .setContentIntent(pendingIntent)
                         .setOngoing(true);
 
         startForeground(3, notificationbulider.build());

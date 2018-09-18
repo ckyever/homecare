@@ -3,6 +3,7 @@ package com.example.sayyaf.homecare.notifications;
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
@@ -10,8 +11,10 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.text.format.DateFormat;
 
+import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.communication.ChatMessage;
+import com.example.sayyaf.homecare.contacts.ContactChatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -86,6 +89,10 @@ public class EmergencyMsgListener extends IntentService {
     private void setNotification(String name, long time){
         NotificationCompat.Builder notificationbulider = null;
 
+        Intent intent = new Intent(this, ContactChatActivity.class);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
         notificationbulider =
                 new NotificationCompat.Builder(EmergencyMsgListener.this,
                         NotificationChannels.getEmergencyCH())
@@ -95,6 +102,8 @@ public class EmergencyMsgListener extends IntentService {
                                 time))
                         .setColor(0xffff0000)
                         .setLights(0xffff0000, 250, 10000)
+                        .setVisibility(Notification.VISIBILITY_PUBLIC)
+                        .setContentIntent(pendingIntent)
                         .setDefaults(Notification.DEFAULT_ALL)
                         .setCategory(NotificationCompat.CATEGORY_MESSAGE);
 

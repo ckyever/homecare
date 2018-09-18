@@ -46,9 +46,12 @@ public class NotificationChannels extends Application {
                     NotificationManager.IMPORTANCE_HIGH);
 
             channel2.setDescription("This is an emergency notification channal");
-            channel2.setLightColor(0xffff0000);
+
             channel2.enableLights(true);
+            channel2.setLightColor(0xffff0000);
+
             channel2.setLockscreenVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+            channel2.enableVibration(true);
 
             NotificationManager manager =
                     (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
