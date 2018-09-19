@@ -1,27 +1,27 @@
 package com.example.sayyaf.homecare.mapping;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
+import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sayyaf.homecare.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.GeoDataClient;
+import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
@@ -29,6 +29,7 @@ import com.google.android.gms.maps.GoogleMap.OnMyLocationClickListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -45,21 +46,25 @@ public class MapsActivity extends AppCompatActivity implements OnMyLocationButto
     private static final String COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_REQUEST_CODE = 1000;
     private static final float STREET_ZOOM = 15;
+    private static final LatLngBounds LAT_LNG_BOUNDS =
+            new LatLngBounds(new LatLng(-90, -180), new LatLng(90, 180));
 
     private GoogleMap mMap;
     private Boolean mLocationPermissionsGranted = false;
     private FusedLocationProviderClient mFusedLocationClient;
     private Location currentLocation;
     private LatLng currentLatLng;
+    private PlaceAutocompleteAdapter mPlaceAutocompleteAdapter;
+    private GeoDataClient mGeoDataClient = Places.getGeoDataClient(this);
 
-    private EditText mInputSearchEditText;
+    private AutoCompleteTextView mInputSearchTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        mInputSearchEditText = (EditText) findViewById(R.id.inputSearch);
+        mInputSearchTextView = (AutoCompleteTextView) findViewById(R.id.inputSearch);
 
         // Get location permissions then initialise the map
         getLocationPermission();
@@ -75,9 +80,11 @@ public class MapsActivity extends AppCompatActivity implements OnMyLocationButto
         mapFragment.getMapAsync(this);
     }
 
+    /*
     private void startTrackingService() {
         startService(new Intent(this, com.example.sayyaf.homecare.mapping.TrackingService.class));
     }
+    */
 
     /**
      * Attempts to get location permission of the device then initialise the map, if not a
@@ -94,7 +101,7 @@ public class MapsActivity extends AppCompatActivity implements OnMyLocationButto
 
                 // All permissions granted so initialise the map and start tracking service
                 initMap();
-                startTrackingService();
+                //startTrackingService();
             }
             else {
                 ActivityCompat.requestPermissions(this, permissions, LOCATION_REQUEST_CODE);
@@ -122,7 +129,7 @@ public class MapsActivity extends AppCompatActivity implements OnMyLocationButto
 
                 // So now we can initialise the map and initialise tracking service
                 initMap();
-                startTrackingService();
+                //startTrackingService();
             }
         }
     }
@@ -206,8 +213,12 @@ public class MapsActivity extends AppCompatActivity implements OnMyLocationButto
     private void initialiseSearch() {
         // Search the location that has been input in the search bar
 
-        mInputSearchEditText.setImeActionLabel("Search", EditorInfo.IME_ACTION_SEARCH);
-        mInputSearchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        mPlaceAutocompleteAdapter = new PlaceAutocompleteAdapter
+                (this, mGeoDataClient, LAT_LNG_BOUNDS, null);
+
+        mInputSearchTextView.setAdapter(mPlaceAutocompleteAdapter);
+        mInputSearchTextView.setImeActionLabel("Search", EditorInfo.IME_ACTION_SEARCH);
+        mInputSearchTextView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
@@ -221,7 +232,7 @@ public class MapsActivity extends AppCompatActivity implements OnMyLocationButto
     private void geoLocate() {
         // Place a marker and move the camera to the location that has been searched
 
-        String searchString = mInputSearchEditText.getText().toString();
+        String searchString = mInputSearchTextView.getText().toString();
 
         Geocoder geocoder = new Geocoder(MapsActivity.this);
         List<Address> list = new ArrayList<>();
@@ -243,4 +254,18 @@ public class MapsActivity extends AppCompatActivity implements OnMyLocationButto
             mMap.addMarker(markerOptions);
         }
     }
+/*
+    private AdapterView.OnItemClickListener mAutocompleteClickListener =
+            new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                    final AutocompletePrediction item = mPlaceAutocompleteAdapter.getItem(position);
+                    final String placeId = item.getPlaceId();
+
+                    Task<PlaceBufferResponse> placeResult = mGeoDataClient.getPlaceById(placeId);
+
+                }
+            }
+            */
 }
