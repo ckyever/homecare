@@ -8,7 +8,7 @@ import android.support.v4.app.NotificationCompat;
 
 public class NotificationChannels extends Application {
     private static String chatNotificationCH = "chat notification";
-    private static String testForegroundCH = "foreground keeper";
+    private static String foregroundCH = "foreground keeper";
     private static String emergencyCH = "emergency notification";
 
     @Override
@@ -20,7 +20,7 @@ public class NotificationChannels extends Application {
     public static String getChatNotificationCH(){
         return chatNotificationCH;
     }
-    public static String getTestForegroundCH() { return testForegroundCH; }
+    public static String getForegroundCH() { return foregroundCH; }
     public static String getEmergencyCH(){ return emergencyCH; }
 
     private void createNotificationChannels() {
@@ -29,14 +29,14 @@ public class NotificationChannels extends Application {
             NotificationChannel channel1 = new NotificationChannel(
                     chatNotificationCH,
                     "CHAT",
-                    NotificationManager.IMPORTANCE_DEFAULT);
+                    NotificationManager.IMPORTANCE_HIGH);
 
             channel1.setDescription("This is a chat notification channal");
 
             NotificationChannel channel3 = new NotificationChannel(
-                    testForegroundCH,
+                    foregroundCH,
                     "KEEP",
-                    NotificationManager.IMPORTANCE_HIGH);
+                    NotificationManager.IMPORTANCE_DEFAULT);
 
             channel3.setDescription("This is a foreground keeper");
 

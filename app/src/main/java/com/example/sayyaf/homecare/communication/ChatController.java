@@ -129,7 +129,7 @@ public class ChatController {
                     this_device.getName());
 
             // update time that user interacted with message
-            lastMsgTime = ct.getMessageTime();
+            // lastMsgTime = ct.getMessageTime();
 
             chatDB.push().setValue(ct);
 

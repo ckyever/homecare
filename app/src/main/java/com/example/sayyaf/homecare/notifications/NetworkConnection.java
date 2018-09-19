@@ -15,7 +15,7 @@ import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class NetworkConnection extends BroadcastReceiver {
 
-    private static final int connectionID = 2;
+    private static final int connectionID = 20;
 
     private boolean connection;
 
@@ -33,9 +33,7 @@ public class NetworkConnection extends BroadcastReceiver {
     }
 
     public void onReceive(Context context, Intent intent) {
-        /*String action = intent.getAction();
 
-        if ("android.net.conn.CONNECTIVITY_CHANGE".equals(action)) {*/
         boolean current_connection_state;
 
         ConnectivityManager connectivityManager
@@ -71,7 +69,7 @@ public class NetworkConnection extends BroadcastReceiver {
 
             notificationbulider =
                     new NotificationCompat.Builder(context,
-                            NotificationChannels.getTestForegroundCH())
+                            NotificationChannels.getChatNotificationCH())
                             .setSmallIcon(R.drawable.ic_launcher_background)
                             .setContentTitle(state)
                             .setContentText(content)

@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
 import com.example.sayyaf.homecare.notifications.NotificationService;
 import com.example.sayyaf.homecare.requests.RequestActivity;
 import com.example.sayyaf.homecare.accounts.LoginActivity;
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button mContactsUpdate;
     Button mFriendRequests;
     Button logoutButton;
+    Button helpButton;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +63,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mFriendRequests = (Button) findViewById(R.id.friendRequests);
         mFriendRequests.setOnClickListener(this);
+
+        helpButton = (Button) findViewById(R.id.optionHelp);
+        helpButton.setOnClickListener(this);
 
     }
 
@@ -96,6 +101,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(intent);
             finish();
         }
+
+        if(view == helpButton){
+            EmergencyCallActivity.setBackToActivity(MainActivity.class);
+
+            Intent intent = new Intent(MainActivity.this, EmergencyCallActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        }
     }
 
     private void logout(){
@@ -104,9 +118,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // stop foreground service
         this.stopService(new Intent(this, NotificationService.class));
-
         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
+
     }
 
     /*@Override
@@ -133,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }*/
 
     public void onBackPressed() {
-        finish();
+        super.onBackPressed();
     }
 
     // Launches the TrackingActivity if current user is a caregiver and the MapsActivity if current

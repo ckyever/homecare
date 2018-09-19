@@ -15,6 +15,7 @@ import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.communication.ChatMessage;
 import com.example.sayyaf.homecare.contacts.ContactChatActivity;
+import com.example.sayyaf.homecare.mapping.TrackingActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -28,14 +29,29 @@ import java.util.ArrayList;
 public class EmergencyMsgListener extends IntentService {
 
     private int emergencyID;
-    private final int max_emergency_notifications = 5;
-
-    private FirebaseUser user_this_device;
+    private ArrayList<Integer> emergencyIDs;
+    private static Query emergencyRef;
+    private static ValueEventListener notificationListener;
 
     public EmergencyMsgListener(){
         super("EmergencyMsgListener");
-        emergencyID = 10;
-        user_this_device = FirebaseAuth.getInstance().getCurrentUser();
+        emergencyID = 20;
+
+        emergencyRef = FirebaseDatabase.getInstance()
+                .getReference("EmergencyMsg")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+        notificationListener = setUpnotificationListener();
+
+        emergencyIDs = new ArrayList<Integer>();
+    }
+
+    public static Query getEmergencyRef(){
+        return emergencyRef;
+    }
+
+    public static ValueEventListener getNotificationListener(){
+        return notificationListener;
     }
 
     @Override
@@ -43,12 +59,30 @@ public class EmergencyMsgListener extends IntentService {
         listenToEmergencyMsg();
     }
 
+    @Override
+    public void onDestroy() {
+
+        //stop service
+
+        stopSelf();
+        super.onDestroy();
+    }
+
+
     private void listenToEmergencyMsg(){
-        String uid = user_this_device.getUid();
 
-        Query emergencyRef = FirebaseDatabase.getInstance().getReference("EmergencyMsg").child(uid);
+        emergencyRef = FirebaseDatabase.getInstance()
+                .getReference("EmergencyMsg")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
 
-        emergencyRef.addValueEventListener(new ValueEventListener() {
+        notificationListener = setUpnotificationListener();
+
+        emergencyRef.addValueEventListener(notificationListener);
+
+    }
+
+    private ValueEventListener setUpnotificationListener(){
+        return new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
@@ -73,7 +107,8 @@ public class EmergencyMsgListener extends IntentService {
 
                     FirebaseDatabase.getInstance()
                             .getReference("EmergencyMsg")
-                            .child(uid).removeValue();
+                            .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                            .removeValue();
 
                 }
             }
@@ -82,16 +117,18 @@ public class EmergencyMsgListener extends IntentService {
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-        });
-
+        };
     }
 
     private void setNotification(String name, long time){
         NotificationCompat.Builder notificationbulider = null;
 
-        Intent intent = new Intent(this, ContactChatActivity.class);
+        Intent goToContact = new Intent(this, ContactChatActivity.class);
+        PendingIntent pendingGoToContact = PendingIntent.getActivity(this, 0, goToContact, 0);
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+        Intent goToTracking = new Intent(this, TrackingActivity.class);
+        PendingIntent pendingGoToTracking = PendingIntent.getActivity(this, 0, goToTracking, 0);
+
 
         notificationbulider =
                 new NotificationCompat.Builder(EmergencyMsgListener.this,
@@ -103,20 +140,19 @@ public class EmergencyMsgListener extends IntentService {
                         .setColor(0xffff0000)
                         .setLights(0xffff0000, 250, 10000)
                         .setVisibility(Notification.VISIBILITY_PUBLIC)
-                        .setContentIntent(pendingIntent)
                         .setDefaults(Notification.DEFAULT_ALL)
-                        .setCategory(NotificationCompat.CATEGORY_MESSAGE);
+                        .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                        .addAction(R.drawable.ic_launcher_background, "Go to Contact", pendingGoToContact)
+                        .addAction(R.drawable.ic_launcher_background, "Go to Tracking", pendingGoToTracking);
 
         NotificationManager manager =
                 (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         manager.notify(emergencyID, notificationbulider.build());
 
-        if(emergencyID <= max_emergency_notifications){
-            emergencyID = 10;
-        }
-        else
-            emergencyID--;
+        emergencyIDs.add(emergencyID);
+
+        emergencyID++;
     }
 
 

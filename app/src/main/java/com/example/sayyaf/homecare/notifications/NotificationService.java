@@ -17,6 +17,7 @@ import android.support.v4.app.NotificationCompat;
 
 import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
+import com.example.sayyaf.homecare.contacts.ContactChatActivity;
 
 public class NotificationService extends Service {
 
@@ -27,6 +28,7 @@ public class NotificationService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         super.onStartCommand(intent, flags, startId);
+
         return START_STICKY;
     }
 
@@ -35,19 +37,22 @@ public class NotificationService extends Service {
         super.onCreate();
 
         serviceKeeper();
+
         internetStateMonitor();
+        // stopListenToEmergencyMsg(this);
         listenToEmergencyMsg(this);
+
     }
+
 
     private void serviceKeeper(){
         NotificationCompat.Builder notificationbulider = null;
 
-        Intent intent = new Intent(this, MainActivity.class);
-
+        Intent intent = new Intent(this, ContactChatActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
         notificationbulider =
-                new NotificationCompat.Builder(this, NotificationChannels.getTestForegroundCH())
+                new NotificationCompat.Builder(this, NotificationChannels.getForegroundCH())
                         .setSmallIcon(R.drawable.ic_launcher_background)
                         .setContentTitle("Welcome to HomeCare")
                         .setContentText("You have logged in")
@@ -71,15 +76,34 @@ public class NotificationService extends Service {
     }
 
     private void listenToEmergencyMsg(Context context){
+
         Intent intent = new Intent(context, EmergencyMsgListener.class);
         context.startService(intent);
     }
 
+    private void stopListenToEmergencyMsg(Context context){
+        Intent intent = new Intent(context, EmergencyMsgListener.class);
+        context.stopService(intent);
+    }
 
+    @Override
     public void onDestroy() {
-        super.onDestroy();
-        if(connectivityreceiver != null)
+
+        if(connectivityreceiver != null){
             ((NetworkConnection) connectivityreceiver).cancelNotification(this);
+            unregisterReceiver(connectivityreceiver);
+        }
+
+        stopListenToEmergencyMsg(this);
+        EmergencyMsgListener.getEmergencyRef().removeEventListener(EmergencyMsgListener.getNotificationListener());
+
+        NotificationManager manager =
+                (NotificationManager) this.getSystemService(NOTIFICATION_SERVICE);
+
+        manager.cancelAll();
+
+        stopSelf();
+        super.onDestroy();
     }
 
     @Nullable
