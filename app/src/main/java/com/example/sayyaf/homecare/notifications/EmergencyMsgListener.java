@@ -29,29 +29,16 @@ import java.util.ArrayList;
 public class EmergencyMsgListener extends IntentService {
 
     private int emergencyID;
-    private ArrayList<Integer> emergencyIDs;
     private static Query emergencyRef;
     private static ValueEventListener notificationListener;
 
     public EmergencyMsgListener(){
         super("EmergencyMsgListener");
-        emergencyID = 20;
-
-        emergencyRef = FirebaseDatabase.getInstance()
-                .getReference("EmergencyMsg")
-                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-
-        notificationListener = setUpnotificationListener();
-
-        emergencyIDs = new ArrayList<Integer>();
     }
 
-    public static Query getEmergencyRef(){
-        return emergencyRef;
-    }
-
-    public static ValueEventListener getNotificationListener(){
-        return notificationListener;
+    // stop tracking emergency message mailbox
+    public static void stopListening(){
+        emergencyRef.removeEventListener(notificationListener);
     }
 
     @Override
@@ -63,25 +50,24 @@ public class EmergencyMsgListener extends IntentService {
     public void onDestroy() {
 
         //stop service
-
         stopSelf();
         super.onDestroy();
     }
 
-
+    // start tracking emergency message mailbox
     private void listenToEmergencyMsg(){
+        emergencyID = 10;
 
         emergencyRef = FirebaseDatabase.getInstance()
                 .getReference("EmergencyMsg")
                 .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
 
-        notificationListener = setUpnotificationListener();
+        notificationListener = setUpNotificationListener();
 
         emergencyRef.addValueEventListener(notificationListener);
-
     }
 
-    private ValueEventListener setUpnotificationListener(){
+    private ValueEventListener setUpNotificationListener(){
         return new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -94,8 +80,6 @@ public class EmergencyMsgListener extends IntentService {
 
                         ChatMessage ct = s.getValue(ChatMessage.class);
 
-                        //setNotification(ct.getMessageSender(), ct.getMessageTime());
-
                         senders.add(ct.getMessageSender());
                         times.add(ct.getMessageTime());
 
@@ -105,6 +89,7 @@ public class EmergencyMsgListener extends IntentService {
                         setNotification(senders.get(i), times.get(i));
                     }
 
+                    // remove calls as user receive the emergency calls
                     FirebaseDatabase.getInstance()
                             .getReference("EmergencyMsg")
                             .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
@@ -150,8 +135,7 @@ public class EmergencyMsgListener extends IntentService {
 
         manager.notify(emergencyID, notificationbulider.build());
 
-        emergencyIDs.add(emergencyID);
-
+        // increment id to avoid override previous notification
         emergencyID++;
     }
 

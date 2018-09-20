@@ -21,8 +21,8 @@ import com.example.sayyaf.homecare.contacts.ContactChatActivity;
 
 public class NotificationService extends Service {
 
-    private boolean connection = false;
-    private BroadcastReceiver connectivityreceiver;
+    // private boolean connectionState;
+    private BroadcastReceiver connectivityReceiver;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -36,19 +36,22 @@ public class NotificationService extends Service {
     public void onCreate() {
         super.onCreate();
 
+        // keep the app on foreground
         serviceKeeper();
 
+        // start tracking network connection state
         internetStateMonitor();
-        // stopListenToEmergencyMsg(this);
+
+        // start tracking if emergency message sent to this user
         listenToEmergencyMsg(this);
 
     }
 
-
+    // keep the app on foreground, enable services run even with app is closed (if logged in)
     private void serviceKeeper(){
         NotificationCompat.Builder notificationbulider = null;
 
-        Intent intent = new Intent(this, ContactChatActivity.class);
+        Intent intent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
         notificationbulider =
@@ -65,42 +68,48 @@ public class NotificationService extends Service {
         startForeground(3, notificationbulider.build());
     }
 
+    // start tracking network connection state
     private void internetStateMonitor(){
 
-        connectivityreceiver = new NetworkConnection(connection);
+        connectivityReceiver = new NetworkConnection();
 
-        registerReceiver(connectivityreceiver,
+        registerReceiver(connectivityReceiver,
                 new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
-
-        connection = ((NetworkConnection) connectivityreceiver).getConnection();
     }
 
+    // start tracking if emergency message sent to this user
     private void listenToEmergencyMsg(Context context){
 
         Intent intent = new Intent(context, EmergencyMsgListener.class);
         context.startService(intent);
     }
 
-    private void stopListenToEmergencyMsg(Context context){
+    /*private void stopListenToEmergencyMsg(Context context){
         Intent intent = new Intent(context, EmergencyMsgListener.class);
         context.stopService(intent);
+    }*/
+
+    // clean up all the notifications
+    private void notificationCleanUp(){
+        NotificationManager manager =
+                (NotificationManager) this.getSystemService(NOTIFICATION_SERVICE);
+
+        manager.cancelAll();
     }
 
     @Override
     public void onDestroy() {
 
-        if(connectivityreceiver != null){
-            ((NetworkConnection) connectivityreceiver).cancelNotification(this);
-            unregisterReceiver(connectivityreceiver);
-        }
+        // stop tracking network connection state
+        if(connectivityReceiver != null) unregisterReceiver(connectivityReceiver);
 
-        stopListenToEmergencyMsg(this);
-        EmergencyMsgListener.getEmergencyRef().removeEventListener(EmergencyMsgListener.getNotificationListener());
+        // stopListenToEmergencyMsg(this);
 
-        NotificationManager manager =
-                (NotificationManager) this.getSystemService(NOTIFICATION_SERVICE);
+        // stop tracking if emergency message sent to this user
+        EmergencyMsgListener.stopListening();
 
-        manager.cancelAll();
+        // clean up all the notifications
+        notificationCleanUp();
 
         stopSelf();
         super.onDestroy();

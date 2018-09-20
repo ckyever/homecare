@@ -27,15 +27,6 @@ public class LaunchActivity extends AppCompatActivity {
             // not signed in
             Intent goToLogIn = new Intent(this, LoginActivity.class);
             goToLogIn.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-
-            // start foreground service
-            /*if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                this.startService(new Intent(this, NotificationService.class));
-            }
-            else {
-                this.startForegroundService(new Intent(this, NotificationService.class));
-            }*/
-
             startActivity(goToLogIn);
             finish();
         }

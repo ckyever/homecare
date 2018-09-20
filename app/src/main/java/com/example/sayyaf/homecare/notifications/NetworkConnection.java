@@ -19,19 +19,16 @@ public class NetworkConnection extends BroadcastReceiver {
 
     private boolean connection;
 
-    public NetworkConnection(boolean connection){
+    /*public NetworkConnection(boolean connection){
         this.connection = connection;
-    }
+    }*/
+
+    // default as not connected
+    public NetworkConnection() { connection = false; }
 
     public boolean getConnection(){ return connection; }
 
-    public void cancelNotification(Context context){
-        NotificationManager manager =
-                (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
-
-        manager.cancel(connectionID);
-    }
-
+    @Override
     public void onReceive(Context context, Intent intent) {
 
         boolean current_connection_state;
@@ -39,6 +36,7 @@ public class NetworkConnection extends BroadcastReceiver {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+
         if (activeNetwork != null) {
             // connected to the internet
             current_connection_state = true;
@@ -47,11 +45,10 @@ public class NetworkConnection extends BroadcastReceiver {
             current_connection_state = false;
         }
 
-        // state changed
+        // detect state change
         if(current_connection_state != connection){
 
-            String state;
-            String content;
+            String state, content;
             int color;
 
             if(current_connection_state){
@@ -65,28 +62,39 @@ public class NetworkConnection extends BroadcastReceiver {
                 color = 0xff0000ff;
             }
 
-            NotificationCompat.Builder notificationbulider = null;
+            // inform user about the connection change
+            showStateChange(context, state, content, color);
 
-            notificationbulider =
-                    new NotificationCompat.Builder(context,
-                            NotificationChannels.getChatNotificationCH())
-                            .setSmallIcon(R.drawable.ic_launcher_background)
-                            .setContentTitle(state)
-                            .setContentText(content)
-                            .setColor(color)
-                            .setVisibility(Notification.VISIBILITY_PUBLIC)
-                            .setDefaults(Notification.DEFAULT_ALL)
-                            .setCategory(NotificationCompat.CATEGORY_MESSAGE);
-
-            NotificationManager manager =
-                    (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
-
-            manager.notify(connectionID, notificationbulider.build());
-
+            // set to detected connection state
             connection = current_connection_state;
+
         }
 
-        //}
+    }
+
+    /* inform user about the connection change
+     * state: either connected or not connected to the internet
+     * content: description of services under current connection state
+     */
+    private void showStateChange(Context context, String state, String content, int color){
+        NotificationCompat.Builder notificationbulider = null;
+
+        notificationbulider =
+                new NotificationCompat.Builder(context,
+                        NotificationChannels.getChatNotificationCH())
+                        .setSmallIcon(R.drawable.ic_launcher_background)
+                        .setContentTitle(state)
+                        .setContentText(content)
+                        .setColor(color)
+                        .setVisibility(Notification.VISIBILITY_PUBLIC)
+                        .setDefaults(Notification.DEFAULT_ALL)
+                        .setCategory(NotificationCompat.CATEGORY_MESSAGE);
+
+        NotificationManager manager =
+                (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+
+        manager.notify(connectionID, notificationbulider.build());
+
     }
 
 }

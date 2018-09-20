@@ -3,6 +3,11 @@ package com.example.sayyaf.homecare.notifications;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
@@ -36,6 +41,7 @@ public class EmergencyCallActivity extends AppCompatActivity implements View.OnC
 
     private User this_device;
 
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_emergency);
@@ -50,14 +56,22 @@ public class EmergencyCallActivity extends AppCompatActivity implements View.OnC
 
     }
 
+    @Override
     protected void onStart(){
         super.onStart();
 
         getCurrentUser();
         timer = setTime(this, 5);
         timer.start();
+
     }
 
+    // set up returning path for this activity
+    public static void setBackToActivity(Class entryActivity){
+        backToActivity = new ActivityKeeper(entryActivity);
+    }
+
+    @Override
     protected void onPause(){
         if(timer != null){
             timer.cancel();
@@ -66,54 +80,48 @@ public class EmergencyCallActivity extends AppCompatActivity implements View.OnC
         super.onPause();
     }
 
-    public static void setBackToActivity(Class entryActivity){
-        backToActivity = new ActivityKeeper(entryActivity);
-    }
-
     @Override
     public void onClick(View v) {
         if(v == cancelCall){
-            if(timer != null){
-                timer.cancel();
-                timer = null;
-            }
-
-            Toast.makeText(EmergencyCallActivity.this,
-                    "Emergency Notification is cancelled", Toast.LENGTH_SHORT).show();
-
-            backToLastActivity();
+            cancelEmergencyCall();
         }
     }
 
     @Override
     public void onBackPressed() {
-        if(timer != null) timer.cancel();
-
-        Toast.makeText(EmergencyCallActivity.this,
-                "Emergency Notification is cancelled", Toast.LENGTH_SHORT).show();
-
-        backToLastActivity();
+        cancelEmergencyCall();
     }
 
     private CountDownTimer setTime(Context context, long seconds){
         return new CountDownTimer(seconds * 1000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
+                // show the remaining time for notification to send
                 timeLeft.setText("" + millisUntilFinished / 1000);
             }
 
             @Override
             public void onFinish() {
+                // send emergency contents
                 fireEmergencyNotification();
             }
         };
     }
 
     private void backToLastActivity(){
-        Intent intent = new Intent(EmergencyCallActivity.this, backToActivity.getBackPressActivityClass());
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
+        backToActivity.returnToActivity(this);
+    }
+
+    private void cancelEmergencyCall(){
+        if(timer != null){
+            timer.cancel();
+            timer = null;
+        }
+
+        Toast.makeText(EmergencyCallActivity.this,
+                "Emergency Notification is cancelled", Toast.LENGTH_SHORT).show();
+
+        backToLastActivity();
     }
 
     private void getCurrentUser(){
@@ -146,6 +154,7 @@ public class EmergencyCallActivity extends AppCompatActivity implements View.OnC
 
         ChatMessage ct = new ChatMessage("", this_device.getName());
 
+        // send emergency contents to all friends
         for(String friendId : this_device.getFriends().keySet()){
             sendNotification(friendId, ct);
         }

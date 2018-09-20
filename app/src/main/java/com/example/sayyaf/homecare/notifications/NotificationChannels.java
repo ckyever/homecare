@@ -36,7 +36,7 @@ public class NotificationChannels extends Application {
             NotificationChannel channel3 = new NotificationChannel(
                     foregroundCH,
                     "KEEP",
-                    NotificationManager.IMPORTANCE_DEFAULT);
+                    NotificationManager.IMPORTANCE_LOW);
 
             channel3.setDescription("This is a foreground keeper");
 
