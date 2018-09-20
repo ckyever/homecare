@@ -1,6 +1,7 @@
 package com.example.sayyaf.homecare.mapping;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -12,7 +13,10 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,7 +24,10 @@ import android.widget.Toast;
 import com.example.sayyaf.homecare.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.AutocompletePrediction;
 import com.google.android.gms.location.places.GeoDataClient;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.PlaceBufferResponse;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -55,7 +62,8 @@ public class MapsActivity extends AppCompatActivity implements OnMyLocationButto
     private Location currentLocation;
     private LatLng currentLatLng;
     private PlaceAutocompleteAdapter mPlaceAutocompleteAdapter;
-    private GeoDataClient mGeoDataClient = Places.getGeoDataClient(this);
+    private GeoDataClient mGeoDataClient;
+    private PlaceInfo mPlace;
 
     private AutoCompleteTextView mInputSearchTextView;
 
@@ -210,18 +218,27 @@ public class MapsActivity extends AppCompatActivity implements OnMyLocationButto
         return false;
     }
 
+    private void hideKeyboard() {
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+
     private void initialiseSearch() {
         // Search the location that has been input in the search bar
-
+        mGeoDataClient = Places.getGeoDataClient(this);
         mPlaceAutocompleteAdapter = new PlaceAutocompleteAdapter
                 (this, mGeoDataClient, LAT_LNG_BOUNDS, null);
-
+        mInputSearchTextView.setOnItemClickListener(mAutocompleteClickListener);
         mInputSearchTextView.setAdapter(mPlaceAutocompleteAdapter);
         mInputSearchTextView.setImeActionLabel("Search", EditorInfo.IME_ACTION_SEARCH);
         mInputSearchTextView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    hideKeyboard();
                     geoLocate();
                 }
                 return false;
@@ -254,7 +271,7 @@ public class MapsActivity extends AppCompatActivity implements OnMyLocationButto
             mMap.addMarker(markerOptions);
         }
     }
-/*
+
     private AdapterView.OnItemClickListener mAutocompleteClickListener =
             new AdapterView.OnItemClickListener() {
                 @Override
@@ -263,9 +280,40 @@ public class MapsActivity extends AppCompatActivity implements OnMyLocationButto
                     final AutocompletePrediction item = mPlaceAutocompleteAdapter.getItem(position);
                     final String placeId = item.getPlaceId();
 
+                    // Get selected location from autocomplete
                     Task<PlaceBufferResponse> placeResult = mGeoDataClient.getPlaceById(placeId);
+                    placeResult.addOnCompleteListener(mUpdatePlaceDetailsCallback);
+                    hideKeyboard();
 
                 }
+            };
+
+    private OnCompleteListener<PlaceBufferResponse> mUpdatePlaceDetailsCallback = new OnCompleteListener<PlaceBufferResponse>() {
+        @Override
+        public void onComplete(@NonNull Task<PlaceBufferResponse> task) {
+            if (task.isSuccessful()) {
+                PlaceBufferResponse places = task.getResult();
+                final Place place = places.get(0);
+
+                // Store information about location
+                try {
+                    mPlace = new PlaceInfo();
+                    mPlace.setAddress(place.getAddress().toString());
+                    mPlace.setLatlng(place.getLatLng());
+                } catch (NullPointerException e){
+                    Log.e(TAG, "NullPointerException: " + e.getMessage());
+                }
+
+                // Place marker and move camera
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mPlace.getLatlng(), STREET_ZOOM));
+                MarkerOptions markerOptions = new MarkerOptions().position(mPlace.getLatlng()).title(mPlace.getAddress());
+                mMap.addMarker(markerOptions);
+
+                places.release();
+            } else {
+                Log.e(TAG, "Place not found");
             }
-            */
+        }
+    };
+
 }
