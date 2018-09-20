@@ -38,19 +38,18 @@
 
     <TextView
         android:id="@+id/contactEmail"
-        android:textColor="@android:color/black"
         android:layout_width="0sp"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/spacing"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_height="61dp"
         android:layout_alignParentStart="true"
-        android:paddingTop="5sp"
+        android:background="@android:color/white"
         android:paddingLeft="10sp"
         android:paddingRight="10sp"
-        android:layout_marginBottom="5sp"
-        android:background="@android:color/white"
-        android:textSize="20sp" />
+        android:paddingTop="5sp"
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/spacing" />
 
     <Button
         android:id="@+id/chatButton"
@@ -63,6 +62,18 @@
         app:layout_constraintTop_toTopOf="@id/username"
         app:layout_constraintEnd_toEndOf="parent"
         android:textSize="20sp" />
+
+    <Button
+        android:id="@+id/VoiceCallButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="56dp"
+        android:paddingLeft="10sp"
+        android:paddingRight="10sp"
+        android:text="Call"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/username" />
 
 </android.support.constraint.ConstraintLayout>
 

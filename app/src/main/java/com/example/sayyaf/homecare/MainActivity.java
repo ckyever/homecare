@@ -1,16 +1,22 @@
 package com.example.sayyaf.homecare;
 
+import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Build;
+import android.content.pm.PackageManager;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
 import com.example.sayyaf.homecare.notifications.NotificationService;
+import com.example.sayyaf.homecare.communication.BaseActivity;
+import com.example.sayyaf.homecare.communication.SinchService;
 import com.example.sayyaf.homecare.requests.RequestActivity;
 import com.example.sayyaf.homecare.accounts.LoginActivity;
 import com.example.sayyaf.homecare.contacts.ContactChatActivity;
@@ -23,9 +29,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.sinch.android.rtc.SinchError;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+public class MainActivity extends BaseActivity implements View.OnClickListener,SinchService.StartFailedListener {
 
     // set up chat controllers for once
     private static boolean setUpChatControllers = false;
@@ -69,6 +76,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    @Override
+    public void onServiceConnected() {
+        if (!getSinchServiceInterface().isStarted()) {
+            getSinchServiceInterface().startClient(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        }
+    }
 
     @Override
     public void onClick(View view) {
@@ -182,6 +195,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
+    }
+
+    @Override
+    public void onStarted() {
+        mContacts.setEnabled(true);
+    }
+
+    @Override
+    public void onStartFailed(SinchError error) {
+        Toast.makeText(this, error.toString(), Toast.LENGTH_LONG).show();
+    }
+
+    private boolean readyService(String username) {
+
+        if (getSinchServiceInterface() != null && !getSinchServiceInterface().isStarted()) {
+            getSinchServiceInterface().startClient(username);
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
 }
