@@ -11,6 +11,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -51,6 +52,10 @@
         </activity>
         <activity android:name=".requests.RequestActivity">
         </activity>
+        <activity android:name=".communication.CallScreenActivity">
+        </activity>
+        <activity android:name=".communication.IncomingVoiceCallActivity">
+        </activity>
         <activity
             android:name=".contacts.ContactChatActivity"
             android:windowSoftInputMode="stateHidden">
@@ -68,6 +73,8 @@
             android:name=".mapping.MapsActivity"
             android:label="@string/title_activity_maps"/>
 
+        <activity android:name=".notifications.EmergencyCallActivity"/>
+
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
@@ -80,9 +87,22 @@
             android:enabled="true"
             android:exported="true" />
 
+        <service
+            android:name=".notifications.NotificationService"
+            android:enabled="true"
+            android:exported="true" />
+
+        <service
+            android:name=".notifications.EmergencyMsgListener"
+            android:enabled="true"
+            android:exported="true" />
+
         <activity
             android:name=".mapping.TrackingActivity"
             android:label="@string/title_activity_tracking"></activity>
+        <service
+            android:name=".communication.SinchService"
+            android:enabled="true"/>
     </application>
 
 </manifest><!--
