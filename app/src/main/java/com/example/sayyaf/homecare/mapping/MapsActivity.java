@@ -88,11 +88,11 @@ public class MapsActivity extends AppCompatActivity implements OnMyLocationButto
         mapFragment.getMapAsync(this);
     }
 
-    /*
+/*
     private void startTrackingService() {
         startService(new Intent(this, com.example.sayyaf.homecare.mapping.TrackingService.class));
     }
-    */
+*/
 
     /**
      * Attempts to get location permission of the device then initialise the map, if not a
@@ -218,6 +218,14 @@ public class MapsActivity extends AppCompatActivity implements OnMyLocationButto
         return false;
     }
 
+    // Place marker and move camera to location
+    private void placeMarker(LatLng latlng, String title) {
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, STREET_ZOOM));
+        MarkerOptions markerOptions = new MarkerOptions().position(latlng).title(title);
+        mMap.addMarker(markerOptions);
+    }
+
+    // Hide keyboard
     private void hideKeyboard() {
         View view = this.getCurrentFocus();
         if (view != null) {
@@ -266,9 +274,8 @@ public class MapsActivity extends AppCompatActivity implements OnMyLocationButto
             Log.d(TAG, "geoLocate: found a location: " + address.toString());
 
             // Place marker and move camera
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(address.getLatitude(), address.getLongitude()), STREET_ZOOM));
-            MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(address.getLatitude(), address.getLongitude())).title(address.getAddressLine(0));
-            mMap.addMarker(markerOptions);
+            placeMarker(new LatLng(address.getLatitude(), address.getLongitude()),
+                    address.getAddressLine(0));
         }
     }
 
@@ -305,9 +312,7 @@ public class MapsActivity extends AppCompatActivity implements OnMyLocationButto
                 }
 
                 // Place marker and move camera
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mPlace.getLatlng(), STREET_ZOOM));
-                MarkerOptions markerOptions = new MarkerOptions().position(mPlace.getLatlng()).title(mPlace.getAddress());
-                mMap.addMarker(markerOptions);
+                placeMarker(mPlace.getLatlng(), mPlace.getAddress());
 
                 places.release();
             } else {
