@@ -17,6 +17,7 @@ import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
 import com.example.sayyaf.homecare.notifications.NotificationService;
 import com.example.sayyaf.homecare.communication.BaseActivity;
 import com.example.sayyaf.homecare.communication.SinchService;
+import com.example.sayyaf.homecare.options.OptionActivity;
 import com.example.sayyaf.homecare.requests.RequestActivity;
 import com.example.sayyaf.homecare.accounts.LoginActivity;
 import com.example.sayyaf.homecare.contacts.ContactChatActivity;
@@ -44,6 +45,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
     Button mFriendRequests;
     Button logoutButton;
     Button helpButton;
+    Button optionsButton;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +75,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
 
         helpButton = (Button) findViewById(R.id.optionHelp);
         helpButton.setOnClickListener(this);
+
+        optionsButton = (Button) findViewById(R.id.options);
+        optionsButton.setOnClickListener(this);
 
     }
 
@@ -123,11 +128,24 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
             startActivity(intent);
             finish();
         }
+
+        if(view == optionsButton){
+            Intent intent = new Intent(MainActivity.this, OptionActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        }
     }
 
     private void logout(){
         // logout from firebase
         FirebaseAuth.getInstance().signOut();
+
+        // test 1
+        // getSinchServiceInterface().stopClient();
+
+        // test 2
+        // unbindService();
 
         // stop foreground service
         this.stopService(new Intent(this, NotificationService.class));
