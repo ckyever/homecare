@@ -14,8 +14,10 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,8 +39,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MapsActivity extends AppCompatActivity implements OnMyLocationButtonClickListener,
-        OnMyLocationClickListener, OnMapReadyCallback {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final String TAG = "MapsActivity";
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
@@ -53,6 +54,7 @@ public class MapsActivity extends AppCompatActivity implements OnMyLocationButto
     private LatLng currentLatLng;
 
     private EditText mInputSearchEditText;
+    private ImageView mLocationButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +62,7 @@ public class MapsActivity extends AppCompatActivity implements OnMyLocationButto
         setContentView(R.layout.activity_maps);
 
         mInputSearchEditText = (EditText) findViewById(R.id.inputSearch);
+        mLocationButton = (ImageView) findViewById(R.id.ic_mylocation);
 
         // Get location permissions then initialise the map
         getLocationPermission();
@@ -141,8 +144,9 @@ public class MapsActivity extends AppCompatActivity implements OnMyLocationButto
         mMap = googleMap;
 
         getDeviceLocation();
-        mMap.getUiSettings().setZoomControlsEnabled(true);
+        enableMyLocationButton();
 
+        mMap.getUiSettings().setZoomControlsEnabled(true);
         initialiseSearch();
     }
 
@@ -179,10 +183,8 @@ public class MapsActivity extends AppCompatActivity implements OnMyLocationButto
                 });
 
                 mMap.setMyLocationEnabled(true);
-
-                // Enable "My Location" button
-                mMap.setOnMyLocationButtonClickListener(this);
-                mMap.setOnMyLocationClickListener(this);
+                // Hide the default my location button
+                mMap.getUiSettings().setMyLocationButtonEnabled(false);
             }
         }
         catch (SecurityException e){
@@ -190,17 +192,23 @@ public class MapsActivity extends AppCompatActivity implements OnMyLocationButto
         }
     }
 
-    @Override
-    public void onMyLocationClick(@NonNull Location location) {
-        Toast.makeText(this, "Current location:\n" +
-                location, Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public boolean onMyLocationButtonClick() {
-        // Return false so that we don't consume the event and the default behavior still occurs
-        // (the camera animates to the user's current position).
-        return false;
+    // Initialises the "My Location" button functionality
+    private void enableMyLocationButton() {
+        mLocationButton.setOnClickListener(new View.OnClickListener() {
+            boolean buttonOn = false;
+            @Override
+            public void onClick(View view) {
+                if (!buttonOn) {
+                    mLocationButton.setImageResource(R.drawable.ic_mylocationon);
+                    getDeviceLocation();
+                    buttonOn = true;
+                }
+                else if (buttonOn) {
+                    mLocationButton.setImageResource(R.drawable.ic_mylocationoff);
+                    buttonOn = false;
+                }
+            }
+        });
     }
 
     private void initialiseSearch() {

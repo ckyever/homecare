@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.sayyaf.homecare.mapping.TrackingService;
 import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
 import com.example.sayyaf.homecare.notifications.NotificationService;
 import com.example.sayyaf.homecare.communication.BaseActivity;
@@ -129,8 +130,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
         // logout from firebase
         FirebaseAuth.getInstance().signOut();
 
-        // stop foreground service
+        // stop foreground services
         this.stopService(new Intent(this, NotificationService.class));
+        this.stopService(new Intent(this, TrackingService.class));
         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
