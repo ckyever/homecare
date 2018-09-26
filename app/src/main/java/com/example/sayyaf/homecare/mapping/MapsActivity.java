@@ -1,8 +1,12 @@
 package com.example.sayyaf.homecare.mapping;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Camera;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -10,6 +14,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -18,7 +23,6 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,8 +54,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final String TAG = "MapsActivity";
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final String COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
-    private static final int LOCATION_REQUEST_CODE = 1000;
-    private static final float STREET_ZOOM = 15;
+    private static final int LOCATION_REQUEST_CODE = 1;
+    private static final float STREET_ZOOM = 17;
     private static final LatLngBounds LAT_LNG_BOUNDS =
             new LatLngBounds(new LatLng(-90, -180), new LatLng(90, 180));
 
@@ -63,8 +67,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private PlaceAutocompleteAdapter mPlaceAutocompleteAdapter;
     private GeoDataClient mGeoDataClient;
     private PlaceInfo mPlace;
+    private LatLng mLatLng;
 
-    private EditText mInputSearchEditText;
     private ImageView mLocationButton;
     private AutoCompleteTextView mInputSearchTextView;
 
@@ -90,11 +94,41 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapFragment.getMapAsync(this);
     }
 
-/*
+    /**
+     * Starts the tracking service
+     */
     private void startTrackingService() {
-        startService(new Intent(this, com.example.sayyaf.homecare.mapping.TrackingService.class));
+        startService(new Intent(this,
+                com.example.sayyaf.homecare.mapping.TrackingService.class));
     }
-*/
+
+    // Receives latitude and longitude from TrackingService and stores it as mLatLng
+    BroadcastReceiver bReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "Getting intent extras");
+            Bundle intentExtras = intent.getExtras();
+
+            if (intentExtras != null) {
+                double latitude = intentExtras.getDouble("Latitude");
+                double longitude = intentExtras.getDouble("Longitude");
+                mLatLng = new LatLng(latitude, longitude);
+            }
+        }
+    };
+
+    // Dynamically adds listener to the tracking service
+    protected void onResume(){
+        super.onResume();
+        LocalBroadcastManager.getInstance(this).registerReceiver(bReceiver,
+                new IntentFilter("TrackingService"));
+    }
+
+    // Dynamically removes listener from the tracking service
+    protected void onPause (){
+        super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(bReceiver);
+    }
 
     /**
      * Attempts to get location permission of the device then initialise the map, if not a
@@ -111,7 +145,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                 // All permissions granted so initialise the map and start tracking service
                 initMap();
-                //startTrackingService();
+                startTrackingService();
             }
             else {
                 ActivityCompat.requestPermissions(this, permissions, LOCATION_REQUEST_CODE);
@@ -139,7 +173,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                 // So now we can initialise the map and initialise tracking service
                 initMap();
-                //startTrackingService();
+                startTrackingService();
             }
         }
     }
@@ -206,17 +240,22 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    // Initialises the "My Location" button functionality
+    /**
+     * When the "My Location" button is toggled center on the device's current location and
+     * keep the camera following the location while toggled. When turned off the user can freely
+     * move their map camera view.
+     */
     private void enableMyLocationButton() {
         mLocationButton.setOnClickListener(new View.OnClickListener() {
             boolean buttonOn = false;
             @Override
             public void onClick(View view) {
+                // Change image view to indicate button is toggled on
                 if (!buttonOn) {
                     mLocationButton.setImageResource(R.drawable.ic_mylocationon);
-                    getDeviceLocation();
                     buttonOn = true;
                 }
+                // Change image view to indicate button is toggled off
                 else if (buttonOn) {
                     mLocationButton.setImageResource(R.drawable.ic_mylocationoff);
                     buttonOn = false;
