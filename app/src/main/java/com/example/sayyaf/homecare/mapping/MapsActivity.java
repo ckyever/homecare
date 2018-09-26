@@ -67,6 +67,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GeoDataClient mGeoDataClient;
     private PlaceInfo mPlace;
     private LatLng mLatLng;
+    private Boolean isLocationButtonOn = false;
 
     private ImageView mLocationButton;
     private AutoCompleteTextView mInputSearchTextView;
@@ -84,7 +85,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     /**
-     * Initialises the map fragment
+     * Initialises the map fragment.
      */
     private void initMap() {
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -94,14 +95,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     /**
-     * Starts the tracking service
+     * Starts the tracking service.
      */
     private void startTrackingService() {
         startService(new Intent(this,
                 com.example.sayyaf.homecare.mapping.TrackingService.class));
     }
 
-    // Receives latitude and longitude from TrackingService and stores it as mLatLng
+    // Broadcast receiver that listens to latitude and longitude updates from TrackingService
+    // and stores it in mLatLng and moves the camera to the new latlng if applicable.
     BroadcastReceiver bReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -112,18 +114,23 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 double latitude = intentExtras.getDouble("Latitude");
                 double longitude = intentExtras.getDouble("Longitude");
                 mLatLng = new LatLng(latitude, longitude);
+                cameraFollow();
             }
         }
     };
 
-    // Dynamically adds listener to the tracking service
+    /**
+     * Dynamically adds broadcast receiver to TrackingService.
+     */
     protected void onResume(){
         super.onResume();
         LocalBroadcastManager.getInstance(this).registerReceiver(bReceiver,
                 new IntentFilter("TrackingService"));
     }
 
-    // Dynamically removes listener from the tracking service
+    /**
+     * Dynamically removes broadcast receiver from TrackingService.
+     */
     protected void onPause (){
         super.onPause();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(bReceiver);
@@ -131,7 +138,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     /**
      * Attempts to get location permission of the device then initialise the map, if not a
-     * permission request is sent and appears on the user's screen
+     * permission request is sent and appears on the user's screen.
      */
     private void getLocationPermission() {
         String[] permissions = {FINE_LOCATION, COARSE_LOCATION};
@@ -157,7 +164,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     /**
      * Handles the result of the permission request, initialising the map if the user allows the
-     * request
+     * request.
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
@@ -180,11 +187,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
+     * Here the behaviour is to add the current users location on the map, enable the "My Location"
+     * button which can center and follow the users real time location as they move, enable the
+     * zoom assist buttons, and initialise the location search bar.
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -198,8 +203,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     /**
-     * Gets the current location of the device and represents it as a blue circle on the map.
-     * Also enables a "My Location" button which recentres the camera on the current location.
+     * Gets the current location of the device after checking for permissions
+     * and represents it as a blue circle on the map. We hide the default "My Location" button
+     * to implement a custom one with the ability to stay following the users location.
      */
     private void getDeviceLocation() {
 
@@ -230,7 +236,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 });
 
                 mMap.setMyLocationEnabled(true);
-                // Hide the default my location button
+                // Hide the default "My Location" button
                 mMap.getUiSettings().setMyLocationButtonEnabled(false);
             }
         }
@@ -240,27 +246,41 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     /**
-     * When the "My Location" button is toggled center on the device's current location and
-     * keep the camera following the location while toggled. When turned off the user can freely
-     * move their map camera view.
+     * Listens to clicks on the "My Location" image view and imitates a toggleable button, changing
+     * the boolean isLocationButtonOn, which dictates whether the camera should be following the
+     * users current location via the method cameraFollow().
      */
     private void enableMyLocationButton() {
         mLocationButton.setOnClickListener(new View.OnClickListener() {
-            boolean buttonOn = false;
             @Override
             public void onClick(View view) {
                 // Change image view to indicate button is toggled on
-                if (!buttonOn) {
+                if (!isLocationButtonOn) {
                     mLocationButton.setImageResource(R.drawable.ic_mylocationon);
-                    buttonOn = true;
+                    isLocationButtonOn = true;
+                    // Centre and zoom camera on location after pressing
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mLatLng, STREET_ZOOM));
                 }
                 // Change image view to indicate button is toggled off
-                else if (buttonOn) {
+                else if (isLocationButtonOn) {
                     mLocationButton.setImageResource(R.drawable.ic_mylocationoff);
-                    buttonOn = false;
+                    isLocationButtonOn = false;
                 }
             }
         });
+    }
+
+    /**
+     * When called checks the "My Location" button is toggled on and moves the camera to the current
+     * location.
+     */
+    private void cameraFollow() {
+        if (isLocationButtonOn) {
+            mMap.animateCamera(CameraUpdateFactory.newLatLng(mLatLng));
+        }
+        else {
+            // Do nothing
+        }
     }
 
     // Place marker and move camera to location
