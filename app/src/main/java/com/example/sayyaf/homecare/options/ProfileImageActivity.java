@@ -1,5 +1,6 @@
 package com.example.sayyaf.homecare.options;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
@@ -11,6 +12,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,6 +38,9 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
 
     private final int imageSelectReqCode = 5;
 
+    private ProgressBar progressBar;
+    private TextView progressBarMsg;
+
     private ImageView profileImage;
 
     private TextView selectImage;
@@ -45,6 +50,7 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
     private FloatingActionButton confirmChangeButton;
 
     private Uri imagePath;
+    private boolean uploadComplete;
 
     private String userId;
 
@@ -61,11 +67,18 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
 
         profileImage = (ImageView) findViewById(R.id.profileImage);
 
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        progressBarMsg = (TextView) findViewById(R.id.progressBarMsg);
+
+        uploadComplete = true;
         loadProfileImage();
     }
 
     @Override
     public void onClick(View v) {
+
+        // wait for upload
+        if(!uploadComplete) return;
 
         // select image
         if(v == selectImage || v == selectImageButton){
@@ -86,23 +99,32 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
         getCurrentUserId();
 
         Query profileImgRef = FirebaseDatabase.getInstance()
-                .getReference("Users")
-                .child(userId).child("setUpProfileImage");
+                .getReference("User")
+                .child(userId).child("hasProfileImage");
 
         profileImgRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
-                    FirebaseStorage.getInstance()
-                            .getReference("UserProfileImage").child(userId).getDownloadUrl()
-                            .addOnSuccessListener(onDownloadSuccess())
-                            .addOnFailureListener(onDownloadFailure());
+
+                    boolean hasProfileImage = dataSnapshot.getValue(Boolean.class);
+
+                    if(hasProfileImage){
+                        showProgress("Loading ...");
+
+                        FirebaseStorage.getInstance()
+                                .getReference("UserProfileImage").child(userId).getDownloadUrl()
+                                .addOnSuccessListener(onDownloadSuccess())
+                                .addOnFailureListener(onDownloadFailure());
+                    }
+
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                progressBar.setVisibility(View.GONE);
+                progressBarMsg.setVisibility(View.GONE);
             }
         });
 
@@ -110,17 +132,23 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
 
     private void uploadProfileImage(){
         if(imagePath != null){
+
+            showProgress("Uploading ...");
+
+            uploadComplete = false;
+
             StorageReference storageRef = FirebaseStorage.getInstance()
                     .getReference("UserProfileImage").child(userId);
 
-            storageRef.putFile(imagePath);
-                    /*.addOnCompleteListener(onUploadCompleteAction())
-                    .addOnFailureListener(onUploadFailureAction());*/
+            storageRef.putFile(imagePath)
+                    .addOnCompleteListener(onUploadCompleteAction())
+                    .addOnFailureListener(onUploadFailureAction());
 
-            Toast.makeText(ProfileImageActivity.this, "Profile image is updated",
+
+            /*Toast.makeText(ProfileImageActivity.this, "Profile image is updated",
                     Toast.LENGTH_SHORT).show();
 
-            returnToOptions();
+            returnToOptions();*/
 
         }
         else{
@@ -145,6 +173,8 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
                 Glide.with(getApplicationContext())
                     .load(userImagePath.toString())
                     .into(profileImage);
+
+                endProgress();
             }
         };
     }
@@ -155,6 +185,8 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
             public void onFailure(@NonNull Exception e) {
                 Toast.makeText(ProfileImageActivity.this, "Profile image is not loaded",
                         Toast.LENGTH_SHORT).show();
+
+                endProgress();
             }
         };
     }
@@ -166,6 +198,12 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
             public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                 Toast.makeText(ProfileImageActivity.this, "Profile image is updated",
                         Toast.LENGTH_SHORT).show();
+
+                endProgress();
+
+                FirebaseDatabase.getInstance()
+                        .getReference("User")
+                        .child(userId).child("hasProfileImage").setValue(true);
 
                 returnToOptions();
             }
@@ -179,6 +217,8 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
             public void onFailure(@NonNull Exception e) {
                 Toast.makeText(ProfileImageActivity.this, "Cannot update profile image",
                         Toast.LENGTH_SHORT).show();
+
+                endProgress();
             }
         };
 
@@ -187,6 +227,8 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
     @Override
     protected void onActivityResult(int reqCode, int resCode, Intent intent){
         super.onActivityResult(reqCode, resCode, intent);
+
+        showProgress("Loading ...");
 
         if(reqCode == imageSelectReqCode && resCode == RESULT_OK
                 && intent != null){
@@ -203,10 +245,6 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
 
                     profileImage.setImageBitmap(bitmap);
 
-                    FirebaseDatabase.getInstance()
-                            .getReference("Users")
-                            .child(userId).child("setUpProfileImage").setValue(true);
-
                 }
                 catch (IOException e){
                     e.printStackTrace();
@@ -219,11 +257,27 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
 
         }
 
+        endProgress();
+
+    }
+
+    private void showProgress(String message){
+        progressBar.setVisibility(View.VISIBLE);
+        progressBarMsg.setVisibility(View.VISIBLE);
+        progressBarMsg.setText(message);
+    }
+
+    private void endProgress(){
+        progressBar.setVisibility(View.GONE);
+        progressBarMsg.setVisibility(View.GONE);
     }
 
 
     @Override
     public void onBackPressed() {
+        // wait for upload
+        if(!uploadComplete) return;
+
         // back to options page
         returnToOptions();
     }

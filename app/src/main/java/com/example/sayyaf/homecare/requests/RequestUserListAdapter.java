@@ -3,17 +3,22 @@ package com.example.sayyaf.homecare.requests;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.User;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
 
@@ -29,10 +34,13 @@ public class RequestUserListAdapter extends ArrayAdapter<User> {
     private Button acceptButton;
     private Button declineButton;
 
+    private Context context;
+
 
     public RequestUserListAdapter(@NonNull Context context, int resource, ArrayList<User> users,
                                   User currentUser, DatabaseReference ref) {
         super(context, resource, users);
+        this.context = context;
         this.users = users;
         this.activity = (Activity)context;
         this.currentUser = currentUser;
@@ -52,6 +60,8 @@ public class RequestUserListAdapter extends ArrayAdapter<User> {
         //getting view in row_data
         TextView username = (TextView) v.findViewById(R.id.usernameRequest);
         TextView contactEmail = (TextView) v.findViewById(R.id.contactEmailRequest);
+        ImageView userRequestImage = (ImageView) v.findViewById(R.id.userRequestImage);
+
         acceptButton = (Button) v.findViewById(R.id.acceptButton);
         declineButton = (Button) v.findViewById(R.id.declineButton);
 
@@ -62,6 +72,11 @@ public class RequestUserListAdapter extends ArrayAdapter<User> {
         // display name and email
         username.setText(name);
         contactEmail.setText(requestEmail);
+
+        if(users.get(i).gethasProfileImage())
+            FirebaseStorage.getInstance()
+                    .getReference("UserProfileImage").child(users.get(i).getId()).getDownloadUrl()
+                    .addOnSuccessListener(onDownloadSuccess(userRequestImage));
 
         //On click, current user has chosen to accept friend request
         acceptButton.setOnClickListener(new View.OnClickListener() {
@@ -89,6 +104,19 @@ public class RequestUserListAdapter extends ArrayAdapter<User> {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         activity.startActivity(intent);
         activity.finish();
+    }
+
+    private OnSuccessListener<Uri> onDownloadSuccess(ImageView userImage){
+        return new OnSuccessListener<Uri>(){
+            @Override
+            public void onSuccess(Uri userImagePath) {
+
+                Glide.with(context.getApplicationContext())
+                        .load(userImagePath.toString())
+                        .into(userImage);
+
+            }
+        };
     }
 
 }

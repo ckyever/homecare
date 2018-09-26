@@ -61,6 +61,12 @@ public class EmergencyCallActivity extends AppCompatActivity implements View.OnC
         super.onStart();
 
         getCurrentUser();
+
+        if(!checkHasFriends()){
+            backToLastActivity();
+            return;
+        }
+
         timer = setTime(this, 5);
         timer.start();
 
@@ -147,10 +153,13 @@ public class EmergencyCallActivity extends AppCompatActivity implements View.OnC
         });
     }
 
-    private void fireEmergencyNotification(){
-        if(this_device == null) return;
+    private boolean checkHasFriends(){
+        return this_device != null
+                && this_device.getFriends() != null
+                && !this_device.getFriends().isEmpty();
+    }
 
-        if(this_device.getFriends() == null || this_device.getFriends().isEmpty()) return;
+    private void fireEmergencyNotification(){
 
         ChatMessage ct = new ChatMessage("", this_device.getName());
 

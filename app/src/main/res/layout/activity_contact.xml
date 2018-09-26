@@ -79,7 +79,6 @@
         android:background="@android:color/white"/>
 
 
-
 </android.support.constraint.ConstraintLayout>
 
     <!--

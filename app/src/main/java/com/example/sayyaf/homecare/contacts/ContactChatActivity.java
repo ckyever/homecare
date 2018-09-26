@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sayyaf.homecare.MainActivity;
@@ -28,7 +30,7 @@ public class ContactChatActivity extends BaseActivity implements View.OnClickLis
 
     private DatabaseReference ref;
     private User this_device;
-    private User friend;
+    // private User friend;
 
     private EditText textInputs;
     private Button searchUser;
@@ -150,6 +152,7 @@ public class ContactChatActivity extends BaseActivity implements View.OnClickLis
      * showResult: showing the query result from matching the starter
      */
     public void getFriends(ContactUserListCallback contactUserListCallback, String starter, boolean showResult){
+
         ref.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -208,6 +211,7 @@ public class ContactChatActivity extends BaseActivity implements View.OnClickLis
                         friends, this_device, ref, getSinchServiceInterface());
 
         contactView.setAdapter(contactUserListAdapter);
+
     }
 
     // check input is vaild

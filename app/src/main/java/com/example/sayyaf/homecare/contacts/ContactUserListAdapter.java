@@ -3,6 +3,7 @@ package com.example.sayyaf.homecare.contacts;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.view.LayoutInflater;
@@ -10,15 +11,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.User;
 import com.example.sayyaf.homecare.communication.CallScreenActivity;
 import com.example.sayyaf.homecare.communication.ChatActivity;
 import com.example.sayyaf.homecare.communication.SinchService;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.storage.FirebaseStorage;
 import com.sinch.android.rtc.MissingPermissionException;
 import com.sinch.android.rtc.calling.Call;
 
@@ -65,9 +70,17 @@ public class ContactUserListAdapter extends ArrayAdapter<User>{
         TextView contactEmail = (TextView) v.findViewById(R.id.contactEmail);
         Button chatButton = (Button) v.findViewById(R.id.chatButton);
         Button voiceCallButton = (Button) v.findViewById(R.id.VoiceCallButton);
+        ImageView userImage = (ImageView) v.findViewById(R.id.userImage);
+
         // display name and email
         username.setText(users.get(i).getName());
         contactEmail.setText(users.get(i).getEmail());
+
+        // set profile image if there is one
+        if(users.get(i).gethasProfileImage())
+            FirebaseStorage.getInstance()
+                    .getReference("UserProfileImage").child(users.get(i).getId()).getDownloadUrl()
+                    .addOnSuccessListener(onDownloadSuccess(userImage));
 
         // assoicate button to private chat page
         chatButton.setOnClickListener(new View.OnClickListener() {
@@ -119,5 +132,18 @@ public class ContactUserListAdapter extends ArrayAdapter<User>{
             //ActivityCompat.requestPermissions(context, new String[]{e.getRequiredPermission()}, 0);
         }
 
+    }
+
+    private OnSuccessListener<Uri> onDownloadSuccess(ImageView userImage){
+        return new OnSuccessListener<Uri>(){
+            @Override
+            public void onSuccess(Uri userImagePath) {
+
+                Glide.with(context.getApplicationContext())
+                        .load(userImagePath.toString())
+                        .into(userImage);
+
+            }
+        };
     }
 }
