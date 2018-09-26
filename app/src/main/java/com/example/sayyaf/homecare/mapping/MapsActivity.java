@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.graphics.Camera;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -62,8 +61,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GoogleMap mMap;
     private Boolean mLocationPermissionsGranted = false;
     private FusedLocationProviderClient mFusedLocationClient;
-    private Location currentLocation;
-    private LatLng currentLatLng;
+    private Location initialLocation;
+    private LatLng initialLatLng;
     private PlaceAutocompleteAdapter mPlaceAutocompleteAdapter;
     private GeoDataClient mGeoDataClient;
     private PlaceInfo mPlace;
@@ -216,10 +215,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     public void onComplete(@NonNull Task task) {
                         // Successfully found device location
                         if (task.isSuccessful() && task.getResult() != null) {
-                            currentLocation = (Location) location.getResult();
-                            currentLatLng = new LatLng(currentLocation.getLatitude(),
-                                    currentLocation.getLongitude());
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng,
+                            initialLocation = (Location) location.getResult();
+                            initialLatLng = new LatLng(initialLocation.getLatitude(),
+                                    initialLocation.getLongitude());
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialLatLng,
                                     STREET_ZOOM));
                         }
                         // Unable to get device's location
