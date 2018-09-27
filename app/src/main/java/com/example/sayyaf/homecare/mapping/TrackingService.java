@@ -12,6 +12,7 @@ import android.location.Location;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.example.sayyaf.homecare.notifications.NotificationChannels;
@@ -21,6 +22,7 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -107,10 +109,19 @@ public class TrackingService extends Service {
                     if (location != null) {
                         Log.d(TAG, "location update " + location);
                         mRef.setValue(location);
+                        sendBroadcast(location);
                     }
                 }
             }, null);
         }
+    }
+
+    // Allows the MapsActivity to add a listener for this service and obtain real time latlng values
+    private void sendBroadcast (Location location) {
+        Intent intent = new Intent (TAG);
+        intent.putExtra("Latitude", location.getLatitude());
+        intent.putExtra("Longitude", location.getLongitude());
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
 }

@@ -1,28 +1,25 @@
 package com.example.sayyaf.homecare;
 
-import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Build;
-import android.content.pm.PackageManager;
-import android.os.IBinder;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
-import com.example.sayyaf.homecare.notifications.NotificationService;
+import com.example.sayyaf.homecare.accounts.LoginActivity;
 import com.example.sayyaf.homecare.communication.BaseActivity;
 import com.example.sayyaf.homecare.communication.SinchService;
-import com.example.sayyaf.homecare.requests.RequestActivity;
-import com.example.sayyaf.homecare.accounts.LoginActivity;
 import com.example.sayyaf.homecare.contacts.ContactChatActivity;
 import com.example.sayyaf.homecare.contacts.ContactUpdateActivity;
 import com.example.sayyaf.homecare.mapping.MapsActivity;
 import com.example.sayyaf.homecare.mapping.TrackingActivity;
+import com.example.sayyaf.homecare.mapping.TrackingService;
+import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
+import com.example.sayyaf.homecare.notifications.NotificationService;
+import com.example.sayyaf.homecare.requests.RequestActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -129,8 +126,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
         // logout from firebase
         FirebaseAuth.getInstance().signOut();
 
-        // stop foreground service
+        // stop foreground services
         this.stopService(new Intent(this, NotificationService.class));
+        this.stopService(new Intent(this, TrackingService.class));
         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
