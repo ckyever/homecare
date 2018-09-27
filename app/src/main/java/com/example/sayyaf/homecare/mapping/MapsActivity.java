@@ -37,9 +37,11 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.maps.GeoApiContext;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -64,6 +66,8 @@ public class MapsActivity extends AppCompatActivity implements OnMyLocationButto
     private PlaceAutocompleteAdapter mPlaceAutocompleteAdapter;
     private GeoDataClient mGeoDataClient;
     private PlaceInfo mPlace;
+    private Marker locationSearched;
+    private GeoApiContext mGeoApiContext;
 
     private AutoCompleteTextView mInputSearchTextView;
 
@@ -76,6 +80,7 @@ public class MapsActivity extends AppCompatActivity implements OnMyLocationButto
 
         // Get location permissions then initialise the map
         getLocationPermission();
+        locationSearched = null;
     }
 
     /**
@@ -86,6 +91,10 @@ public class MapsActivity extends AppCompatActivity implements OnMyLocationButto
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        mGeoApiContext = new GeoApiContext.Builder()
+                .apiKey(getString(R.string.google_maps_key))
+                .build();
     }
 
 /*
@@ -220,9 +229,16 @@ public class MapsActivity extends AppCompatActivity implements OnMyLocationButto
 
     // Place marker and move camera to location
     private void placeMarker(LatLng latlng, String title) {
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, STREET_ZOOM));
-        MarkerOptions markerOptions = new MarkerOptions().position(latlng).title(title);
-        mMap.addMarker(markerOptions);
+        if (locationSearched != null) {
+            locationSearched.remove();
+            locationSearched = null;
+        }
+
+        if (locationSearched == null) {
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, STREET_ZOOM));
+            MarkerOptions markerOptions = new MarkerOptions().position(latlng).title(title);
+            locationSearched = mMap.addMarker(markerOptions);
+        }
     }
 
     // Hide keyboard
