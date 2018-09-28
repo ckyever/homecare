@@ -60,13 +60,6 @@ public class EmergencyCallActivity extends AppCompatActivity implements View.OnC
     protected void onStart(){
         super.onStart();
 
-        getCurrentUser();
-
-        if(!checkHasFriends()){
-            backToLastActivity();
-            return;
-        }
-
         timer = setTime(this, 5);
         timer.start();
 
@@ -109,6 +102,17 @@ public class EmergencyCallActivity extends AppCompatActivity implements View.OnC
             @Override
             public void onFinish() {
                 // send emergency contents
+
+                getCurrentUser();
+
+                if(!checkHasFriends()){
+                    Toast.makeText(EmergencyCallActivity.this,
+                            "User need at least one added caregiver", Toast.LENGTH_SHORT).show();
+
+                    backToLastActivity();
+                    return;
+                }
+
                 fireEmergencyNotification();
             }
         };
@@ -154,9 +158,10 @@ public class EmergencyCallActivity extends AppCompatActivity implements View.OnC
     }
 
     private boolean checkHasFriends(){
-        return this_device != null
+
+        return (this_device != null
                 && this_device.getFriends() != null
-                && !this_device.getFriends().isEmpty();
+                && !this_device.getFriends().isEmpty());
     }
 
     private void fireEmergencyNotification(){

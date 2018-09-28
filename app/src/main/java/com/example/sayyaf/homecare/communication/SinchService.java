@@ -65,7 +65,7 @@ public class SinchService extends Service {
         if (mSinchClient != null && mSinchClient.isStarted()) {
 
             // test 1
-            // mSinchClient.stopListeningOnActiveConnection();
+            mSinchClient.stopListeningOnActiveConnection();
 
             mSinchClient.terminate();
         }

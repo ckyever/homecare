@@ -139,16 +139,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
 
     private void logout(){
         // logout from firebase
-        FirebaseAuth.getInstance().signOut();
+        // FirebaseAuth.getInstance().signOut();
 
-        // test 1
-        // getSinchServiceInterface().stopClient();
+        // test (1), 3, 4
+        getSinchServiceInterface().stopClient();
 
-        // test 2
-        // unbindService();
+        // test 2 ?, 3, 4
+        unbindService();
 
         // stop foreground service
         this.stopService(new Intent(this, NotificationService.class));
+
+        // test 4 - logout from firebase after services closed
+        FirebaseAuth.getInstance().signOut();
+
         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);

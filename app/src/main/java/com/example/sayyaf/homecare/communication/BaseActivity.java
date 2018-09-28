@@ -95,8 +95,8 @@ public abstract class BaseActivity extends /*Activity*/AppCompatActivity impleme
     }
 
     // test 2
-    /*public void unbindService(){
+    public void unbindService(){
         getApplicationContext().unbindService(this);
-    }*/
+    }
 
 }
