@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.sayyaf.homecare.accounts.User;
 import com.example.sayyaf.homecare.communication.BaseActivity;
 import com.example.sayyaf.homecare.communication.SinchService;
 import com.example.sayyaf.homecare.requests.RequestActivity;
@@ -25,6 +26,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.sinch.android.rtc.SinchError;
 
@@ -40,10 +42,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
     Button mContactsUpdate;
     Button mFriendRequests;
     Button logoutButton;
+    private DatabaseReference ref;
+    private User currentUser;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ref = FirebaseDatabase.getInstance().getReference("");
 
         mMapButton = findViewById(R.id.mapButton);
         mMapButton.setOnClickListener(this);
@@ -63,11 +68,35 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
 
     }
 
+    public void getCurrentUser() {
+        Query query = ref.child("User").orderByChild("id")
+                .equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot datasnapshot) {
+                for (DataSnapshot s : datasnapshot.getChildren()) {
+                    if (s.exists()) {
+                        currentUser = s.getValue(User.class);
+                        startClient(currentUser);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError arg0) {
+            }
+        });
+    }
+
     @Override
     public void onServiceConnected() {
         if (!getSinchServiceInterface().isStarted()) {
-            getSinchServiceInterface().startClient(FirebaseAuth.getInstance().getCurrentUser().getUid());
+            getCurrentUser();
         }
+    }
+
+    private void startClient(User user) {
+        getSinchServiceInterface().startClient(user.getId() + "," + user.getName());
     }
 
     @Override
@@ -178,17 +207,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
     @Override
     public void onStartFailed(SinchError error) {
         Toast.makeText(this, error.toString(), Toast.LENGTH_LONG).show();
-    }
-
-    private boolean readyService(String username) {
-
-        if (getSinchServiceInterface() != null && !getSinchServiceInterface().isStarted()) {
-            getSinchServiceInterface().startClient(username);
-            return true;
-        }
-        else {
-            return false;
-        }
     }
 
 }

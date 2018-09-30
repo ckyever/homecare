@@ -15,7 +15,7 @@
         >
 
         <TextView
-            android:id="@+id/remoteUser"
+            android:id="@+id/remoteUserVoice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -24,7 +24,7 @@
             android:textSize="28sp"/>
 
         <TextView
-            android:id="@+id/callState"
+            android:id="@+id/callStateVoice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -34,7 +34,7 @@
             />
 
         <TextView
-            android:id="@+id/callDuration"
+            android:id="@+id/callDurationVoice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -57,13 +57,13 @@
     </ImageView>
 
     <RelativeLayout
-        android:id="@+id/bottomPanel"
+        android:id="@+id/bottomPanelVoice"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/greyish"
         android:layout_weight="1">
         <Button
-            android:id="@+id/hangupButton"
+            android:id="@+id/hangupButtonVoice"
             android:paddingBottom="20dp"
             android:paddingTop="20dp"
             android:layout_width="wrap_content"

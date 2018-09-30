@@ -235,7 +235,7 @@ public class ChatController {
 
     // go to voice chat page
     public void startVoiceChat(ChatActivity chatActivity){
-        Intent goToCallPage = new Intent(chatActivity, VoiceCallActivity.class);
+        Intent goToCallPage = new Intent(chatActivity, VoiceCallScreenActivity.class);
         chatActivity.startActivity(goToCallPage);
         chatActivity.finish();
     }

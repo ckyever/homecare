@@ -39,7 +39,7 @@
     <TextView
         android:id="@+id/contactEmail"
         android:layout_width="0sp"
-        android:layout_height="61dp"
+        android:layout_height="85dp"
         android:layout_alignParentStart="true"
         android:background="@android:color/white"
         android:paddingLeft="10sp"
@@ -48,29 +48,45 @@
         android:textColor="@android:color/black"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/spacing" />
 
     <Button
         android:id="@+id/chatButton"
-        android:text="Chat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="260dp"
+        android:layout_marginTop="80dp"
         android:paddingLeft="10sp"
         android:paddingRight="10sp"
-        android:layout_marginBottom="5sp"
-        app:layout_constraintTop_toTopOf="@id/username"
+        android:text="Chat"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
-        android:textSize="20sp" />
+        app:layout_constraintTop_toTopOf="@id/username" />
 
     <Button
         android:id="@+id/VoiceCallButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="56dp"
+        android:layout_marginEnd="144dp"
+        android:layout_marginTop="80dp"
         android:paddingLeft="10sp"
         android:paddingRight="10sp"
-        android:text="Call"
+        android:text="Voice"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/username" />
+
+    <Button
+        android:id="@+id/VideoCallButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:layout_marginTop="80dp"
+        android:paddingLeft="10sp"
+        android:paddingRight="10sp"
+        android:text="Video"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/username" />

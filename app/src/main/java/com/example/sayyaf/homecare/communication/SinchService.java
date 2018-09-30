@@ -1,11 +1,12 @@
 package com.example.sayyaf.homecare.communication;
 
-
+import com.sinch.android.rtc.AudioController;
 import com.sinch.android.rtc.ClientRegistration;
 import com.sinch.android.rtc.Sinch;
 import com.sinch.android.rtc.SinchClient;
 import com.sinch.android.rtc.SinchClientListener;
 import com.sinch.android.rtc.SinchError;
+import com.sinch.android.rtc.video.VideoController;
 import com.sinch.android.rtc.calling.Call;
 import com.sinch.android.rtc.calling.CallClient;
 import com.sinch.android.rtc.calling.CallClientListener;
@@ -20,11 +21,16 @@ import android.os.IBinder;
 import android.util.Log;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.Manifest;
 
+
+/**
+ * Class to handle the Sinch Backend to enable WebRTC video and voice calling.
+ * Handles necessary security info, service initialisation and calling.
+ */
 public class SinchService extends Service {
 
     private static final String APP_KEY = "6e708d90-e302-4740-a3ab-5a44b08465a7";
@@ -72,12 +78,16 @@ public class SinchService extends Service {
         boolean permissionsGranted = true;
         if (mSinchClient == null) {
             mSettings.setUsername(userName);
+            mUserId = userName;
             createClient(userName);
-
         }
         try {
             //mandatory checks
             mSinchClient.checkManifest();
+            //auxiliary check
+            if (getApplicationContext().checkCallingOrSelfPermission(android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                throw new MissingPermissionException(Manifest.permission.CAMERA);
+            }
         } catch (MissingPermissionException e) {
             permissionsGranted = false;
             if (messenger != null) {
@@ -100,7 +110,6 @@ public class SinchService extends Service {
     }
 
     private void createClient(String userName) {
-        mUserId = userName;
         mSinchClient = Sinch.getSinchClientBuilder().context(getApplicationContext()).userId(userName)
                 .applicationKey(APP_KEY)
                 .applicationSecret(APP_SECRET)
@@ -110,8 +119,6 @@ public class SinchService extends Service {
         mSinchClient.startListeningOnActiveConnection();
 
         mSinchClient.addSinchClientListener(new MySinchClientListener());
-        // Permission READ_PHONE_STATE is needed to respect native calls.
-        mSinchClient.getCallClient().setRespectNativeCalls(false);
         mSinchClient.getCallClient().addCallClientListener(new SinchCallClientListener());
     }
 
@@ -120,7 +127,6 @@ public class SinchService extends Service {
             mSinchClient.terminate();
             mSinchClient = null;
         }
-        mSettings.setUsername("");
     }
 
     private boolean isStarted() {
@@ -135,14 +141,11 @@ public class SinchService extends Service {
 
     public class SinchServiceInterface extends Binder {
 
-        public Call callPhoneNumber(String phoneNumber) {
-            return mSinchClient.getCallClient().callPhoneNumber(phoneNumber);
+        public Call callUserVideo(String userId) {
+            return mSinchClient.getCallClient().callUserVideo(userId);
         }
 
         public Call callUser(String userId) {
-            if (mSinchClient == null) {
-                return null;
-            }
             return mSinchClient.getCallClient().callUser(userId);
         }
 
@@ -150,11 +153,11 @@ public class SinchService extends Service {
             return mUserId;
         }
 
+        public void retryStartAfterPermissionGranted() { SinchService.this.attemptAutoStart(); }
+
         public boolean isStarted() {
             return SinchService.this.isStarted();
         }
-
-        public void retryStartAfterPermissionGranted() { SinchService.this.attemptAutoStart(); }
 
         public void startClient(String userName) {
             start(userName);
@@ -171,9 +174,24 @@ public class SinchService extends Service {
         public Call getCall(String callId) {
             return mSinchClient.getCallClient().getCall(callId);
         }
+
+        public VideoController getVideoController() {
+            if (!isStarted()) {
+                return null;
+            }
+            return mSinchClient.getVideoController();
+        }
+
+        public AudioController getAudioController() {
+            if (!isStarted()) {
+                return null;
+            }
+            return mSinchClient.getAudioController();
+        }
     }
 
     public interface StartFailedListener {
+
         void onStartFailed(SinchError error);
 
         void onStarted();
@@ -235,7 +253,7 @@ public class SinchService extends Service {
         @Override
         public void onIncomingCall(CallClient callClient, Call call) {
             Log.d(TAG, "Incoming call");
-            Intent intent = new Intent(SinchService.this, IncomingVoiceCallActivity.class);
+            Intent intent = new Intent(SinchService.this, IncomingCallActivity.class);
             intent.putExtra(CALL_ID, call.getCallId());
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             SinchService.this.startActivity(intent);
