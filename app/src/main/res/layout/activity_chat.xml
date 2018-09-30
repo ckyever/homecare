@@ -45,18 +45,6 @@
         android:transcriptMode="alwaysScroll"/>
 
     <Button
-        android:id="@+id/voiceCall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Voice\nCall"
-        android:onClick="onClick"
-        android:textSize="15sp"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        />
-
-    <Button
         android:id="@+id/sendMsg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -73,9 +61,10 @@
         android:layout_height="45sp"
         android:paddingStart="10sp"
         android:paddingEnd="10sp"
+        android:layout_marginStart="10sp"
         android:layout_marginBottom="5sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/voiceCall"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/sendMsg"
         android:hint="Write your message"
         android:background="@android:color/white"/>

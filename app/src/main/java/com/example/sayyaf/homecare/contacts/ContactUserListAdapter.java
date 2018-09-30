@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.User;
 import com.example.sayyaf.homecare.communication.CallScreenActivity;
@@ -134,6 +135,7 @@ public class ContactUserListAdapter extends ArrayAdapter<User>{
 
     }
 
+    // load user image if download success
     private OnSuccessListener<Uri> onDownloadSuccess(ImageView userImage){
         return new OnSuccessListener<Uri>(){
             @Override
@@ -141,6 +143,10 @@ public class ContactUserListAdapter extends ArrayAdapter<User>{
 
                 Glide.with(context.getApplicationContext())
                         .load(userImagePath.toString())
+                        .apply(new RequestOptions()
+                                .override(100, 100) // resize image in pixel
+                                .centerCrop()
+                                .dontAnimate())
                         .into(userImage);
 
             }

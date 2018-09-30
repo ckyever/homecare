@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.User;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -73,6 +74,7 @@ public class RequestUserListAdapter extends ArrayAdapter<User> {
         username.setText(name);
         contactEmail.setText(requestEmail);
 
+        // set profile image if there is one
         if(users.get(i).gethasProfileImage())
             FirebaseStorage.getInstance()
                     .getReference("UserProfileImage").child(users.get(i).getId()).getDownloadUrl()
@@ -106,6 +108,7 @@ public class RequestUserListAdapter extends ArrayAdapter<User> {
         activity.finish();
     }
 
+    // load user image if download success
     private OnSuccessListener<Uri> onDownloadSuccess(ImageView userImage){
         return new OnSuccessListener<Uri>(){
             @Override
@@ -113,6 +116,10 @@ public class RequestUserListAdapter extends ArrayAdapter<User> {
 
                 Glide.with(context.getApplicationContext())
                         .load(userImagePath.toString())
+                        .apply(new RequestOptions()
+                                .override(100, 100) // resize image in pixel
+                                .centerCrop()
+                                .dontAnimate())
                         .into(userImage);
 
             }

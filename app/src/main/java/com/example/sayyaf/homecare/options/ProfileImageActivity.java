@@ -11,13 +11,19 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
+import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
+import com.example.sayyaf.homecare.requests.RequestActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -36,6 +42,7 @@ import java.io.IOException;
 
 public class ProfileImageActivity extends AppCompatActivity implements View.OnClickListener {
 
+    private static boolean uploadComplete = true;
     private final int imageSelectReqCode = 5;
 
     private ProgressBar progressBar;
@@ -49,8 +56,9 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
     private TextView confirmChange;
     private FloatingActionButton confirmChangeButton;
 
+    private Button helpButton;
+
     private Uri imagePath;
-    private boolean uploadComplete;
 
     private String userId;
 
@@ -70,12 +78,32 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         progressBarMsg = (TextView) findViewById(R.id.progressBarMsg);
 
-        uploadComplete = true;
+        helpButton = (Button) findViewById(R.id.optionHelp);
+
+        configurateUser();
+
         loadProfileImage();
+
+    }
+
+    private void configurateUser(){
+        if(!MainActivity.getIsCaregiver()){
+            helpButton.setVisibility(View.VISIBLE);
+            helpButton.setEnabled(true);
+        }
     }
 
     @Override
     public void onClick(View v) {
+
+        if(v == helpButton){
+            EmergencyCallActivity.setBackToActivity(ProfileImageActivity.class);
+
+            Intent intent = new Intent(ProfileImageActivity.this, EmergencyCallActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        }
 
         // wait for upload
         if(!uploadComplete) return;
@@ -89,6 +117,7 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
             getCurrentUserId();
             uploadProfileImage();
         }
+
     }
 
     private void getCurrentUserId(){
@@ -145,10 +174,10 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
                     .addOnFailureListener(onUploadFailureAction());
 
 
-            /*Toast.makeText(ProfileImageActivity.this, "Profile image is updated",
+            Toast.makeText(ProfileImageActivity.this, "Profile image is uploading",
                     Toast.LENGTH_SHORT).show();
 
-            returnToOptions();*/
+            returnToOptions();
 
         }
         else{
@@ -171,8 +200,9 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
             public void onSuccess(Uri userImagePath) {
 
                 Glide.with(getApplicationContext())
-                    .load(userImagePath.toString())
-                    .into(profileImage);
+                        .load(userImagePath.toString())
+                        .apply(new RequestOptions().dontAnimate())
+                        .into(profileImage);
 
                 endProgress();
             }
@@ -201,11 +231,12 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
 
                 endProgress();
 
+                uploadComplete = true;
+
                 FirebaseDatabase.getInstance()
                         .getReference("User")
                         .child(userId).child("hasProfileImage").setValue(true);
 
-                returnToOptions();
             }
         };
     }
@@ -219,6 +250,8 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
                         Toast.LENGTH_SHORT).show();
 
                 endProgress();
+
+                uploadComplete = true;
             }
         };
 
@@ -261,12 +294,14 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
 
     }
 
+    // show either upload or download progress
     private void showProgress(String message){
         progressBar.setVisibility(View.VISIBLE);
         progressBarMsg.setVisibility(View.VISIBLE);
         progressBarMsg.setText(message);
     }
 
+    // remove progress bar after finish
     private void endProgress(){
         progressBar.setVisibility(View.GONE);
         progressBarMsg.setVisibility(View.GONE);
@@ -275,9 +310,6 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
 
     @Override
     public void onBackPressed() {
-        // wait for upload
-        if(!uploadComplete) return;
-
         // back to options page
         returnToOptions();
     }

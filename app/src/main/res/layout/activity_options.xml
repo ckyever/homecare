@@ -43,6 +43,7 @@
         android:layout_marginBottom="10sp"
         android:layout_marginStart="10sp"
         android:layout_marginEnd="10sp"
+        android:onClick="onClick"
         app:layout_constraintTop_toBottomOf="@id/optionsText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
@@ -60,5 +61,22 @@
         app:layout_constraintTop_toTopOf="@id/changeImage"
         app:layout_constraintBottom_toBottomOf="@id/changeImage" />
 
+    <Button
+        android:id="@+id/optionHelp"
+        android:layout_width="wrap_content"
+        android:layout_height="40sp"
+        android:paddingStart="10sp"
+        android:paddingEnd="10sp"
+        android:background="#FF0000"
+        android:onClick="onClick"
+        android:text="Help Me!"
+        android:enabled="false"
+        android:visibility="invisible"
+        android:textColor="#FFFF00"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@id/optionsText"
+        app:layout_constraintTop_toTopOf="@id/optionsText"
+        app:layout_constraintBottom_toBottomOf="@id/optionsText"/>
 
 </android.support.constraint.ConstraintLayout>

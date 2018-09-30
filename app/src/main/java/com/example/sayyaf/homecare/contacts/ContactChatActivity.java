@@ -16,6 +16,8 @@ import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.User;
 import com.example.sayyaf.homecare.communication.BaseActivity;
+import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
+import com.example.sayyaf.homecare.requests.RequestActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -35,6 +37,8 @@ public class ContactChatActivity extends BaseActivity implements View.OnClickLis
     private EditText textInputs;
     private Button searchUser;
     private Button refreshList;
+    private Button helpButton;
+
     private ArrayList<User> friends;
     private ListView contactView;
     private ContactUserListAdapter contactUserListAdapter;
@@ -51,7 +55,11 @@ public class ContactChatActivity extends BaseActivity implements View.OnClickLis
         textInputs = (EditText) findViewById(R.id.textInputs);
         searchUser = (Button) findViewById(R.id.searchUser);
         refreshList = (Button) findViewById(R.id.refreshList);
+        helpButton = (Button) findViewById(R.id.optionHelp);
+
         contactView = (ListView) findViewById(R.id.contactView);
+
+        configurateUser();
 
         ref = FirebaseDatabase.getInstance().getReference();
 
@@ -69,6 +77,13 @@ public class ContactChatActivity extends BaseActivity implements View.OnClickLis
             }
         });
 
+    }
+
+    private void configurateUser(){
+        if(!MainActivity.getIsCaregiver()){
+            helpButton.setVisibility(View.VISIBLE);
+            helpButton.setEnabled(true);
+        }
     }
 
     @Override
@@ -103,6 +118,15 @@ public class ContactChatActivity extends BaseActivity implements View.OnClickLis
                     resetView(friends);
                 }
             });
+        }
+
+        if(v == helpButton){
+            EmergencyCallActivity.setBackToActivity(ContactChatActivity.class);
+
+            Intent intent = new Intent(ContactChatActivity.this, EmergencyCallActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
         }
 
     }

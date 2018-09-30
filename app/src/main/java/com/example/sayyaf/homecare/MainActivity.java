@@ -11,8 +11,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.sayyaf.homecare.accounts.LaunchActivity;
 import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
 import com.example.sayyaf.homecare.notifications.NotificationService;
 import com.example.sayyaf.homecare.communication.BaseActivity;
@@ -29,16 +31,16 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.sinch.android.rtc.SinchError;
 
 
 public class MainActivity extends BaseActivity implements View.OnClickListener,SinchService.StartFailedListener {
 
-    // set up chat controllers for once
-    private static boolean setUpChatControllers = false;
     private static final String TAG = "MainActivity";
-    //private ChatController chatController;
+    private static boolean isCaregiver = false;
+
     Button mMapButton;
     Button mContacts;
     Button mContactsUpdate;
@@ -79,6 +81,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
         optionsButton = (Button) findViewById(R.id.options);
         optionsButton.setOnClickListener(this);
 
+        configurateUser();
+
+    }
+
+    public static void setUserType(boolean userType){ isCaregiver = userType; }
+
+    public static boolean getIsCaregiver(){ return isCaregiver; }
+
+    private void configurateUser(){
+        if(!isCaregiver){
+            mMapButton.setText("Map");
+            helpButton.setVisibility(View.VISIBLE);
+            helpButton.setEnabled(true);
+        }
     }
 
     @Override
@@ -138,49 +154,25 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
     }
 
     private void logout(){
-        // logout from firebase
-        // FirebaseAuth.getInstance().signOut();
-
         // test (1), 3, 4
         getSinchServiceInterface().stopClient();
 
         // test 2 ?, 3, 4
         unbindService();
 
-        // stop foreground service
+        // stop foreground services (monitor network connection state, emergency notification)
         this.stopService(new Intent(this, NotificationService.class));
 
-        // test 4 - logout from firebase after services closed
+        // logout from firebase
         FirebaseAuth.getInstance().signOut();
 
-        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        isCaregiver = false;
+
+        Intent intent = new Intent(MainActivity.this, LaunchActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
 
     }
-
-    /*@Override
-    protected void onStart(){
-        super.onStart();
-        ChatActivity.listenToAdded(this,
-                (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE),
-                FirebaseDatabase.getInstance().getReference("testChatDB"));
-        //chatController.listenToAdded(this, (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE));
-
-    }
-
-    @Override
-    protected void onPause(){
-        ChatActivity.cancelAddListening(FirebaseDatabase.getInstance().getReference("testChatDB"));
-        //chatController.cancelAddListening();
-        super.onPause();
-    }*/
-
-    /*@Override
-    protected void onDestroy(){
-        this.stopService(new Intent(this, NotificationService.class));
-        super.onDestroy();
-    }*/
 
     public void onBackPressed() {
         super.onBackPressed();

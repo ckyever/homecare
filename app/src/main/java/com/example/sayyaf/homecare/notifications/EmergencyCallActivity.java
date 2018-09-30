@@ -10,6 +10,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -41,6 +42,8 @@ public class EmergencyCallActivity extends AppCompatActivity implements View.OnC
 
     private User this_device;
 
+    private Vibrator misLaunchAttention;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +54,8 @@ public class EmergencyCallActivity extends AppCompatActivity implements View.OnC
 
         cancelCall.setOnClickListener(this);
 
+        misLaunchAttention = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
+
         this_device = null;
         timer = null;
 
@@ -59,6 +64,10 @@ public class EmergencyCallActivity extends AppCompatActivity implements View.OnC
     @Override
     protected void onStart(){
         super.onStart();
+
+        getCurrentUser();
+
+        misLaunchAttention.vibrate(500);
 
         timer = setTime(this, 5);
         timer.start();
@@ -73,6 +82,8 @@ public class EmergencyCallActivity extends AppCompatActivity implements View.OnC
     @Override
     protected void onPause(){
         if(timer != null){
+            misLaunchAttention.cancel();
+
             timer.cancel();
             timer = null;
         }
@@ -103,8 +114,6 @@ public class EmergencyCallActivity extends AppCompatActivity implements View.OnC
             public void onFinish() {
                 // send emergency contents
 
-                getCurrentUser();
-
                 if(!checkHasFriends()){
                     Toast.makeText(EmergencyCallActivity.this,
                             "User need at least one added caregiver", Toast.LENGTH_SHORT).show();
@@ -124,6 +133,9 @@ public class EmergencyCallActivity extends AppCompatActivity implements View.OnC
 
     private void cancelEmergencyCall(){
         if(timer != null){
+
+            misLaunchAttention.cancel();
+
             timer.cancel();
             timer = null;
         }

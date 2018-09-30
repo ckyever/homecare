@@ -34,7 +34,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:background="#ACB9E8"
-        android:text="Map"
+        android:text="Tracking"
         android:textAlignment="center"
         app:layout_constraintBottom_toTopOf="@+id/friendRequests"
         app:layout_constraintEnd_toStartOf="@+id/optionContacts"
@@ -45,17 +45,22 @@
         android:id="@+id/optionHelp"
         android:layout_width="128dp"
         android:layout_height="56dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="32dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:background="#99ACB9E8"
+        android:background="#FF0000"
         android:onClick="onClick"
-        android:text="Help"
-        app:layout_constraintBottom_toTopOf="@id/logoutButton"
-        app:layout_constraintEnd_toStartOf="@+id/optionScreenshare"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/friendRequests" />
+        android:enabled="false"
+        android:visibility="invisible"
+        android:text="Help Me!"
+        android:textSize="20sp"
+        android:textColor="#FFFF00"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/options"
+        app:layout_constraintHorizontal_bias="0.444"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
         android:id="@+id/contactsUpdate"
@@ -67,7 +72,7 @@
         android:layout_marginTop="8dp"
         android:background="#ACB9E8"
         android:text="Add Contacts"
-        app:layout_constraintBottom_toTopOf="@+id/optionScreenshare"
+        app:layout_constraintBottom_toTopOf="@+id/logoutButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/friendRequests"
         app:layout_constraintTop_toBottomOf="@+id/optionContacts" />
@@ -82,7 +87,7 @@
         android:layout_marginTop="8dp"
         android:background="#ACB9E8"
         android:text="friend requests"
-        app:layout_constraintBottom_toTopOf="@+id/optionHelp"
+        app:layout_constraintBottom_toTopOf="@+id/optionScreenshare"
         app:layout_constraintEnd_toStartOf="@+id/contactsUpdate"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mapButton" />
@@ -91,15 +96,16 @@
         android:id="@+id/logoutButton"
         android:layout_width="128dp"
         android:layout_height="56dp"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:background="#ACB9E8"
         android:text="Logout"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/options"
-        app:layout_constraintHorizontal_bias="0.444"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintBottom_toTopOf="@+id/optionHelp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/optionScreenshare"
+        app:layout_constraintTop_toBottomOf="@+id/contactsUpdate"/>
 
     <Button
         android:id="@+id/options"
@@ -110,9 +116,9 @@
         android:layout_marginStart="8dp"
         android:background="#ACB9E8"
         android:text="Options"
-        app:layout_constraintStart_toEndOf="@+id/logoutButton"
+        app:layout_constraintEnd_toStartOf="@+id/optionHelp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/optionContacts"
@@ -141,9 +147,13 @@
         android:background="#ACB9E8"
         android:onClick="onClick"
         android:text="Share Screen"
-        app:layout_constraintBottom_toTopOf="@+id/options"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/optionHelp"
-        app:layout_constraintTop_toBottomOf="@+id/contactsUpdate" />
+        app:layout_constraintBottom_toTopOf="@id/options"
+        app:layout_constraintEnd_toStartOf="@+id/logoutButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/friendRequests" />
 
 </android.support.constraint.ConstraintLayout>
+
+<!--
+
+-->

@@ -105,7 +105,7 @@
         android:layout_marginEnd="20sp"
         android:scaleType="centerCrop"
         android:adjustViewBounds="true"
-        app:srcCompat="@android:drawable/sym_def_app_icon"
+        app:srcCompat="@mipmap/ic_launcher_round"
         app:layout_constraintTop_toBottomOf="@id/profileImageText"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -135,6 +135,24 @@
         app:layout_constraintStart_toStartOf="@id/profileImage"
         app:layout_constraintEnd_toEndOf="@id/profileImage"
         app:layout_constraintTop_toBottomOf="@id/progressBar"/>
+
+    <Button
+        android:id="@+id/optionHelp"
+        android:layout_width="wrap_content"
+        android:layout_height="40sp"
+        android:paddingStart="10sp"
+        android:paddingEnd="10sp"
+        android:background="#FF0000"
+        android:onClick="onClick"
+        android:text="Help Me!"
+        android:enabled="false"
+        android:visibility="invisible"
+        android:textColor="#FFFF00"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@id/profileImageText"
+        app:layout_constraintTop_toTopOf="@id/profileImageText"
+        app:layout_constraintBottom_toBottomOf="@id/profileImageText"/>
 
 
 </android.support.constraint.ConstraintLayout>

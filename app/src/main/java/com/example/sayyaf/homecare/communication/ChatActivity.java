@@ -1,5 +1,6 @@
 package com.example.sayyaf.homecare.communication;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -10,6 +11,8 @@ import android.widget.EditText;
 
 import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.User;
+import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
+import com.example.sayyaf.homecare.requests.RequestActivity;
 import com.google.firebase.database.DatabaseReference;
 
 public class ChatActivity extends AppCompatActivity implements View.OnClickListener{
@@ -70,13 +73,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
         switch (button_id) {
 
-            case R.id.voiceCall:
-                // start a voice call
-                chatController.startVoiceChat(this);
-                break;
-
             case R.id.sendMsg:
-
                 chatController.sendMsg(this, textMsg);
                 break;
 
