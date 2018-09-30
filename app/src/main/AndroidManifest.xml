@@ -74,6 +74,8 @@
             android:name=".mapping.MapsActivity"
             android:label="@string/title_activity_maps"/>
 
+        <activity android:name=".notifications.EmergencyCallActivity"/>
+
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
@@ -83,6 +85,16 @@
 
         <service
             android:name=".mapping.TrackingService"
+            android:enabled="true"
+            android:exported="true" />
+
+        <service
+            android:name=".notifications.NotificationService"
+            android:enabled="true"
+            android:exported="true" />
+
+        <service
+            android:name=".notifications.EmergencyMsgListener"
             android:enabled="true"
             android:exported="true" />
 

@@ -2,6 +2,7 @@ package com.example.sayyaf.homecare;
 
 import android.content.ComponentName;
 import android.content.Intent;
+import android.os.Build;
 import android.content.pm.PackageManager;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
@@ -13,6 +14,8 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.sayyaf.homecare.accounts.User;
+import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
+import com.example.sayyaf.homecare.notifications.NotificationService;
 import com.example.sayyaf.homecare.communication.BaseActivity;
 import com.example.sayyaf.homecare.communication.SinchService;
 import com.example.sayyaf.homecare.requests.RequestActivity;
@@ -44,11 +47,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
     Button logoutButton;
     private DatabaseReference ref;
     private User currentUser;
+    Button helpButton;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ref = FirebaseDatabase.getInstance().getReference("");
+
+        // start foreground service
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            this.startService(new Intent(this, NotificationService.class));
+        }
+        else {
+            this.startForegroundService(new Intent(this, NotificationService.class));
+        }
 
         mMapButton = findViewById(R.id.mapButton);
         mMapButton.setOnClickListener(this);
@@ -64,7 +76,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
         mFriendRequests = (Button) findViewById(R.id.friendRequests);
         mFriendRequests.setOnClickListener(this);
 
-
+        helpButton = (Button) findViewById(R.id.optionHelp);
+        helpButton.setOnClickListener(this);
 
     }
 
@@ -130,13 +143,27 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
             startActivity(intent);
             finish();
         }
+
+        if(view == helpButton){
+            EmergencyCallActivity.setBackToActivity(MainActivity.class);
+
+            Intent intent = new Intent(MainActivity.this, EmergencyCallActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        }
     }
 
     private void logout(){
         // logout from firebase
         FirebaseAuth.getInstance().signOut();
+
+        // stop foreground service
+        this.stopService(new Intent(this, NotificationService.class));
         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
+
     }
 
     /*@Override
@@ -163,7 +190,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
     }*/
 
     public void onBackPressed() {
-        finish();
+        super.onBackPressed();
     }
 
     // Launches the TrackingActivity if current user is a caregiver and the MapsActivity if current
@@ -171,7 +198,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
     private void mapLauncher() {
         String path = "User/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/caregiver";
         DatabaseReference mRef = FirebaseDatabase.getInstance().getReference(path);
-        mRef.addValueEventListener(new ValueEventListener() {
+        mRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
