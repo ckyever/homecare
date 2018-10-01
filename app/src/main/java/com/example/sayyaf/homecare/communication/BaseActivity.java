@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -18,7 +19,7 @@ import android.widget.Toast;
 /**
  * Acts as the base template for activities that need to use Sinch communication services
  */
-public abstract class BaseActivity extends Activity implements ServiceConnection {
+public abstract class BaseActivity extends /*Activity*/AppCompatActivity implements ServiceConnection {
 
     private SinchService.SinchServiceInterface mSinchServiceInterface;
 
@@ -29,8 +30,8 @@ public abstract class BaseActivity extends Activity implements ServiceConnection
         bindService();
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().addFlags(
-                WindowManager.LayoutParams.FLAG_FULLSCREEN
-                        | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+                /*WindowManager.LayoutParams.FLAG_FULLSCREEN
+                        |*/ WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
                         | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
                         | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
                         | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
@@ -117,6 +118,11 @@ public abstract class BaseActivity extends Activity implements ServiceConnection
         Intent serviceIntent = new Intent(this, SinchService.class);
         serviceIntent.putExtra(SinchService.MESSENGER, messenger);
         getApplicationContext().bindService(serviceIntent, this, BIND_AUTO_CREATE);
+    }
+
+    // test 2
+    public void unbindService(){
+        getApplicationContext().unbindService(this);
     }
 
 }

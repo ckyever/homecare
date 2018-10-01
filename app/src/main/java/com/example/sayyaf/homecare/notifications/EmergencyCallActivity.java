@@ -10,6 +10,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -41,6 +42,8 @@ public class EmergencyCallActivity extends AppCompatActivity implements View.OnC
 
     private User this_device;
 
+    private Vibrator misLaunchAttention;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +53,8 @@ public class EmergencyCallActivity extends AppCompatActivity implements View.OnC
         timeLeft = (TextView) findViewById(R.id.timeLeft);
 
         cancelCall.setOnClickListener(this);
+
+        misLaunchAttention = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
 
         this_device = null;
         timer = null;
@@ -61,6 +66,9 @@ public class EmergencyCallActivity extends AppCompatActivity implements View.OnC
         super.onStart();
 
         getCurrentUser();
+
+        misLaunchAttention.vibrate(500);
+
         timer = setTime(this, 5);
         timer.start();
 
@@ -74,6 +82,8 @@ public class EmergencyCallActivity extends AppCompatActivity implements View.OnC
     @Override
     protected void onPause(){
         if(timer != null){
+            misLaunchAttention.cancel();
+
             timer.cancel();
             timer = null;
         }
@@ -103,6 +113,15 @@ public class EmergencyCallActivity extends AppCompatActivity implements View.OnC
             @Override
             public void onFinish() {
                 // send emergency contents
+
+                if(!checkHasFriends()){
+                    Toast.makeText(EmergencyCallActivity.this,
+                            "User need at least one added caregiver", Toast.LENGTH_SHORT).show();
+
+                    backToLastActivity();
+                    return;
+                }
+
                 fireEmergencyNotification();
             }
         };
@@ -114,6 +133,9 @@ public class EmergencyCallActivity extends AppCompatActivity implements View.OnC
 
     private void cancelEmergencyCall(){
         if(timer != null){
+
+            misLaunchAttention.cancel();
+
             timer.cancel();
             timer = null;
         }
@@ -147,10 +169,14 @@ public class EmergencyCallActivity extends AppCompatActivity implements View.OnC
         });
     }
 
-    private void fireEmergencyNotification(){
-        if(this_device == null) return;
+    private boolean checkHasFriends(){
 
-        if(this_device.getFriends() == null || this_device.getFriends().isEmpty()) return;
+        return (this_device != null
+                && this_device.getFriends() != null
+                && !this_device.getFriends().isEmpty());
+    }
+
+    private void fireEmergencyNotification(){
 
         ChatMessage ct = new ChatMessage("", this_device.getName());
 

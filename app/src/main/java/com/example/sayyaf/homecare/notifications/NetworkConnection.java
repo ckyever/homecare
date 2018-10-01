@@ -82,7 +82,7 @@ public class NetworkConnection extends BroadcastReceiver {
         notificationbulider =
                 new NotificationCompat.Builder(context,
                         NotificationChannels.getChatNotificationCH())
-                        .setSmallIcon(R.drawable.ic_launcher_background)
+                        .setSmallIcon(R.drawable.ic_dialog_info)
                         .setContentTitle(state)
                         .setContentText(content)
                         .setColor(color)

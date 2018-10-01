@@ -69,8 +69,13 @@ public class SinchService extends Service {
     @Override
     public void onDestroy() {
         if (mSinchClient != null && mSinchClient.isStarted()) {
+
+            // test 1
+            mSinchClient.stopListeningOnActiveConnection();
+
             mSinchClient.terminate();
         }
+        mSettings.setUsername("");
         super.onDestroy();
     }
 
@@ -124,6 +129,10 @@ public class SinchService extends Service {
 
     private void stop() {
         if (mSinchClient != null) {
+
+            // test 1
+            mSinchClient.stopListeningOnActiveConnection();
+
             mSinchClient.terminate();
             mSinchClient = null;
         }

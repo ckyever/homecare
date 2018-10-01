@@ -11,13 +11,16 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.sayyaf.homecare.accounts.LaunchActivity;
 import com.example.sayyaf.homecare.accounts.User;
 import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
 import com.example.sayyaf.homecare.notifications.NotificationService;
 import com.example.sayyaf.homecare.communication.BaseActivity;
 import com.example.sayyaf.homecare.communication.SinchService;
+import com.example.sayyaf.homecare.options.OptionActivity;
 import com.example.sayyaf.homecare.requests.RequestActivity;
 import com.example.sayyaf.homecare.accounts.LoginActivity;
 import com.example.sayyaf.homecare.contacts.ContactChatActivity;
@@ -36,10 +39,9 @@ import com.sinch.android.rtc.SinchError;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener,SinchService.StartFailedListener {
 
-    // set up chat controllers for once
-    private static boolean setUpChatControllers = false;
     private static final String TAG = "MainActivity";
-    //private ChatController chatController;
+    private static boolean isCaregiver = false;
+
     Button mMapButton;
     Button mContacts;
     Button mContactsUpdate;
@@ -48,6 +50,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
     private DatabaseReference ref;
     private User currentUser;
     Button helpButton;
+    Button optionsButton;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,6 +82,23 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
         helpButton = (Button) findViewById(R.id.optionHelp);
         helpButton.setOnClickListener(this);
 
+        optionsButton = (Button) findViewById(R.id.options);
+        optionsButton.setOnClickListener(this);
+
+        configurateUser();
+
+    }
+
+    public static void setUserType(boolean userType){ isCaregiver = userType; }
+
+    public static boolean getIsCaregiver(){ return isCaregiver; }
+
+    private void configurateUser(){
+        if(!isCaregiver){
+            mMapButton.setText("Map");
+            helpButton.setVisibility(View.VISIBLE);
+            helpButton.setEnabled(true);
+        }
     }
 
     public void getCurrentUser() {
@@ -152,42 +172,35 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
             startActivity(intent);
             finish();
         }
+
+        if(view == optionsButton){
+            Intent intent = new Intent(MainActivity.this, OptionActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        }
     }
 
     private void logout(){
+        // test (1), 3, 4
+        getSinchServiceInterface().stopClient();
+
+        // test 2 ?, 3, 4
+        unbindService();
+
+        // stop foreground services (monitor network connection state, emergency notification)
+        this.stopService(new Intent(this, NotificationService.class));
+
         // logout from firebase
         FirebaseAuth.getInstance().signOut();
 
-        // stop foreground service
-        this.stopService(new Intent(this, NotificationService.class));
-        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        isCaregiver = false;
+
+        Intent intent = new Intent(MainActivity.this, LaunchActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
 
     }
-
-    /*@Override
-    protected void onStart(){
-        super.onStart();
-        ChatActivity.listenToAdded(this,
-                (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE),
-                FirebaseDatabase.getInstance().getReference("testChatDB"));
-        //chatController.listenToAdded(this, (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE));
-
-    }
-
-    @Override
-    protected void onPause(){
-        ChatActivity.cancelAddListening(FirebaseDatabase.getInstance().getReference("testChatDB"));
-        //chatController.cancelAddListening();
-        super.onPause();
-    }*/
-
-    /*@Override
-    protected void onDestroy(){
-        this.stopService(new Intent(this, NotificationService.class));
-        super.onDestroy();
-    }*/
 
     public void onBackPressed() {
         super.onBackPressed();

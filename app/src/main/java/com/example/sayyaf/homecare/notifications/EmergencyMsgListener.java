@@ -118,7 +118,7 @@ public class EmergencyMsgListener extends IntentService {
         notificationbulider =
                 new NotificationCompat.Builder(EmergencyMsgListener.this,
                         NotificationChannels.getEmergencyCH())
-                        .setSmallIcon(R.drawable.ic_launcher_background)
+                        .setSmallIcon(R.drawable.ic_dialog_alert_holo_light)
                         .setContentTitle("Emergency: " + name)
                         .setContentText(DateFormat.format("d/M/yy (h:mm a)",
                                 time))
