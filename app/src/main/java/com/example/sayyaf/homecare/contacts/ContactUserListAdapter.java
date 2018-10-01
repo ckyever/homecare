@@ -19,10 +19,11 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.User;
-import com.example.sayyaf.homecare.communication.CallScreenActivity;
+import com.example.sayyaf.homecare.communication.VideoCallScreenActivity;
 import com.example.sayyaf.homecare.communication.ChatActivity;
 import com.example.sayyaf.homecare.communication.SinchService;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.example.sayyaf.homecare.communication.VoiceCallScreenActivity;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.storage.FirebaseStorage;
 import com.sinch.android.rtc.MissingPermissionException;
@@ -70,6 +71,7 @@ public class ContactUserListAdapter extends ArrayAdapter<User>{
         TextView username = (TextView) v.findViewById(R.id.username);
         TextView contactEmail = (TextView) v.findViewById(R.id.contactEmail);
         Button chatButton = (Button) v.findViewById(R.id.chatButton);
+        Button videoCallButton = (Button) v.findViewById(R.id.VideoCallButton);
         Button voiceCallButton = (Button) v.findViewById(R.id.VoiceCallButton);
         ImageView userImage = (ImageView) v.findViewById(R.id.userImage);
 
@@ -100,10 +102,17 @@ public class ContactUserListAdapter extends ArrayAdapter<User>{
             }
         });
 
+        videoCallButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                videoCallButtonClicked(users.get(i));
+            }
+        });
+
         voiceCallButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                callButtonClicked(users.get(i));
+                voiceCallButtonClicked(users.get(i));
             }
         });
 
@@ -113,10 +122,10 @@ public class ContactUserListAdapter extends ArrayAdapter<User>{
 
     }
 
-    private void callButtonClicked(User user) {
+    private void videoCallButtonClicked(User user) {
 
         try {
-            Call call = sinchServiceInterface.callUser(user.getId());
+            Call call = sinchServiceInterface.callUserVideo(user.getName() + "," + user.getId());
             if (call == null) {
                 // Service failed for some reason, show a Toast and abort
                 Toast.makeText(context, "Service is not started. Try stopping the service and starting it again before "
@@ -124,7 +133,29 @@ public class ContactUserListAdapter extends ArrayAdapter<User>{
                 return;
             }
             String callId = call.getCallId();
-            Intent callScreen = new Intent(context, CallScreenActivity.class);
+            Intent callScreen = new Intent(context, VideoCallScreenActivity.class);
+            callScreen.putExtra(SinchService.CALL_ID, callId);
+            callScreen.putExtra("name", user.getName());
+            callScreen.putExtra("id", user.getId());
+            context.startActivity(callScreen);
+        } catch (MissingPermissionException e) {
+            //ActivityCompat.requestPermissions(context, new String[]{e.getRequiredPermission()}, 0);
+        }
+
+    }
+
+    private void voiceCallButtonClicked(User user) {
+
+        try {
+            Call call = sinchServiceInterface.callUser(user.getName() + "," + user.getId());
+            if (call == null) {
+                // Service failed for some reason, show a Toast and abort
+                Toast.makeText(context, "Service is not started. Try stopping the service and starting it again before "
+                        + "placing a call.", Toast.LENGTH_LONG).show();
+                return;
+            }
+            String callId = call.getCallId();
+            Intent callScreen = new Intent(context, VoiceCallScreenActivity.class);
             callScreen.putExtra(SinchService.CALL_ID, callId);
             callScreen.putExtra("name", user.getName());
             callScreen.putExtra("id", user.getId());

@@ -233,6 +233,13 @@ public class ChatController {
         contactName.setText(contact_person.getName());
     }
 
+    // go to voice chat page
+    public void startVoiceChat(ChatActivity chatActivity){
+        Intent goToCallPage = new Intent(chatActivity, VoiceCallScreenActivity.class);
+        chatActivity.startActivity(goToCallPage);
+        chatActivity.finish();
+    }
+
     // move back to contct page
     public void returnToMenu(ChatActivity chatActivity){
         Intent goToMenu = new Intent(chatActivity, ContactChatActivity.class);

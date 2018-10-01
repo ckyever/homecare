@@ -67,7 +67,7 @@
         android:layout_marginBottom="5sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/contactEmail"
-        app:layout_constraintStart_toEndOf="@id/VoiceCallButton"
+        app:layout_constraintStart_toEndOf="@id/VideoCallButton"
         android:textSize="20sp" />
 
     <Button
@@ -79,7 +79,19 @@
         android:text="Call"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/chatButton"
+        app:layout_constraintEnd_toStartOf="@id/VideoCallButton"
+        app:layout_constraintTop_toBottomOf="@id/contactEmail" />
+
+    <Button
+        android:id="@+id/VideoCallButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10sp"
+        android:paddingRight="10sp"
+        android:text="Video"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/contactEmail" />
 
     <ImageView

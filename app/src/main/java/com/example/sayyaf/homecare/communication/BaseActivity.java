@@ -16,14 +16,17 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-
+/**
+ * Acts as the base template for activities that need to use Sinch communication services
+ */
 public abstract class BaseActivity extends /*Activity*/AppCompatActivity implements ServiceConnection {
 
-    public SinchService.SinchServiceInterface mSinchServiceInterface;
+    private SinchService.SinchServiceInterface mSinchServiceInterface;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //binds the service to the activity
         bindService();
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().addFlags(
@@ -34,6 +37,10 @@ public abstract class BaseActivity extends /*Activity*/AppCompatActivity impleme
                         | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
     }
 
+    /**
+     * Asynchronous method called when the service has become connected
+     * Used to bind the SinchServiceInterface to the activity
+     */
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
         if (SinchService.class.getName().equals(componentName.getClassName())) {
@@ -42,6 +49,10 @@ public abstract class BaseActivity extends /*Activity*/AppCompatActivity impleme
         }
     }
 
+    /**
+     * Asynchronous method called when the service has become disconnected
+     * Used to unbind the SinchServiceInterface from the activity
+     */
     @Override
     public void onServiceDisconnected(ComponentName componentName) {
         if (SinchService.class.getName().equals(componentName.getClassName())) {
@@ -50,18 +61,22 @@ public abstract class BaseActivity extends /*Activity*/AppCompatActivity impleme
         }
     }
 
+
+    //Allows for customised behaviour in subclasses
     protected void onServiceConnected() {
-        // for subclasses
     }
 
+    //Allows for customised behaviour in subclasses
     protected void onServiceDisconnected() {
-        // for subclasses
     }
 
     protected SinchService.SinchServiceInterface getSinchServiceInterface() {
         return mSinchServiceInterface;
     }
 
+
+
+    //Initialises the Sinch messenger backend
     private Messenger messenger = new Messenger(new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -75,6 +90,13 @@ public abstract class BaseActivity extends /*Activity*/AppCompatActivity impleme
         }
     });
 
+
+    /**
+     * Requests required permissions from the user
+     * @param requestCode
+     * @param permissions Permissions Required
+     * @param grantResults Permissions Granted
+     */
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         boolean granted = grantResults.length > 0;
         for (int grantResult : grantResults) {
@@ -85,9 +107,13 @@ public abstract class BaseActivity extends /*Activity*/AppCompatActivity impleme
         } else {
             Toast.makeText(this, "This application needs permission to use your microphone and camera to function properly.", Toast.LENGTH_LONG).show();
         }
+        //try to restart service after permissions granted
         mSinchServiceInterface.retryStartAfterPermissionGranted();
     }
 
+    /**
+     * Used to bind the service to the Activity
+     */
     private void bindService() {
         Intent serviceIntent = new Intent(this, SinchService.class);
         serviceIntent.putExtra(SinchService.MESSENGER, messenger);
