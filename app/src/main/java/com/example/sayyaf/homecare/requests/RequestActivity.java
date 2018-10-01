@@ -6,12 +6,16 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.User;
+import com.example.sayyaf.homecare.accounts.UserAppVersionController;
+import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -25,7 +29,7 @@ import java.util.ArrayList;
 
 /** Class for handling the acceptance or rejection of received friend requests
  */
-public class RequestActivity extends AppCompatActivity implements RequestsUserListCallback {
+public class RequestActivity extends AppCompatActivity implements RequestsUserListCallback, View.OnClickListener {
 
     private DatabaseReference ref;
     private User currentUser;
@@ -34,12 +38,20 @@ public class RequestActivity extends AppCompatActivity implements RequestsUserLi
     private ListView requestsView;
     private RequestUserListAdapter requestUserListAdapter;
 
+    private Button helpButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_requests);
         requestsView = (ListView) findViewById(R.id.requestsView);
+
+        helpButton = (Button) findViewById(R.id.optionHelp);
+
+        // activate help button on assisted person version
+        UserAppVersionController.getUserAppVersionController().resetButton(helpButton);
+
         ref = FirebaseDatabase.getInstance().getReference();
         friends = new ArrayList<>();
         getCurrentUser();
@@ -135,5 +147,17 @@ public class RequestActivity extends AppCompatActivity implements RequestsUserLi
         goToMenu.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(goToMenu);
         finish();
+    }
+
+    @Override
+    public void onClick(View view) {
+        if(view == helpButton){
+            EmergencyCallActivity.setBackToActivity(RequestActivity.class);
+
+            Intent intent = new Intent(RequestActivity.this, EmergencyCallActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        }
     }
 }

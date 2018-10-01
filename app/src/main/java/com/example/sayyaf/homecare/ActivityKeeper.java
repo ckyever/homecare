@@ -19,11 +19,9 @@ public class ActivityKeeper {
         this.backPressActivityClass = backPressActivityClass;
     }
 
-    /*public Class getBackPressActivityClass() {
-        return backPressActivityClass;
-    }*/
-
-    // return to previous activity
+    /* return to previous activity
+     * context: current activity
+     */
     public void returnToActivity(Context context){
         Intent intent = new Intent(context, backPressActivityClass);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

@@ -11,13 +11,18 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sayyaf.homecare.mapping.TrackingService;
+import com.example.sayyaf.homecare.accounts.LaunchActivity;
+import com.example.sayyaf.homecare.accounts.User;
+import com.example.sayyaf.homecare.accounts.UserAppVersionController;
 import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
 import com.example.sayyaf.homecare.notifications.NotificationService;
 import com.example.sayyaf.homecare.communication.BaseActivity;
 import com.example.sayyaf.homecare.communication.SinchService;
+import com.example.sayyaf.homecare.options.OptionActivity;
 import com.example.sayyaf.homecare.requests.RequestActivity;
 import com.example.sayyaf.homecare.accounts.LoginActivity;
 import com.example.sayyaf.homecare.contacts.ContactChatActivity;
@@ -29,34 +34,32 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.sinch.android.rtc.SinchError;
 
 
 public class MainActivity extends BaseActivity implements View.OnClickListener,SinchService.StartFailedListener {
 
-    // set up chat controllers for once
-    private static boolean setUpChatControllers = false;
     private static final String TAG = "MainActivity";
-    //private ChatController chatController;
+
     Button mMapButton;
     Button mContacts;
     Button mContactsUpdate;
     Button mFriendRequests;
     Button logoutButton;
+    private DatabaseReference ref;
+    private User currentUser;
     Button helpButton;
+    Button optionsButton;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ref = FirebaseDatabase.getInstance().getReference("");
 
-        // start foreground service
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            this.startService(new Intent(this, NotificationService.class));
-        }
-        else {
-            this.startForegroundService(new Intent(this, NotificationService.class));
-        }
+        // start notification foreground service
+        startNotificationForeground();
 
         mMapButton = findViewById(R.id.mapButton);
         mMapButton.setOnClickListener(this);
@@ -75,13 +78,58 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
         helpButton = (Button) findViewById(R.id.optionHelp);
         helpButton.setOnClickListener(this);
 
+        optionsButton = (Button) findViewById(R.id.options);
+        optionsButton.setOnClickListener(this);
+
+        // activate help button set correct map type on assisted person version
+        UserAppVersionController.getUserAppVersionController().resetButton(helpButton, mMapButton);
+
+    }
+
+    public void getCurrentUser() {
+        Query query = ref.child("User").orderByChild("id")
+                .equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot datasnapshot) {
+                for (DataSnapshot s : datasnapshot.getChildren()) {
+                    if (s.exists()) {
+                        currentUser = s.getValue(User.class);
+                        startClient(currentUser);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError arg0) {
+            }
+        });
     }
 
     @Override
     public void onServiceConnected() {
         if (!getSinchServiceInterface().isStarted()) {
-            getSinchServiceInterface().startClient(FirebaseAuth.getInstance().getCurrentUser().getUid());
+            getCurrentUser();
         }
+    }
+
+    private void startClient(User user) {
+        getSinchServiceInterface().startClient(user.getId() + "," + user.getName());
+    }
+
+    // start notification foreground service (monitor network connection state, emergency notification listener)
+    private void startNotificationForeground(){
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            this.startService(new Intent(this, NotificationService.class));
+        }
+        else {
+            this.startForegroundService(new Intent(this, NotificationService.class));
+        }
+    }
+
+    // stop notification foreground services (monitor network connection state, emergency notification)
+    private void stopNotificationForeground(){
+        this.stopService(new Intent(this, NotificationService.class));
     }
 
     @Override
@@ -124,43 +172,36 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
             startActivity(intent);
             finish();
         }
+
+        if(view == optionsButton){
+            Intent intent = new Intent(MainActivity.this, OptionActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        }
     }
 
     private void logout(){
+        // test (1), 3, 4
+        getSinchServiceInterface().stopClient();
+
+        // test 2 ?, 3, 4
+        unbindService();
+
+        // stop notification foreground services (monitor network connection state, emergency notification)
+        stopNotificationForeground();
+
         // logout from firebase
         FirebaseAuth.getInstance().signOut();
 
         // stop foreground services
         this.stopService(new Intent(this, NotificationService.class));
         this.stopService(new Intent(this, TrackingService.class));
-        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        Intent intent = new Intent(MainActivity.this, LaunchActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
 
     }
-
-    /*@Override
-    protected void onStart(){
-        super.onStart();
-        ChatActivity.listenToAdded(this,
-                (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE),
-                FirebaseDatabase.getInstance().getReference("testChatDB"));
-        //chatController.listenToAdded(this, (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE));
-
-    }
-
-    @Override
-    protected void onPause(){
-        ChatActivity.cancelAddListening(FirebaseDatabase.getInstance().getReference("testChatDB"));
-        //chatController.cancelAddListening();
-        super.onPause();
-    }*/
-
-    /*@Override
-    protected void onDestroy(){
-        this.stopService(new Intent(this, NotificationService.class));
-        super.onDestroy();
-    }*/
 
     public void onBackPressed() {
         super.onBackPressed();
@@ -168,7 +209,21 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
 
     // Launches the TrackingActivity if current user is a caregiver and the MapsActivity if current
     // user is an assisted person
-    private void mapLauncher() {
+    private void mapLauncher(){
+        UserAppVersionController.getUserAppVersionController()
+                .launchMapActivity(MainActivity.this);
+        /*if(UserAppVersionController.getUserAppVersionController().getIsCaregiver()){
+            Intent intent = new Intent(MainActivity.this,
+                    TrackingActivity.class);
+            startActivity(intent);
+        }
+        else{
+            Intent intent = new Intent(MainActivity.this,
+                    MapsActivity.class);
+            startActivity(intent);
+        }*/
+    }
+    /*private void mapLauncher() {
         String path = "User/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/caregiver";
         DatabaseReference mRef = FirebaseDatabase.getInstance().getReference(path);
         mRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -197,7 +252,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
             }
         });
 
-    }
+    }*/
 
     @Override
     public void onStarted() {
@@ -207,17 +262,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
     @Override
     public void onStartFailed(SinchError error) {
         Toast.makeText(this, error.toString(), Toast.LENGTH_LONG).show();
-    }
-
-    private boolean readyService(String username) {
-
-        if (getSinchServiceInterface() != null && !getSinchServiceInterface().isStarted()) {
-            getSinchServiceInterface().startClient(username);
-            return true;
-        }
-        else {
-            return false;
-        }
     }
 
 }

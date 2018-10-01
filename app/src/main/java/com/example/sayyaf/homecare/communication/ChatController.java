@@ -20,12 +20,8 @@ import com.google.firebase.database.DatabaseReference;
 public class ChatController {
 
     private User this_device, contact_person;
-    //private String chatDB;
     private DatabaseReference chatDB;
     private FirebaseListAdapter<ChatMessage> contentUpdateAdapter;
-
-    private ChildEventListener chatAddedListener; // use for notification
-    private long lastMsgTime; // use for notification
 
 
     /*  set up chat control for user-contact person pair (on user adding)
@@ -38,9 +34,6 @@ public class ChatController {
         this.this_device = this_device;
         this.contact_person = contact_person;
         this.chatDB = chatDB;
-
-        // chatAddedListener = null;
-        // lastMsgTime = 0;
 
     }
 
@@ -60,18 +53,17 @@ public class ChatController {
 
                 ChatMessage ct = this.getItem(position);
 
-                if(ct.getMessageSender().equals(this_device.getName()
-                        /*FirebaseAuth.getInstance().getCurrentUser().getEmail()*/)){
+                if(ct.getMessageSender().equals(this_device.getName())){
 
                     // use UI element represent the sent is from this device
                     v = LayoutInflater.from(chatActivity.getApplicationContext()).
-                            inflate(msg_block_this_device/*R.layout.msg_block_sender*/, viewGroup, false);
+                            inflate(msg_block_this_device, viewGroup, false);
                 }
                 else{
 
                     // use UI element represent the sent is from the other user
                     v = LayoutInflater.from(chatActivity.getApplicationContext()).
-                            inflate(msg_block_contact_person/*R.layout.msg_block*/, viewGroup, false);
+                            inflate(msg_block_contact_person, viewGroup, false);
 
                 }
 
@@ -123,13 +115,8 @@ public class ChatController {
         if(vaildateMsgContent(textMsg)){
 
             // upload msg to db
-
             ChatMessage ct = new ChatMessage(trimmedContent(textMsg),
-                    /*FirebaseAuth.getInstance().getCurrentUser().getEmail()*/
                     this_device.getName());
-
-            // update time that user interacted with message
-            // lastMsgTime = ct.getMessageTime();
 
             chatDB.push().setValue(ct);
 
@@ -155,89 +142,9 @@ public class ChatController {
         textMsg.setText("");
     }
 
-    /* listen to new message sent to user (may move to contact controller)
-     * chatDB: database for the chatting pair
-     */
-    /*public void listenToAdded(Context context, NotificationManager notificationManager,
-                              DatabaseReference chatDB){
-
-        //if(chatAddedListener == null)
-            chatAddedListener = new ChildEventListener() {
-                @Override
-                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    if(dataSnapshot.exists()){
-                        String username = dataSnapshot.child("messageSender").getValue().toString();
-                        long sendTime = (long) dataSnapshot.child("messageTime").getValue();
-
-                        if(sendTime > lastMsgTime &&
-                                !username.equals(FirebaseAuth.getInstance().getCurrentUser().getEmail())){
-                            newIncomingNotification(context, notificationManager,
-                                    username,
-                                    dataSnapshot.child("messageText").getValue().toString());
-
-                            lastMsgTime = sendTime;
-                        }
-                    }
-                }
-
-                @Override
-                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-                }
-
-                @Override
-                public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-                }
-
-                @Override
-                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            };
-
-        chatDB.orderByKey().limitToLast(1).addChildEventListener(chatAddedListener);
-    }*/
-
-    /* cancel listening to new message sent to user (may move to contact controller)
-     * chatDB: database for the chatting pair
-     */
-    /*public void cancelAddListening(DatabaseReference chatDB){
-        chatDB.removeEventListener(chatAddedListener);
-    }*/
-
-    // fire the notification (may move to contact controller)
-    /*private void newIncomingNotification(
-            Context context, NotificationManager notificationManager,
-            String sender, String contents){
-
-        NotificationCompat.Builder notificationbulider =
-                new NotificationCompat.Builder(context, NotificationChannels.getChatNotificationCH())
-                        .setSmallIcon(R.drawable.ic_launcher_background)
-                        .setContentTitle("New message from: " + sender)
-                        .setContentText(contents)
-                        .setDefaults(Notification.DEFAULT_ALL)
-                        .setCategory(NotificationCompat.CATEGORY_MESSAGE);
-
-        if(notificationManager != null)
-            notificationManager.notify(1, notificationbulider.build());
-    }*/
-
     // show peer's user name
     public void displayReceiverName(TextView contactName) {
         contactName.setText(contact_person.getName());
-    }
-
-    // go to voice chat page
-    public void startVoiceChat(ChatActivity chatActivity){
-        Intent goToCallPage = new Intent(chatActivity, VoiceCallActivity.class);
-        chatActivity.startActivity(goToCallPage);
-        chatActivity.finish();
     }
 
     // move back to contct page

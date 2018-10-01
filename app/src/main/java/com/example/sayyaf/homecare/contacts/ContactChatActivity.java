@@ -8,12 +8,17 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.User;
+import com.example.sayyaf.homecare.accounts.UserAppVersionController;
 import com.example.sayyaf.homecare.communication.BaseActivity;
+import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
+import com.example.sayyaf.homecare.requests.RequestActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -28,11 +33,13 @@ public class ContactChatActivity extends BaseActivity implements View.OnClickLis
 
     private DatabaseReference ref;
     private User this_device;
-    private User friend;
+    // private User friend;
 
     private EditText textInputs;
     private Button searchUser;
     private Button refreshList;
+    private Button helpButton;
+
     private ArrayList<User> friends;
     private ListView contactView;
     private ContactUserListAdapter contactUserListAdapter;
@@ -49,7 +56,12 @@ public class ContactChatActivity extends BaseActivity implements View.OnClickLis
         textInputs = (EditText) findViewById(R.id.textInputs);
         searchUser = (Button) findViewById(R.id.searchUser);
         refreshList = (Button) findViewById(R.id.refreshList);
+        helpButton = (Button) findViewById(R.id.optionHelp);
+
         contactView = (ListView) findViewById(R.id.contactView);
+
+        // activate help button on assisted person version
+        UserAppVersionController.getUserAppVersionController().resetButton(helpButton);
 
         ref = FirebaseDatabase.getInstance().getReference();
 
@@ -103,6 +115,15 @@ public class ContactChatActivity extends BaseActivity implements View.OnClickLis
             });
         }
 
+        if(v == helpButton){
+            EmergencyCallActivity.setBackToActivity(ContactChatActivity.class);
+
+            Intent intent = new Intent(ContactChatActivity.this, EmergencyCallActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        }
+
     }
 
     // debug getting data
@@ -121,7 +142,7 @@ public class ContactChatActivity extends BaseActivity implements View.OnClickLis
     // get user of this device
     public void getCurrentUser() {
         Query query = ref.child("User").orderByChild("id")
-                .equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                .equalTo(UserAppVersionController.getUserAppVersionController().getCurrentUserId());
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot datasnapshot) {
@@ -150,6 +171,7 @@ public class ContactChatActivity extends BaseActivity implements View.OnClickLis
      * showResult: showing the query result from matching the starter
      */
     public void getFriends(ContactUserListCallback contactUserListCallback, String starter, boolean showResult){
+
         ref.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -208,6 +230,7 @@ public class ContactChatActivity extends BaseActivity implements View.OnClickLis
                         friends, this_device, ref, getSinchServiceInterface());
 
         contactView.setAdapter(contactUserListAdapter);
+
     }
 
     // check input is vaild
