@@ -5,25 +5,28 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.EditText;
 
 import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.User;
+import com.example.sayyaf.homecare.accounts.UserAppVersionController;
+import com.example.sayyaf.homecare.contacts.ContactChatActivity;
 import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
 import com.example.sayyaf.homecare.requests.RequestActivity;
 import com.google.firebase.database.DatabaseReference;
 
 public class ChatActivity extends AppCompatActivity implements View.OnClickListener{
 
-    private static boolean setUpChatController = false;
     private static ChatController chatController;
-    //private ChatController chatController;
 
     private EditText textMsg;
     private TextView contactName;
     private ListView msgView;
+    private Button sendMsg;
+    private Button helpButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,8 +39,11 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         msgView = (ListView) findViewById(R.id.msgView);
         contactName = (TextView) findViewById(R.id.contactName);
 
-        /*chatController =
-                    (ChatController) getIntent().getSerializableExtra("Chat Controller");*/
+        sendMsg = (Button) findViewById(R.id.sendMsg);
+        helpButton = (Button) findViewById(R.id.optionHelp);
+
+        // activate help button on assisted person version
+        UserAppVersionController.getUserAppVersionController().resetButton(helpButton);
 
         // show the chat peer name
         chatController.displayReceiverName(contactName);
@@ -59,25 +65,20 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         chatController = new ChatController(this_device, contact_person, chatDB);
     }
 
-    /*public static void listenToAdded(Context context, NotificationManager notificationManager, DatabaseReference chatDB){
-        chatController.listenToAdded(context, notificationManager, chatDB);
-    }
-
-    public static void cancelAddListening(DatabaseReference chatDB){
-        chatController.cancelAddListening(chatDB);
-    }*/
-
     @Override
     public void onClick(View v) {
-       int button_id = v.getId();
+       if(v == sendMsg){
+           chatController.sendMsg(this, textMsg);
+       }
 
-        switch (button_id) {
+       if(v == helpButton){
+           EmergencyCallActivity.setBackToActivity(ChatActivity.class);
 
-            case R.id.sendMsg:
-                chatController.sendMsg(this, textMsg);
-                break;
-
-        }
+           Intent intent = new Intent(ChatActivity.this, EmergencyCallActivity.class);
+           intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+           startActivity(intent);
+           finish();
+       }
     }
 
     @Override

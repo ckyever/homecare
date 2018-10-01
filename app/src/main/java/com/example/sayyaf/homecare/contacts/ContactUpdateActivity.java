@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.User;
+import com.example.sayyaf.homecare.accounts.UserAppVersionController;
 import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
 import com.example.sayyaf.homecare.options.OptionActivity;
 import com.example.sayyaf.homecare.requests.RequestController;
@@ -53,7 +54,8 @@ public class ContactUpdateActivity extends AppCompatActivity implements View.OnC
         mRemoveUserButton = (Button) findViewById(R.id.removeContact);
         helpButton = (Button) findViewById(R.id.optionHelp);
 
-        configurateUser();
+        // activate help button on assisted person version
+        UserAppVersionController.getUserAppVersionController().resetButton(helpButton);
 
         currentUserAuth = FirebaseAuth.getInstance().getCurrentUser();
         ref = FirebaseDatabase.getInstance().getReference();
@@ -62,14 +64,6 @@ public class ContactUpdateActivity extends AppCompatActivity implements View.OnC
         mAddUserButton.setOnClickListener(this);
         mRemoveUserButton.setOnClickListener(this);
     }
-
-    private void configurateUser(){
-        if(!MainActivity.getIsCaregiver()){
-            helpButton.setVisibility(View.VISIBLE);
-            helpButton.setEnabled(true);
-        }
-    }
-
 
     @Override
     public void onClick(View view) {

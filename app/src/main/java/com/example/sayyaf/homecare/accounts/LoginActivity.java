@@ -10,6 +10,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,6 +37,9 @@ public class LoginActivity  extends AppCompatActivity implements View.OnClickLis
     Button mLoginButton;
     private FirebaseAuth mAuth;
 
+    private ProgressBar progressBar;
+    private TextView progressBarMsg;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +56,9 @@ public class LoginActivity  extends AppCompatActivity implements View.OnClickLis
 
         mEmailEditText.addTextChangedListener(textWatcher);
         mPasswordEditText.addTextChangedListener(textWatcher);
+
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        progressBarMsg = (TextView) findViewById(R.id.progressBarMsg);
 
     }
 
@@ -111,6 +118,8 @@ public class LoginActivity  extends AppCompatActivity implements View.OnClickLis
         String email = mEmailEditText.getText().toString();
         String password = mPasswordEditText.getText().toString();
 
+        showProgress();
+
         //Firebase Authentication service use to check for successful sign in
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnSuccessListener(this, new OnSuccessListener<AuthResult>() {
@@ -127,7 +136,13 @@ public class LoginActivity  extends AppCompatActivity implements View.OnClickLis
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 if(dataSnapshot.exists()){
-                                    MainActivity.setUserType(dataSnapshot.getValue(Boolean.class));
+
+                                    // set up user info for app version controll
+                                    UserAppVersionController
+                                            .getUserAppVersionController()
+                                            .setUser(user.getUid(), dataSnapshot.getValue(Boolean.class));
+
+                                    endProgress();
 
                                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
 
@@ -150,9 +165,23 @@ public class LoginActivity  extends AppCompatActivity implements View.OnClickLis
             public void onFailure(@NonNull Exception e) {
                 Toast.makeText(LoginActivity.this, "Emaill Address or Password is Incorrect",
                         Toast.LENGTH_SHORT).show();
+
+                endProgress();
             }
         });
 
+    }
+
+    // show either auth progress
+    private void showProgress(){
+        progressBar.setVisibility(View.VISIBLE);
+        progressBarMsg.setVisibility(View.VISIBLE);
+    }
+
+    // remove progress bar after finish
+    private void endProgress(){
+        progressBar.setVisibility(View.GONE);
+        progressBarMsg.setVisibility(View.GONE);
     }
 
     public void onBackPressed() {

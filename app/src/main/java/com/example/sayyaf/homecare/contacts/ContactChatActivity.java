@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.User;
+import com.example.sayyaf.homecare.accounts.UserAppVersionController;
 import com.example.sayyaf.homecare.communication.BaseActivity;
 import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
 import com.example.sayyaf.homecare.requests.RequestActivity;
@@ -59,7 +60,8 @@ public class ContactChatActivity extends BaseActivity implements View.OnClickLis
 
         contactView = (ListView) findViewById(R.id.contactView);
 
-        configurateUser();
+        // activate help button on assisted person version
+        UserAppVersionController.getUserAppVersionController().resetButton(helpButton);
 
         ref = FirebaseDatabase.getInstance().getReference();
 
@@ -77,13 +79,6 @@ public class ContactChatActivity extends BaseActivity implements View.OnClickLis
             }
         });
 
-    }
-
-    private void configurateUser(){
-        if(!MainActivity.getIsCaregiver()){
-            helpButton.setVisibility(View.VISIBLE);
-            helpButton.setEnabled(true);
-        }
     }
 
     @Override
@@ -147,7 +142,7 @@ public class ContactChatActivity extends BaseActivity implements View.OnClickLis
     // get user of this device
     public void getCurrentUser() {
         Query query = ref.child("User").orderByChild("id")
-                .equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                .equalTo(UserAppVersionController.getUserAppVersionController().getCurrentUserId());
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot datasnapshot) {

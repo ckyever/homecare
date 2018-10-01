@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
+import com.example.sayyaf.homecare.accounts.UserAppVersionController;
 import com.example.sayyaf.homecare.contacts.ContactChatActivity;
 import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
 
@@ -30,14 +31,8 @@ public class OptionActivity extends AppCompatActivity implements View.OnClickLis
         changeImageText = (TextView) findViewById(R.id.changeImage);
         helpButton = (Button) findViewById(R.id.optionHelp);
 
-        configurateUser();
-    }
-
-    private void configurateUser(){
-        if(!MainActivity.getIsCaregiver()){
-            helpButton.setVisibility(View.VISIBLE);
-            helpButton.setEnabled(true);
-        }
+        // activate help button on assisted person version
+        UserAppVersionController.getUserAppVersionController().resetButton(helpButton);
     }
 
     @Override

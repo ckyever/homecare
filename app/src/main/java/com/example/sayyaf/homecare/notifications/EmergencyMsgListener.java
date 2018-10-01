@@ -13,6 +13,7 @@ import android.text.format.DateFormat;
 
 import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
+import com.example.sayyaf.homecare.accounts.UserAppVersionController;
 import com.example.sayyaf.homecare.communication.ChatMessage;
 import com.example.sayyaf.homecare.contacts.ContactChatActivity;
 import com.example.sayyaf.homecare.mapping.TrackingActivity;
@@ -89,10 +90,11 @@ public class EmergencyMsgListener extends IntentService {
                         setNotification(senders.get(i), times.get(i));
                     }
 
-                    // remove calls as user receive the emergency calls
+                    // remove calls when user receive the emergency calls
                     FirebaseDatabase.getInstance()
                             .getReference("EmergencyMsg")
-                            .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                            .child(UserAppVersionController
+                                    .getUserAppVersionController().getCurrentUserId())
                             .removeValue();
 
                 }

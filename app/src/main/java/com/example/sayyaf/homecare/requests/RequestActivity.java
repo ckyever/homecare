@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.User;
+import com.example.sayyaf.homecare.accounts.UserAppVersionController;
 import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -48,19 +49,13 @@ public class RequestActivity extends AppCompatActivity implements RequestsUserLi
 
         helpButton = (Button) findViewById(R.id.optionHelp);
 
-        configurateUser();
+        // activate help button on assisted person version
+        UserAppVersionController.getUserAppVersionController().resetButton(helpButton);
 
         ref = FirebaseDatabase.getInstance().getReference();
         friends = new ArrayList<>();
         getCurrentUser();
 
-    }
-
-    private void configurateUser(){
-        if(!MainActivity.getIsCaregiver()){
-            helpButton.setVisibility(View.VISIBLE);
-            helpButton.setEnabled(true);
-        }
     }
 
     @Override

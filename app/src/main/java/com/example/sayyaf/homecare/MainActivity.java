@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.example.sayyaf.homecare.accounts.LaunchActivity;
 import com.example.sayyaf.homecare.accounts.User;
+import com.example.sayyaf.homecare.accounts.UserAppVersionController;
 import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
 import com.example.sayyaf.homecare.notifications.NotificationService;
 import com.example.sayyaf.homecare.communication.BaseActivity;
@@ -40,7 +41,6 @@ import com.sinch.android.rtc.SinchError;
 public class MainActivity extends BaseActivity implements View.OnClickListener,SinchService.StartFailedListener {
 
     private static final String TAG = "MainActivity";
-    private static boolean isCaregiver = false;
 
     Button mMapButton;
     Button mContacts;
@@ -57,13 +57,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
         setContentView(R.layout.activity_main);
         ref = FirebaseDatabase.getInstance().getReference("");
 
-        // start foreground service
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            this.startService(new Intent(this, NotificationService.class));
-        }
-        else {
-            this.startForegroundService(new Intent(this, NotificationService.class));
-        }
+        // start notification foreground service
+        startNotificationForeground();
 
         mMapButton = findViewById(R.id.mapButton);
         mMapButton.setOnClickListener(this);
@@ -85,20 +80,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
         optionsButton = (Button) findViewById(R.id.options);
         optionsButton.setOnClickListener(this);
 
-        configurateUser();
+        // activate help button set correct map type on assisted person version
+        UserAppVersionController.getUserAppVersionController().resetButton(helpButton, mMapButton);
 
-    }
-
-    public static void setUserType(boolean userType){ isCaregiver = userType; }
-
-    public static boolean getIsCaregiver(){ return isCaregiver; }
-
-    private void configurateUser(){
-        if(!isCaregiver){
-            mMapButton.setText("Map");
-            helpButton.setVisibility(View.VISIBLE);
-            helpButton.setEnabled(true);
-        }
     }
 
     public void getCurrentUser() {
@@ -130,6 +114,21 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
 
     private void startClient(User user) {
         getSinchServiceInterface().startClient(user.getId() + "," + user.getName());
+    }
+
+    // start notification foreground service (monitor network connection state, emergency notification listener)
+    private void startNotificationForeground(){
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            this.startService(new Intent(this, NotificationService.class));
+        }
+        else {
+            this.startForegroundService(new Intent(this, NotificationService.class));
+        }
+    }
+
+    // stop notification foreground services (monitor network connection state, emergency notification)
+    private void stopNotificationForeground(){
+        this.stopService(new Intent(this, NotificationService.class));
     }
 
     @Override
@@ -188,13 +187,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
         // test 2 ?, 3, 4
         unbindService();
 
-        // stop foreground services (monitor network connection state, emergency notification)
-        this.stopService(new Intent(this, NotificationService.class));
+        // stop notification foreground services (monitor network connection state, emergency notification)
+        stopNotificationForeground();
 
         // logout from firebase
         FirebaseAuth.getInstance().signOut();
-
-        isCaregiver = false;
 
         Intent intent = new Intent(MainActivity.this, LaunchActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -208,7 +205,21 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
 
     // Launches the TrackingActivity if current user is a caregiver and the MapsActivity if current
     // user is an assisted person
-    private void mapLauncher() {
+    private void mapLauncher(){
+        UserAppVersionController.getUserAppVersionController()
+                .launchMapActivity(MainActivity.this);
+        /*if(UserAppVersionController.getUserAppVersionController().getIsCaregiver()){
+            Intent intent = new Intent(MainActivity.this,
+                    TrackingActivity.class);
+            startActivity(intent);
+        }
+        else{
+            Intent intent = new Intent(MainActivity.this,
+                    MapsActivity.class);
+            startActivity(intent);
+        }*/
+    }
+    /*private void mapLauncher() {
         String path = "User/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/caregiver";
         DatabaseReference mRef = FirebaseDatabase.getInstance().getReference(path);
         mRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -237,7 +248,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
             }
         });
 
-    }
+    }*/
 
     @Override
     public void onStarted() {

@@ -17,6 +17,7 @@ import android.support.v4.app.NotificationCompat;
 
 import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
+import com.example.sayyaf.homecare.accounts.UserAppVersionController;
 import com.example.sayyaf.homecare.contacts.ContactChatActivity;
 
 public class NotificationService extends Service {
@@ -42,8 +43,9 @@ public class NotificationService extends Service {
         // start tracking network connection state
         internetStateMonitor();
 
-        // start tracking if emergency message sent to this user
-        listenToEmergencyMsg(this);
+        // start tracking if emergency message sent to caregiver
+        if(UserAppVersionController.getUserAppVersionController().getIsCaregiver())
+            listenToEmergencyMsg(this);
 
     }
 
@@ -84,11 +86,6 @@ public class NotificationService extends Service {
         context.startService(intent);
     }
 
-    /*private void stopListenToEmergencyMsg(Context context){
-        Intent intent = new Intent(context, EmergencyMsgListener.class);
-        context.stopService(intent);
-    }*/
-
     // clean up all the notifications
     private void notificationCleanUp(){
         NotificationManager manager =
@@ -103,10 +100,9 @@ public class NotificationService extends Service {
         // stop tracking network connection state
         if(connectivityReceiver != null) unregisterReceiver(connectivityReceiver);
 
-        // stopListenToEmergencyMsg(this);
-
-        // stop tracking if emergency message sent to this user
-        EmergencyMsgListener.stopListening();
+        // stop tracking if emergency message sent to caregiver
+        if(UserAppVersionController.getUserAppVersionController().getIsCaregiver())
+            EmergencyMsgListener.stopListening();
 
         // clean up all the notifications
         notificationCleanUp();

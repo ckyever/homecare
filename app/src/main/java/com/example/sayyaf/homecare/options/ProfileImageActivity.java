@@ -22,6 +22,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
+import com.example.sayyaf.homecare.accounts.UserAppVersionController;
 import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
 import com.example.sayyaf.homecare.requests.RequestActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -60,8 +61,6 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
 
     private Uri imagePath;
 
-    private String userId;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,17 +79,11 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
 
         helpButton = (Button) findViewById(R.id.optionHelp);
 
-        configurateUser();
+        // activate help button on assisted person version
+        UserAppVersionController.getUserAppVersionController().resetButton(helpButton);
 
         loadProfileImage();
 
-    }
-
-    private void configurateUser(){
-        if(!MainActivity.getIsCaregiver()){
-            helpButton.setVisibility(View.VISIBLE);
-            helpButton.setEnabled(true);
-        }
     }
 
     @Override
@@ -114,22 +107,16 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
         }
         // confirm change
         if(v == confirmChange || v == confirmChangeButton){
-            getCurrentUserId();
             uploadProfileImage();
         }
 
     }
 
-    private void getCurrentUserId(){
-        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-    }
-
     private void loadProfileImage(){
-        getCurrentUserId();
 
         Query profileImgRef = FirebaseDatabase.getInstance()
                 .getReference("User")
-                .child(userId).child("hasProfileImage");
+                .child(UserAppVersionController.getUserAppVersionController().getCurrentUserId()).child("hasProfileImage");
 
         profileImgRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -142,7 +129,9 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
                         showProgress("Loading ...");
 
                         FirebaseStorage.getInstance()
-                                .getReference("UserProfileImage").child(userId).getDownloadUrl()
+                                .getReference("UserProfileImage")
+                                .child(UserAppVersionController.getUserAppVersionController().getCurrentUserId())
+                                .getDownloadUrl()
                                 .addOnSuccessListener(onDownloadSuccess())
                                 .addOnFailureListener(onDownloadFailure());
                     }
@@ -167,7 +156,8 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
             uploadComplete = false;
 
             StorageReference storageRef = FirebaseStorage.getInstance()
-                    .getReference("UserProfileImage").child(userId);
+                    .getReference("UserProfileImage").child(
+                            UserAppVersionController.getUserAppVersionController().getCurrentUserId());
 
             storageRef.putFile(imagePath)
                     .addOnCompleteListener(onUploadCompleteAction())
@@ -235,7 +225,9 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
 
                 FirebaseDatabase.getInstance()
                         .getReference("User")
-                        .child(userId).child("hasProfileImage").setValue(true);
+                        .child(UserAppVersionController
+                                .getUserAppVersionController().getCurrentUserId())
+                        .child("hasProfileImage").setValue(true);
 
             }
         };

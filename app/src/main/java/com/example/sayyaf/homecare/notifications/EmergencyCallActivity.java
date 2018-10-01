@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.example.sayyaf.homecare.ActivityKeeper;
 import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.User;
+import com.example.sayyaf.homecare.accounts.UserAppVersionController;
 import com.example.sayyaf.homecare.communication.ChatMessage;
 import com.example.sayyaf.homecare.contacts.ContactChatActivity;
 import com.google.firebase.auth.FirebaseAuth;
@@ -67,6 +68,7 @@ public class EmergencyCallActivity extends AppCompatActivity implements View.OnC
 
         getCurrentUser();
 
+        // vibration notifier to avoid misLaunch Emergency call
         misLaunchAttention.vibrate(500);
 
         timer = setTime(this, 5);
@@ -150,7 +152,8 @@ public class EmergencyCallActivity extends AppCompatActivity implements View.OnC
         Query userRef = FirebaseDatabase.getInstance()
                 .getReference("User")
                 .orderByChild("id")
-                .equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                .equalTo(UserAppVersionController
+                        .getUserAppVersionController().getCurrentUserId());
 
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -170,7 +173,6 @@ public class EmergencyCallActivity extends AppCompatActivity implements View.OnC
     }
 
     private boolean checkHasFriends(){
-
         return (this_device != null
                 && this_device.getFriends() != null
                 && !this_device.getFriends().isEmpty());
@@ -192,6 +194,7 @@ public class EmergencyCallActivity extends AppCompatActivity implements View.OnC
 
     }
 
+    // caregiver will receive it if they have network connection and logged in
     private void sendNotification(String friendId, ChatMessage ct){
         FirebaseDatabase.getInstance().getReference("EmergencyMsg")
                 .child(friendId).push().setValue(ct);
