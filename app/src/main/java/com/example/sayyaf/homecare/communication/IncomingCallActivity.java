@@ -1,5 +1,9 @@
 package com.example.sayyaf.homecare.communication;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.sayyaf.homecare.R;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
 import com.sinch.android.rtc.MissingPermissionException;
 import com.sinch.android.rtc.PushPair;
 import com.sinch.android.rtc.calling.Call;
@@ -8,12 +12,14 @@ import com.sinch.android.rtc.calling.CallListener;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +34,7 @@ public class IncomingCallActivity extends BaseActivity {
     static final String TAG = IncomingCallActivity.class.getSimpleName();
     private String mCallId;
     private AudioPlayer mAudioPlayer;
+    private ImageView profilePic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +44,7 @@ public class IncomingCallActivity extends BaseActivity {
         Button answer = (Button) findViewById(R.id.answerButton);
         answer.setOnClickListener(mClickListener);
         Button decline = (Button) findViewById(R.id.declineButton);
+        profilePic = (ImageView) findViewById(R.id.profileImageIncoming);
         decline.setOnClickListener(mClickListener);
 
         mAudioPlayer = new AudioPlayer(this);
@@ -58,6 +66,11 @@ public class IncomingCallActivity extends BaseActivity {
             //Break the caller id to get the name of the call sender
             String callerName= call.getRemoteUserId().split(",")[1];
             remoteUser.setText(callerName);
+            FirebaseStorage.getInstance()
+                    .getReference("UserProfileImage")
+                    .child(call.getRemoteUserId().split(",")[0])
+                    .getDownloadUrl()
+                    .addOnSuccessListener(onDownloadSuccess(profilePic));
         } else {
             Log.e(TAG, "Started with invalid callId, aborting");
             finish();
@@ -169,5 +182,22 @@ public class IncomingCallActivity extends BaseActivity {
         public void onShouldSendPushNotification(Call call, List<PushPair> pushPairs) {
         }
 
+    }
+
+    private OnSuccessListener<Uri> onDownloadSuccess(ImageView userImage){
+        return new OnSuccessListener<Uri>(){
+            @Override
+            public void onSuccess(Uri userImagePath) {
+
+                Glide.with(IncomingCallActivity.this)
+                        .load(userImagePath.toString())
+                        .apply(new RequestOptions()
+                                .override(100, 100) // resize image in pixel
+                                .centerCrop()
+                                .dontAnimate())
+                        .into(userImage);
+
+            }
+        };
     }
 }

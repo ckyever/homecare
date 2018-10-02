@@ -256,9 +256,6 @@ public class VideoCallScreenActivity extends BaseActivity {
             RelativeLayout view = (RelativeLayout) findViewById(R.id.remoteVideo);
             view.setEnabled(true);
             view.setVisibility(View.VISIBLE);
-            if(view.getParent() != null) {
-                ((ViewGroup)view.getParent()).removeView(view);
-            }
             view.addView(vc.getRemoteView());
         }
     }
@@ -355,7 +352,8 @@ public class VideoCallScreenActivity extends BaseActivity {
         @Override
         public void onVideoTrackAdded(Call call) {
                 Log.d(TAG, "Video track added");
-               updateUI();
+            addLocalView();
+            addRemoteView();
         }
 
         @Override

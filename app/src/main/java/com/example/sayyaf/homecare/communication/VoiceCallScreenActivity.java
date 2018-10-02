@@ -1,8 +1,15 @@
 package com.example.sayyaf.homecare.communication;
 
+import android.net.Uri;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.sayyaf.homecare.R;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.storage.FirebaseStorage;
 import com.sinch.android.rtc.PushPair;
 import com.sinch.android.rtc.calling.Call;
 import com.sinch.android.rtc.calling.CallEndCause;
@@ -29,6 +36,7 @@ public class VoiceCallScreenActivity extends BaseActivity {
     private UpdateCallDurationTask mDurationTask;
 
     private String mCallId;
+    private ImageView profilePic;
 
     private TextView mCallDuration;
     private TextView mCallState;
@@ -57,6 +65,7 @@ public class VoiceCallScreenActivity extends BaseActivity {
         mCallDuration = (TextView) findViewById(R.id.callDurationVoice);
         mCallerName = (TextView) findViewById(R.id.remoteUserVoice);
         mCallState = (TextView) findViewById(R.id.callStateVoice);
+        profilePic = (ImageView) findViewById(R.id.profileImageVoice);
         Button endCallButton = (Button) findViewById(R.id.hangupButtonVoice);
         name = getIntent().getStringExtra("name");
 
@@ -76,6 +85,11 @@ public class VoiceCallScreenActivity extends BaseActivity {
             call.addCallListener(new SinchCallListener());
             mCallerName.setText(name);
             mCallState.setText(call.getState().toString());
+            FirebaseStorage.getInstance()
+                    .getReference("UserProfileImage")
+                    .child(call.getRemoteUserId().split(",")[0])
+                    .getDownloadUrl()
+                    .addOnSuccessListener(onDownloadSuccess(profilePic));
         } else {
             Log.e(TAG, "Started with invalid callId, aborting.");
             finish();
@@ -122,6 +136,23 @@ public class VoiceCallScreenActivity extends BaseActivity {
         if (call != null) {
             mCallDuration.setText(formatTimespan(call.getDetails().getDuration()));
         }
+    }
+
+    private OnSuccessListener<Uri> onDownloadSuccess(ImageView userImage){
+        return new OnSuccessListener<Uri>(){
+            @Override
+            public void onSuccess(Uri userImagePath) {
+
+                Glide.with(VoiceCallScreenActivity.this)
+                        .load(userImagePath.toString())
+                        .apply(new RequestOptions()
+                                .override(100, 100) // resize image in pixel
+                                .centerCrop()
+                                .dontAnimate())
+                        .into(userImage);
+
+            }
+        };
     }
 
     private class SinchCallListener implements CallListener {
