@@ -44,6 +44,8 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:27.1.1'
     implementation 'com.android.support:cardview-v7:27.1.1'
     implementation 'com.google.maps.android:android-maps-utils:0.5+'
+    implementation 'com.google.maps:google-maps-services:0.2.11'
+    implementation 'org.slf4j:slf4j-simple:1.7.25'
     implementation 'com.android.support:design:28.0.0-rc02'
     implementation project(':sinch-android-rtc-3.12.7')
 }
