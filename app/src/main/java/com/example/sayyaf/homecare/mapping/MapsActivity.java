@@ -3,6 +3,7 @@ package com.example.sayyaf.homecare.mapping;
 import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -16,6 +17,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -55,6 +57,7 @@ import com.google.maps.PendingResult;
 import com.google.maps.internal.PolylineEncoding;
 import com.google.maps.model.DirectionsResult;
 import com.google.maps.model.DirectionsRoute;
+import com.google.maps.model.TravelMode;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -83,6 +86,8 @@ public class MapsActivity extends AppCompatActivity implements View.OnClickListe
     private GeoApiContext mGeoApiContext;
     private LatLng mLatLng;
     private Boolean isLocationButtonOn = false;
+    private Polyline polyline;
+    private TravelMode travelMode;
 
     private ImageView mLocationButton;
     private AutoCompleteTextView mInputSearchTextView;
@@ -101,6 +106,13 @@ public class MapsActivity extends AppCompatActivity implements View.OnClickListe
         // Get location permissions then initialise the map
         getLocationPermission();
         locationSearched = null;
+        polyline = null;
+
+        if (mGeoApiContext == null) {
+            mGeoApiContext = new GeoApiContext.Builder()
+                    .apiKey(getString(R.string.google_maps_key))
+                    .build();
+        }
     }
 
     /**
@@ -112,11 +124,6 @@ public class MapsActivity extends AppCompatActivity implements View.OnClickListe
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        if (mGeoApiContext == null) {
-            mGeoApiContext = new GeoApiContext.Builder()
-                    .apiKey(getString(R.string.google_maps_key))
-                    .build();
-        }
     }
 
     @Override
@@ -124,7 +131,8 @@ public class MapsActivity extends AppCompatActivity implements View.OnClickListe
 
         if (view == mDirectionsButton) {
             if (locationSearched != null) {
-                calculateDirections(locationSearched);
+                // pop up window to select mode of transport
+                transportModePopUp();
             } else {
                 Toast.makeText(MapsActivity.this, "No location searched for directions",
                         Toast.LENGTH_SHORT).show();
@@ -323,11 +331,16 @@ public class MapsActivity extends AppCompatActivity implements View.OnClickListe
 
     // Place marker and move camera to location
     private void placeMarker(LatLng latlng, String title) {
+        // remove old route
+        removePolyline();
+
+        // remove old marker
         if (locationSearched != null) {
             locationSearched.remove();
             locationSearched = null;
         }
 
+        // place new marker
         if (locationSearched == null) {
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, STREET_ZOOM));
             MarkerOptions markerOptions = new MarkerOptions().position(latlng).title(title);
@@ -344,8 +357,8 @@ public class MapsActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    // Search the location that has been input in the search bar
     private void initialiseSearch() {
-        // Search the location that has been input in the search bar
         mGeoDataClient = Places.getGeoDataClient(this);
         mPlaceAutocompleteAdapter = new PlaceAutocompleteAdapter
                 (this, mGeoDataClient, LAT_LNG_BOUNDS, null);
@@ -364,8 +377,8 @@ public class MapsActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
+    // Place a marker and move the camera to the location that has been searched
     private void geoLocate() {
-        // Place a marker and move the camera to the location that has been searched
 
         String searchString = mInputSearchTextView.getText().toString();
 
@@ -431,7 +444,10 @@ public class MapsActivity extends AppCompatActivity implements View.OnClickListe
         }
     };
 
-    private void calculateDirections(Marker marker){
+    // Calculate directions from current location to marker
+    private void calculateDirections(Marker marker, TravelMode travelMode){
+        // remove old route
+        removePolyline();
         Log.d(TAG, "calculateDirections: calculating directions.");
 
         com.google.maps.model.LatLng destination = new com.google.maps.model.LatLng(
@@ -440,7 +456,8 @@ public class MapsActivity extends AppCompatActivity implements View.OnClickListe
         );
         DirectionsApiRequest directions = new DirectionsApiRequest(mGeoApiContext);
 
-        directions.alternatives(true);
+        // directions.alternatives(true);
+        directions.mode(travelMode);
         directions.origin(
                 new com.google.maps.model.LatLng(
                         mLatLng.latitude,
@@ -456,7 +473,7 @@ public class MapsActivity extends AppCompatActivity implements View.OnClickListe
                 Log.d(TAG, "calculateDirections: distance: " + result.routes[0].legs[0].distance);
                 Log.d(TAG, "calculateDirections: geocodedWayPoints: " + result.geocodedWaypoints[0].toString());
 
-                addPolylinesToMap(result);
+                addPolylineToMap(result);
             }
 
             @Override
@@ -467,7 +484,8 @@ public class MapsActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-    private void addPolylinesToMap(final DirectionsResult result){
+    // Add route to map
+    private void addPolylineToMap(final DirectionsResult result){
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
@@ -489,13 +507,52 @@ public class MapsActivity extends AppCompatActivity implements View.OnClickListe
                                 latLng.lng
                         ));
                     }
-                    Polyline polyline = mMap.addPolyline(new PolylineOptions().addAll(newDecodedPath));
-                    polyline.setColor(ContextCompat.getColor(getApplicationContext(), R.color.dark_grey));
-                    polyline.setClickable(true);
+
+                    // draw route on map
+                    polyline = mMap.addPolyline(new PolylineOptions().addAll(newDecodedPath));
+                    polyline.setColor(ContextCompat.getColor(getApplicationContext(), R.color.blue));
+                    // polyline.setClickable(true);
+
+                    // add trip duration to marker
+                    locationSearched.setSnippet("Time: " + route.legs[0].duration.toString());
+
+                    // set camera so current location and destination can be seen
+                    LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                    builder.include(mLatLng);
+                    builder.include(locationSearched.getPosition());
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(),300));
 
                 }
             }
         });
     }
 
+    // Remove route
+    private void removePolyline() {
+        if (polyline != null) {
+            polyline.remove();
+        }
+    }
+
+    // Pop up window for mode of transport selection
+    private void transportModePopUp() {
+        String[] transportMode = {"Driving", "Walking"};
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Choose mode of transport");
+        builder.setItems(transportMode, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int i) {
+                switch (i) {
+                    case 0: travelMode = TravelMode.DRIVING;
+                    break;
+                    case 1: travelMode = TravelMode.WALKING;
+                    break;
+                }
+
+                calculateDirections(locationSearched, travelMode);
+            }
+        });
+        builder.show();
+    }
 }
