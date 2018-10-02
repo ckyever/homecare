@@ -125,7 +125,7 @@ public class ContactUserListAdapter extends ArrayAdapter<User>{
     private void videoCallButtonClicked(User user) {
 
         try {
-            Call call = sinchServiceInterface.callUserVideo(user.getName() + "," + user.getId());
+            Call call = sinchServiceInterface.callUserVideo(user.getId() + "," + user.getName());
             if (call == null) {
                 // Service failed for some reason, show a Toast and abort
                 Toast.makeText(context, "Service is not started. Try stopping the service and starting it again before "
@@ -147,7 +147,7 @@ public class ContactUserListAdapter extends ArrayAdapter<User>{
     private void voiceCallButtonClicked(User user) {
 
         try {
-            Call call = sinchServiceInterface.callUser(user.getName() + "," + user.getId());
+            Call call = sinchServiceInterface.callUser(user.getId() + "," + user.getName());
             if (call == null) {
                 // Service failed for some reason, show a Toast and abort
                 Toast.makeText(context, "Service is not started. Try stopping the service and starting it again before "
