@@ -191,12 +191,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
         // stop notification foreground services (monitor network connection state, emergency notification)
         stopNotificationForeground();
 
+        this.stopService(new Intent(this, TrackingService.class));
+
         // logout from firebase
         FirebaseAuth.getInstance().signOut();
 
         // stop foreground services
-        this.stopService(new Intent(this, NotificationService.class));
-        this.stopService(new Intent(this, TrackingService.class));
         Intent intent = new Intent(MainActivity.this, LaunchActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);

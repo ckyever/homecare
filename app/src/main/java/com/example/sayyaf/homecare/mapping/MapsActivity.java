@@ -22,12 +22,15 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
+import com.example.sayyaf.homecare.accounts.UserAppVersionController;
+import com.example.sayyaf.homecare.contacts.ContactUpdateActivity;
 import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -50,7 +53,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
+        View.OnClickListener {
 
     private static final String TAG = "MapsActivity";
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
@@ -73,6 +77,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private ImageView mLocationButton;
     private AutoCompleteTextView mInputSearchTextView;
+    private Button helpButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,9 +86,26 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         mLocationButton = (ImageView) findViewById(R.id.ic_mylocation);
         mInputSearchTextView = (AutoCompleteTextView) findViewById(R.id.inputSearch);
+        helpButton = (Button) findViewById(R.id.optionHelp);
+
+        // Activate help button on assisted person version
+        UserAppVersionController.getUserAppVersionController().resetButton(helpButton);
 
         // Get location permissions then initialise the map
         getLocationPermission();
+    }
+
+    @Override
+    public void onClick(View view) {
+        if(view == helpButton){
+            EmergencyCallActivity.setBackToActivity(MapsActivity.class);
+
+            Intent intent = new Intent(MapsActivity.this,
+                    EmergencyCallActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        }
     }
 
     /**
@@ -231,7 +253,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         }
                         // Unable to get device's location
                         else {
-                            Toast.makeText(MapsActivity.this, "Unable to get current location",
+                            Toast.makeText(MapsActivity.this,
+                                    "Unable to get current location",
                                     Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -296,7 +319,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void hideKeyboard() {
         View view = this.getCurrentFocus();
         if (view != null) {
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            InputMethodManager imm = (InputMethodManager)
+                    getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
@@ -362,7 +386,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
             };
 
-    private OnCompleteListener<PlaceBufferResponse> mUpdatePlaceDetailsCallback = new OnCompleteListener<PlaceBufferResponse>() {
+    private OnCompleteListener<PlaceBufferResponse> mUpdatePlaceDetailsCallback =
+            new OnCompleteListener<PlaceBufferResponse>() {
         @Override
         public void onComplete(@NonNull Task<PlaceBufferResponse> task) {
             if (task.isSuccessful()) {
