@@ -8,6 +8,7 @@ public class User {
     private String name;
     private String email;
     private boolean isCaregiver;
+    private boolean hasProfileImage;
     //private List<User> friends;
     private HashMap<String, String> friends;
     private HashMap<String, String> chatDatabase;
@@ -18,6 +19,7 @@ public class User {
         this.name = name;
         this.email = email;
         this.isCaregiver = isCaregiver;
+        hasProfileImage = false;
         //this.friends = new ArrayList<>();
         this.friends = new HashMap<>();
         this.chatDatabase = new HashMap<>();
@@ -57,6 +59,10 @@ public class User {
     public String getUserType(){
         if(isCaregiver) return "caregiver";
         return "assisted person";
+    }
+
+    public boolean gethasProfileImage(){
+        return hasProfileImage;
     }
 
     /*

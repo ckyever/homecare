@@ -31,7 +31,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
+import com.example.sayyaf.homecare.accounts.UserAppVersionController;
+import com.example.sayyaf.homecare.contacts.ContactUpdateActivity;
+import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.AutocompletePrediction;
@@ -63,8 +67,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MapsActivity extends AppCompatActivity implements View.OnClickListener,
-        OnMapReadyCallback {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
+        View.OnClickListener {
 
     private static final String TAG = "MapsActivity";
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
@@ -92,6 +96,7 @@ public class MapsActivity extends AppCompatActivity implements View.OnClickListe
     private ImageView mLocationButton;
     private AutoCompleteTextView mInputSearchTextView;
     private Button mDirectionsButton;
+    private Button helpButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,8 +105,14 @@ public class MapsActivity extends AppCompatActivity implements View.OnClickListe
 
         mLocationButton = (ImageView) findViewById(R.id.ic_mylocation);
         mInputSearchTextView = (AutoCompleteTextView) findViewById(R.id.inputSearch);
+
         mDirectionsButton = (Button) findViewById(R.id.directions);
         mDirectionsButton.setOnClickListener(this);
+
+        helpButton = (Button) findViewById(R.id.optionHelp);
+
+        // Activate help button on assisted person version
+        UserAppVersionController.getUserAppVersionController().resetButton(helpButton);
 
         // Get location permissions then initialise the map
         getLocationPermission();
@@ -115,19 +126,17 @@ public class MapsActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    /**
-     * Initialises the map fragment.
-     */
-    private void initMap() {
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-
-    }
-
     @Override
     public void onClick(View view) {
+        if(view == helpButton){
+            EmergencyCallActivity.setBackToActivity(MapsActivity.class);
+
+            Intent intent = new Intent(MapsActivity.this,
+                    EmergencyCallActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        }
 
         if (view == mDirectionsButton) {
             if (locationSearched != null) {
@@ -138,6 +147,17 @@ public class MapsActivity extends AppCompatActivity implements View.OnClickListe
                         Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    /**
+     * Initialises the map fragment.
+     */
+    private void initMap() {
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
     }
 
     /**
@@ -275,7 +295,8 @@ public class MapsActivity extends AppCompatActivity implements View.OnClickListe
                         }
                         // Unable to get device's location
                         else {
-                            Toast.makeText(MapsActivity.this, "Unable to get current location",
+                            Toast.makeText(MapsActivity.this,
+                                    "Unable to get current location",
                                     Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -352,7 +373,8 @@ public class MapsActivity extends AppCompatActivity implements View.OnClickListe
     private void hideKeyboard() {
         View view = this.getCurrentFocus();
         if (view != null) {
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            InputMethodManager imm = (InputMethodManager)
+                    getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
@@ -418,7 +440,8 @@ public class MapsActivity extends AppCompatActivity implements View.OnClickListe
                 }
             };
 
-    private OnCompleteListener<PlaceBufferResponse> mUpdatePlaceDetailsCallback = new OnCompleteListener<PlaceBufferResponse>() {
+    private OnCompleteListener<PlaceBufferResponse> mUpdatePlaceDetailsCallback =
+            new OnCompleteListener<PlaceBufferResponse>() {
         @Override
         public void onComplete(@NonNull Task<PlaceBufferResponse> task) {
             if (task.isSuccessful()) {

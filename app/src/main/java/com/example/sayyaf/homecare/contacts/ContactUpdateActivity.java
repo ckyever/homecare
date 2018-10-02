@@ -14,6 +14,9 @@ import android.widget.Toast;
 import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.User;
+import com.example.sayyaf.homecare.accounts.UserAppVersionController;
+import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
+import com.example.sayyaf.homecare.options.OptionActivity;
 import com.example.sayyaf.homecare.requests.RequestController;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -36,7 +39,9 @@ public class ContactUpdateActivity extends AppCompatActivity implements View.OnC
     private User currentUser;
     private String uid;
     private Button mRemoveUserButton;
-    public static final String TAG =ContactUpdateActivity.class.getSimpleName();
+    private Button helpButton;
+
+    public static final String TAG = ContactUpdateActivity.class.getSimpleName();
 
 
 
@@ -47,6 +52,10 @@ public class ContactUpdateActivity extends AppCompatActivity implements View.OnC
         mAddUserButton = (Button) findViewById(R.id.addContact);
         mUserEmail = (EditText) findViewById(R.id.contactEmail);
         mRemoveUserButton = (Button) findViewById(R.id.removeContact);
+        helpButton = (Button) findViewById(R.id.optionHelp);
+
+        // activate help button on assisted person version
+        UserAppVersionController.getUserAppVersionController().resetButton(helpButton);
 
         currentUserAuth = FirebaseAuth.getInstance().getCurrentUser();
         ref = FirebaseDatabase.getInstance().getReference();
@@ -56,12 +65,20 @@ public class ContactUpdateActivity extends AppCompatActivity implements View.OnC
         mRemoveUserButton.setOnClickListener(this);
     }
 
-
     @Override
     public void onClick(View view) {
 
         //Retrieve the entered email
         final String email = mUserEmail.getText().toString().trim();
+
+        if(view == helpButton){
+            EmergencyCallActivity.setBackToActivity(ContactUpdateActivity.class);
+
+            Intent intent = new Intent(ContactUpdateActivity.this, EmergencyCallActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        }
 
         //Call the requisite protocol based on view clicked
         if(view == mAddUserButton) {

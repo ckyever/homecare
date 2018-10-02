@@ -1,6 +1,15 @@
 package com.example.sayyaf.homecare.communication;
 
+import android.net.Uri;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.sayyaf.homecare.R;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.storage.FirebaseStorage;
 import com.sinch.android.rtc.PushPair;
 import com.sinch.android.rtc.calling.Call;
 import com.sinch.android.rtc.calling.CallEndCause;
@@ -12,7 +21,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
@@ -20,26 +28,26 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class CallScreenActivity extends BaseActivity {
-
-    static final String TAG = CallScreenActivity.class.getSimpleName();
+public class VoiceCallScreenActivity extends BaseActivity {
+    static final String TAG = VoiceCallScreenActivity.class.getSimpleName();
 
     private AudioPlayer mAudioPlayer;
     private Timer mTimer;
     private UpdateCallDurationTask mDurationTask;
 
     private String mCallId;
+    private ImageView profilePic;
 
     private TextView mCallDuration;
     private TextView mCallState;
     private TextView mCallerName;
-    String string;
+    String name;
 
     private class UpdateCallDurationTask extends TimerTask {
 
         @Override
         public void run() {
-            CallScreenActivity.this.runOnUiThread(new Runnable() {
+            VoiceCallScreenActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     updateCallDuration();
@@ -51,15 +59,15 @@ public class CallScreenActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_call_screen);
+        setContentView(R.layout.activity_voice_call_screen);
 
         mAudioPlayer = new AudioPlayer(this);
-        mCallDuration = (TextView) findViewById(R.id.callDuration);
-        mCallerName = (TextView) findViewById(R.id.remoteUser);
-        mCallerName.setText(getIntent().getStringExtra("name"));
-        mCallState = (TextView) findViewById(R.id.callState);
-        Button endCallButton = (Button) findViewById(R.id.hangupButton);
-        string = getIntent().getStringExtra("name");
+        mCallDuration = (TextView) findViewById(R.id.callDurationVoice);
+        mCallerName = (TextView) findViewById(R.id.remoteUserVoice);
+        mCallState = (TextView) findViewById(R.id.callStateVoice);
+        profilePic = (ImageView) findViewById(R.id.profileImageVoice);
+        Button endCallButton = (Button) findViewById(R.id.hangupButtonVoice);
+        name = getIntent().getStringExtra("name");
 
         endCallButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -75,8 +83,13 @@ public class CallScreenActivity extends BaseActivity {
         Call call = getSinchServiceInterface().getCall(mCallId);
         if (call != null) {
             call.addCallListener(new SinchCallListener());
-            mCallerName.setText(string);
+            mCallerName.setText(name);
             mCallState.setText(call.getState().toString());
+            FirebaseStorage.getInstance()
+                    .getReference("UserProfileImage")
+                    .child(call.getRemoteUserId().split(",")[0])
+                    .getDownloadUrl()
+                    .addOnSuccessListener(onDownloadSuccess(profilePic));
         } else {
             Log.e(TAG, "Started with invalid callId, aborting.");
             finish();
@@ -125,6 +138,23 @@ public class CallScreenActivity extends BaseActivity {
         }
     }
 
+    private OnSuccessListener<Uri> onDownloadSuccess(ImageView userImage){
+        return new OnSuccessListener<Uri>(){
+            @Override
+            public void onSuccess(Uri userImagePath) {
+
+                Glide.with(VoiceCallScreenActivity.this)
+                        .load(userImagePath.toString())
+                        .apply(new RequestOptions()
+                                .override(100, 100) // resize image in pixel
+                                .centerCrop()
+                                .dontAnimate())
+                        .into(userImage);
+
+            }
+        };
+    }
+
     private class SinchCallListener implements CallListener {
 
         @Override
@@ -134,7 +164,7 @@ public class CallScreenActivity extends BaseActivity {
             mAudioPlayer.stopProgressTone();
             setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
             String endMsg = "Call ended: " + call.getDetails().toString();
-            Toast.makeText(CallScreenActivity.this, "User Unavailable", Toast.LENGTH_LONG).show();
+            Toast.makeText(VoiceCallScreenActivity.this, endMsg, Toast.LENGTH_LONG).show();
             endCall();
         }
 
