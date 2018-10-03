@@ -3,6 +3,7 @@ package com.example.sayyaf.homecare.mapping;
 import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -10,10 +11,13 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -45,9 +49,19 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.maps.DirectionsApiRequest;
+import com.google.maps.GeoApiContext;
+import com.google.maps.PendingResult;
+import com.google.maps.internal.PolylineEncoding;
+import com.google.maps.model.DirectionsResult;
+import com.google.maps.model.DirectionsRoute;
+import com.google.maps.model.TravelMode;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -72,11 +86,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private PlaceAutocompleteAdapter mPlaceAutocompleteAdapter;
     private GeoDataClient mGeoDataClient;
     private PlaceInfo mPlace;
+    private Marker locationSearched;
+    private GeoApiContext mGeoApiContext;
     private LatLng mLatLng;
     private Boolean isLocationButtonOn = false;
+    private Polyline polyline;
+    private TravelMode travelMode;
 
     private ImageView mLocationButton;
     private AutoCompleteTextView mInputSearchTextView;
+    private Button mDirectionsButton;
     private Button helpButton;
 
     @Override
@@ -86,6 +105,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         mLocationButton = (ImageView) findViewById(R.id.ic_mylocation);
         mInputSearchTextView = (AutoCompleteTextView) findViewById(R.id.inputSearch);
+
+        mDirectionsButton = (Button) findViewById(R.id.directions);
+        mDirectionsButton.setOnClickListener(this);
+
         helpButton = (Button) findViewById(R.id.optionHelp);
 
         // Activate help button on assisted person version
@@ -93,6 +116,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         // Get location permissions then initialise the map
         getLocationPermission();
+        locationSearched = null;
+        polyline = null;
+
+        if (mGeoApiContext == null) {
+            mGeoApiContext = new GeoApiContext.Builder()
+                    .apiKey(getString(R.string.google_maps_key))
+                    .build();
+        }
     }
 
     @Override
@@ -106,6 +137,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             startActivity(intent);
             finish();
         }
+
+        if (view == mDirectionsButton) {
+            if (locationSearched != null) {
+                // pop up window to select mode of transport
+                transportModePopUp();
+            } else {
+                Toast.makeText(MapsActivity.this, "No location searched for directions",
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     /**
@@ -116,6 +157,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
     }
 
     /**
@@ -310,9 +352,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     // Place marker and move camera to location
     private void placeMarker(LatLng latlng, String title) {
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, STREET_ZOOM));
-        MarkerOptions markerOptions = new MarkerOptions().position(latlng).title(title);
-        mMap.addMarker(markerOptions);
+        // remove old route
+        removePolyline();
+
+        // remove old marker
+        if (locationSearched != null) {
+            locationSearched.remove();
+            locationSearched = null;
+        }
+
+        // place new marker
+        if (locationSearched == null) {
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, STREET_ZOOM));
+            MarkerOptions markerOptions = new MarkerOptions().position(latlng).title(title);
+            locationSearched = mMap.addMarker(markerOptions);
+        }
     }
 
     // Hide keyboard
@@ -325,8 +379,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    // Search the location that has been input in the search bar
     private void initialiseSearch() {
-        // Search the location that has been input in the search bar
         mGeoDataClient = Places.getGeoDataClient(this);
         mPlaceAutocompleteAdapter = new PlaceAutocompleteAdapter
                 (this, mGeoDataClient, LAT_LNG_BOUNDS, null);
@@ -345,8 +399,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
+    // Place a marker and move the camera to the location that has been searched
     private void geoLocate() {
-        // Place a marker and move the camera to the location that has been searched
 
         String searchString = mInputSearchTextView.getText().toString();
 
@@ -413,4 +467,115 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     };
 
+    // Calculate directions from current location to marker
+    private void calculateDirections(Marker marker, TravelMode travelMode){
+        // remove old route
+        removePolyline();
+        Log.d(TAG, "calculateDirections: calculating directions.");
+
+        com.google.maps.model.LatLng destination = new com.google.maps.model.LatLng(
+                marker.getPosition().latitude,
+                marker.getPosition().longitude
+        );
+        DirectionsApiRequest directions = new DirectionsApiRequest(mGeoApiContext);
+
+        // directions.alternatives(true);
+        directions.mode(travelMode);
+        directions.origin(
+                new com.google.maps.model.LatLng(
+                        mLatLng.latitude,
+                        mLatLng.longitude
+                )
+        );
+        Log.d(TAG, "calculateDirections: destination: " + destination.toString());
+        directions.destination(destination).setCallback(new PendingResult.Callback<DirectionsResult>() {
+            @Override
+            public void onResult(DirectionsResult result) {
+                Log.d(TAG, "calculateDirections: routes: " + result.routes[0].toString());
+                Log.d(TAG, "calculateDirections: duration: " + result.routes[0].legs[0].duration);
+                Log.d(TAG, "calculateDirections: distance: " + result.routes[0].legs[0].distance);
+                Log.d(TAG, "calculateDirections: geocodedWayPoints: " + result.geocodedWaypoints[0].toString());
+
+                addPolylineToMap(result);
+            }
+
+            @Override
+            public void onFailure(Throwable e) {
+                Log.e(TAG, "calculateDirections: Failed to get directions: " + e.getMessage() );
+
+            }
+        });
+    }
+
+    // Add route to map
+    private void addPolylineToMap(final DirectionsResult result){
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "run: result routes: " + result.routes.length);
+
+                for(DirectionsRoute route: result.routes){
+                    Log.d(TAG, "run: leg: " + route.legs[0].toString());
+                    List<com.google.maps.model.LatLng> decodedPath = PolylineEncoding.decode(route.overviewPolyline.getEncodedPath());
+
+                    List<LatLng> newDecodedPath = new ArrayList<>();
+
+                    // This loops through all the LatLng coordinates of ONE polyline.
+                    for(com.google.maps.model.LatLng latLng: decodedPath){
+
+                        // Log.d(TAG, "run: latlng: " + latLng.toString());
+
+                        newDecodedPath.add(new LatLng(
+                                latLng.lat,
+                                latLng.lng
+                        ));
+                    }
+
+                    // draw route on map
+                    polyline = mMap.addPolyline(new PolylineOptions().addAll(newDecodedPath));
+                    polyline.setColor(ContextCompat.getColor(getApplicationContext(), R.color.blue));
+                    // polyline.setClickable(true);
+
+                    // add trip duration to marker
+                    locationSearched.setSnippet("Time: " + route.legs[0].duration.toString());
+
+                    // set camera so current location and destination can be seen
+                    LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                    builder.include(mLatLng);
+                    builder.include(locationSearched.getPosition());
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(),300));
+
+                }
+            }
+        });
+    }
+
+    // Remove route
+    private void removePolyline() {
+        if (polyline != null) {
+            polyline.remove();
+        }
+    }
+
+    // Pop up window for mode of transport selection
+    private void transportModePopUp() {
+        String[] transportMode = {"Driving", "Walking"};
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Choose mode of transport");
+        builder.setItems(transportMode, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int i) {
+                switch (i) {
+                    case 0: travelMode = TravelMode.DRIVING;
+                    break;
+                    case 1: travelMode = TravelMode.WALKING;
+                    break;
+                }
+
+                calculateDirections(locationSearched, travelMode);
+            }
+        });
+        builder.show();
+    }
 }
