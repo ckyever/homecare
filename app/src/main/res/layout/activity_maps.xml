@@ -57,7 +57,6 @@
         android:src="@drawable/ic_mylocationoff"/>
 
     <Button
-<<<<<<< HEAD
         android:id="@+id/directions"
         android:layout_width="match_parent"
         android:layout_height="30dp"
@@ -67,7 +66,8 @@
         android:layout_marginLeft="250dp"
         android:text="Directions"
         android:textSize="7sp" />
-=======
+
+    <Button
         android:id="@+id/optionHelp"
         android:layout_width="wrap_content"
         android:layout_height="40sp"
@@ -87,6 +87,5 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
->>>>>>> master
 
 </RelativeLayout>
