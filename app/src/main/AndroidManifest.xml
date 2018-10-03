@@ -80,6 +80,10 @@
 
         <activity android:name=".notifications.EmergencyCallActivity"
             android:screenOrientation="portrait" />
+
+        <activity android:name=".notifications.EmergencyAttentionActivity"
+            android:screenOrientation="portrait" />
+
         <activity android:name=".options.OptionActivity" />
         <activity android:name=".options.ProfileImageActivity"
             android:screenOrientation="portrait" />

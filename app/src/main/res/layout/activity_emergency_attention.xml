@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".notifications.EmergencyAttentionActivity">
+
+    <TextView
+        android:id="@+id/notice1"
+        android:textColor="#FF0000"
+        android:textStyle="bold"
+        android:textSize="35sp"
+        android:textAlignment="center"
+        android:text="You get emergency\n call from the\n assisted person"
+        android:layout_marginTop="100sp"
+        android:layout_marginBottom="100sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="50sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/notice2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <TextView
+        android:id="@+id/notice2"
+        android:textColor="#FF0000"
+        android:textStyle="bold"
+        android:textSize="25sp"
+        android:textAlignment="center"
+        android:text="Read the notifications\nfor more details"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="50sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/cancelCall"
+        app:layout_constraintTop_toBottomOf="@id/notice1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+
+    <Button
+        android:id="@+id/done"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ok"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        android:onClick="onClick"
+        android:layout_marginTop="100sp"
+        android:layout_marginBottom="100sp"
+        app:layout_constraintTop_toBottomOf="@id/notice2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+
+
+</android.support.constraint.ConstraintLayout>
