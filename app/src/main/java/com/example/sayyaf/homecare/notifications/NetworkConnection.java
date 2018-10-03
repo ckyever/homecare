@@ -8,7 +8,9 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v4.app.NotificationCompat;
+import android.widget.Toast;
 
+import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
@@ -17,16 +19,12 @@ public class NetworkConnection extends BroadcastReceiver {
 
     private static final int connectionID = 20;
 
-    private boolean connection;
-
-    /*public NetworkConnection(boolean connection){
-        this.connection = connection;
-    }*/
+    private static boolean connection;
 
     // default as not connected
     public NetworkConnection() { connection = false; }
 
-    public boolean getConnection(){ return connection; }
+    public static boolean getConnection(){ return connection; }
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -95,6 +93,12 @@ public class NetworkConnection extends BroadcastReceiver {
 
         manager.notify(connectionID, notificationbulider.build());
 
+    }
+
+    // block access to avoid crash
+    public static void requestNetworkConnection(Context context){
+        Toast.makeText(context,
+                "Wait for Network connection", Toast.LENGTH_SHORT).show();
     }
 
 }

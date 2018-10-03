@@ -1,10 +1,13 @@
 package com.example.sayyaf.homecare.contacts;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -18,6 +21,7 @@ import com.example.sayyaf.homecare.accounts.User;
 import com.example.sayyaf.homecare.accounts.UserAppVersionController;
 import com.example.sayyaf.homecare.communication.BaseActivity;
 import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
+import com.example.sayyaf.homecare.notifications.NetworkConnection;
 import com.example.sayyaf.homecare.requests.RequestActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -29,7 +33,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-public class ContactChatActivity extends BaseActivity implements View.OnClickListener {
+public class ContactChatActivity extends BaseActivity implements View.OnClickListener, ContactUserListCallback {
 
     private DatabaseReference ref;
     private User this_device;
@@ -39,6 +43,9 @@ public class ContactChatActivity extends BaseActivity implements View.OnClickLis
     private Button searchUser;
     private Button refreshList;
     private Button helpButton;
+
+    private ProgressBar progressBar;
+    private TextView progressBarMsg;
 
     private ArrayList<User> friends;
     private ListView contactView;
@@ -60,25 +67,18 @@ public class ContactChatActivity extends BaseActivity implements View.OnClickLis
 
         contactView = (ListView) findViewById(R.id.contactView);
 
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        progressBarMsg = (TextView) findViewById(R.id.progressBarMsg);
+
         // activate help button on assisted person version
         UserAppVersionController.getUserAppVersionController().resetButton(helpButton);
 
         ref = FirebaseDatabase.getInstance().getReference();
-
-        getCurrentUser();
         friends = new ArrayList<User>();
 
         // get all added contacts
-        getAllFriends(new ContactUserListCallback(){
-            @Override
-            public void onCallback(ArrayList<User> friends){
-
-                // wait for database fetch complete and update the listing
-                resetView(friends);
-
-            }
-        });
-
+        showProgress();
+        getAllFriends();
     }
 
     @Override
@@ -86,33 +86,32 @@ public class ContactChatActivity extends BaseActivity implements View.OnClickLis
 
         String starter = textInputs.getText().toString().trim();
 
+        if(!NetworkConnection.getConnection()){
+            NetworkConnection.requestNetworkConnection(ContactChatActivity.this);
+            showProgress();
+            return;
+        }
+
+        if(v != textInputs){
+            // hide keyboard
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+        }
+
         // search user by name or email (added contacts)
         if(v == searchUser){
 
             // ignore empty input
             if(!vaildateInput(starter)) return;
 
-            getFriends(new ContactUserListCallback(){
-                @Override
-                public void onCallback(ArrayList<User> friends){
-
-                    // wait for database fetch complete and update the listing
-                    resetView(friends);
-
-                }
-            }, starter, true);
+            showProgress();
+            getFriends(starter, true);
         }
 
         // refresh the contact listing (show all added contacts)
         if(v == refreshList){
-            getAllFriends(new ContactUserListCallback(){
-                @Override
-                public void onCallback(ArrayList<User> friends){
-
-                    // wait for database fetch complete and update the listing
-                    resetView(friends);
-                }
-            });
+            showProgress();
+            getAllFriends();
         }
 
         if(v == helpButton){
@@ -139,8 +138,8 @@ public class ContactChatActivity extends BaseActivity implements View.OnClickLis
         }
     }
 
-    // get user of this device
-    public void getCurrentUser() {
+    // get all added contacts
+    public void getAllFriends(){
         Query query = ref.child("User").orderByChild("id")
                 .equalTo(UserAppVersionController.getUserAppVersionController().getCurrentUserId());
         query.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -149,6 +148,7 @@ public class ContactChatActivity extends BaseActivity implements View.OnClickLis
                 for (DataSnapshot s : datasnapshot.getChildren()) {
                     if (s.exists()) {
                         this_device = s.getValue(User.class);
+                        onCurrentUserCallback(this_device, null, false);
                     }
                 }
 
@@ -160,18 +160,35 @@ public class ContactChatActivity extends BaseActivity implements View.OnClickLis
         });
     }
 
-    // get all added contacts
-    public void getAllFriends(ContactUserListCallback contactUserListCallback){
-        getFriends(contactUserListCallback, null, false);
-    }
-
     /* get added contacts base on the search
      * contactUserListCallback: interface to do works until database fetching complete
      * starter: starting letters or username or email (show all friends if it is null)
      * showResult: showing the query result from matching the starter
      */
-    public void getFriends(ContactUserListCallback contactUserListCallback, String starter, boolean showResult){
+    public void getFriends(String starter, boolean showResult){
 
+        Query query = ref.child("User").orderByChild("id")
+                .equalTo(UserAppVersionController.getUserAppVersionController().getCurrentUserId());
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot datasnapshot) {
+                for (DataSnapshot s : datasnapshot.getChildren()) {
+                    if (s.exists()) {
+                        this_device = s.getValue(User.class);
+                        onCurrentUserCallback(this_device, starter, showResult);
+                    }
+                }
+
+            }
+            @Override
+            public void onCancelled(DatabaseError arg0) {
+
+            }
+        });
+    }
+
+    @Override
+    public void onCurrentUserCallback(User this_device, String starter, boolean showResult){
         ref.child("User").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -183,7 +200,7 @@ public class ContactChatActivity extends BaseActivity implements View.OnClickLis
                         if(s.exists()){
                             User fd = s.getValue(User.class);
 
-                            if (fd.getChatDatabase() != null){
+                            if (fd.getChatDatabase() != null && !fd.getChatDatabase().isEmpty()){
                                 if(fd.getChatDatabase().containsKey(this_device.getId())){
                                     if(starter == null)
                                         // add all friends
@@ -204,7 +221,7 @@ public class ContactChatActivity extends BaseActivity implements View.OnClickLis
                                 Toast.LENGTH_SHORT).show();
                     }
 
-                    contactUserListCallback.onCallback(friends);
+                    onContactsCallback(friends);
                 }
                 else{
                     // user do not have a added friend
@@ -223,6 +240,11 @@ public class ContactChatActivity extends BaseActivity implements View.OnClickLis
         });
     }
 
+    @Override
+    public void onContactsCallback(ArrayList<User> friends) {
+        resetView(friends);
+    }
+
     // reset view after database query
     private void resetView(ArrayList<User> friends){
         contactUserListAdapter =
@@ -230,7 +252,19 @@ public class ContactChatActivity extends BaseActivity implements View.OnClickLis
                         friends, this_device, ref, getSinchServiceInterface());
 
         contactView.setAdapter(contactUserListAdapter);
+        endProgress();
+    }
 
+    // show either upload or download progress
+    private void showProgress(){
+        progressBar.setVisibility(View.VISIBLE);
+        progressBarMsg.setVisibility(View.VISIBLE);
+    }
+
+    // remove progress bar after finish
+    private void endProgress(){
+        progressBar.setVisibility(View.GONE);
+        progressBarMsg.setVisibility(View.GONE);
     }
 
     // check input is vaild
@@ -243,7 +277,6 @@ public class ContactChatActivity extends BaseActivity implements View.OnClickLis
         return username.startsWith(starter) || email.startsWith(starter);
     }
 
-
     @Override
     public void onBackPressed() {
         // back to menu page
@@ -252,4 +285,5 @@ public class ContactChatActivity extends BaseActivity implements View.OnClickLis
         startActivity(goToMenu);
         finish();
     }
+
 }

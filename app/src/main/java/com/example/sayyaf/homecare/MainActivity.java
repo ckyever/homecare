@@ -1,6 +1,7 @@
 package com.example.sayyaf.homecare;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.content.pm.PackageManager;
@@ -11,6 +12,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,6 +21,7 @@ import com.example.sayyaf.homecare.accounts.LaunchActivity;
 import com.example.sayyaf.homecare.accounts.User;
 import com.example.sayyaf.homecare.accounts.UserAppVersionController;
 import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
+import com.example.sayyaf.homecare.notifications.NetworkConnection;
 import com.example.sayyaf.homecare.notifications.NotificationService;
 import com.example.sayyaf.homecare.communication.BaseActivity;
 import com.example.sayyaf.homecare.communication.SinchService;
@@ -135,6 +138,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
     @Override
     public void onClick(View view) {
 
+        if(view == logoutButton){
+            logout();
+            return;
+        }
+
+        if(!NetworkConnection.getConnection()){
+            NetworkConnection.requestNetworkConnection(MainActivity.this);
+            return;
+        }
+
         if(view == mMapButton) {
             mapLauncher();
         }
@@ -151,10 +164,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();
-        }
-
-        if(view == logoutButton){
-            logout();
         }
 
         if (view == mFriendRequests) {

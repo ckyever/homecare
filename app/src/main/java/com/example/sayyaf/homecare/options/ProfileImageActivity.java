@@ -24,6 +24,7 @@ import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.UserAppVersionController;
 import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
+import com.example.sayyaf.homecare.notifications.NetworkConnection;
 import com.example.sayyaf.homecare.requests.RequestActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -83,11 +84,25 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
         UserAppVersionController.getUserAppVersionController().resetButton(helpButton);
 
         loadProfileImage();
+    }
 
+    public static boolean isUploading(){
+        return !uploadComplete;
     }
 
     @Override
     public void onClick(View v) {
+
+        // select image
+        if(v == selectImage || v == selectImageButton){
+            selectImage();
+            return;
+        }
+
+        if(!NetworkConnection.getConnection()){
+            NetworkConnection.requestNetworkConnection(ProfileImageActivity.this);
+            return;
+        }
 
         if(v == helpButton){
             EmergencyCallActivity.setBackToActivity(ProfileImageActivity.class);
@@ -98,13 +113,6 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
             finish();
         }
 
-        // wait for upload
-        if(!uploadComplete) return;
-
-        // select image
-        if(v == selectImage || v == selectImageButton){
-            selectImage();
-        }
         // confirm change
         if(v == confirmChange || v == confirmChangeButton){
             uploadProfileImage();
@@ -141,8 +149,7 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                progressBar.setVisibility(View.GONE);
-                progressBarMsg.setVisibility(View.GONE);
+                endProgress();
             }
         });
 
@@ -150,8 +157,6 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
 
     private void uploadProfileImage(){
         if(imagePath != null){
-
-            showProgress("Uploading ...");
 
             uploadComplete = false;
 
@@ -219,8 +224,6 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
                 Toast.makeText(ProfileImageActivity.this, "Profile image is updated",
                         Toast.LENGTH_SHORT).show();
 
-                endProgress();
-
                 uploadComplete = true;
 
                 FirebaseDatabase.getInstance()
@@ -240,8 +243,6 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
             public void onFailure(@NonNull Exception e) {
                 Toast.makeText(ProfileImageActivity.this, "Cannot update profile image",
                         Toast.LENGTH_SHORT).show();
-
-                endProgress();
 
                 uploadComplete = true;
             }

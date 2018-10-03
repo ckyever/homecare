@@ -2,12 +2,19 @@ package com.example.sayyaf.homecare.accounts;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
 
 import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.mapping.MapsActivity;
 import com.example.sayyaf.homecare.mapping.TrackingActivity;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 // This class store user details (persistent details) under logged in life time
 public class UserAppVersionController {
@@ -16,7 +23,10 @@ public class UserAppVersionController {
     private String userId;
     private boolean isCaregiver;
 
-    private UserAppVersionController(){ }
+    private UserAppVersionController(){
+        userId = "";
+        isCaregiver = true;
+    }
 
     public static UserAppVersionController getUserAppVersionController(){
         if(instance == null){
@@ -35,9 +45,13 @@ public class UserAppVersionController {
         this.isCaregiver = isCaregiver;
     }
 
-    public boolean getIsCaregiver(){ return isCaregiver; }
+    public boolean getIsCaregiver(){
+        return isCaregiver;
+    }
 
-    public String getCurrentUserId(){ return userId; }
+    public String getCurrentUserId(){
+        return userId;
+    }
 
     // enable help buttons on assisted person version
     public void resetButton(Button helpButton){

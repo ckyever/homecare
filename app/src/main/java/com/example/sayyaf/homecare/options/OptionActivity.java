@@ -14,6 +14,7 @@ import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.UserAppVersionController;
 import com.example.sayyaf.homecare.contacts.ContactChatActivity;
 import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
+import com.example.sayyaf.homecare.notifications.NetworkConnection;
 
 public class OptionActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -37,8 +38,19 @@ public class OptionActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onClick(View v) {
+        if(!NetworkConnection.getConnection()){
+            NetworkConnection.requestNetworkConnection(OptionActivity.this);
+            return;
+        }
+
         // go to image upload
         if(v == changeImageButton || v == changeImageText){
+            if(ProfileImageActivity.isUploading()){
+                Toast.makeText(OptionActivity.this,
+                        "Wait for upload complete", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             Intent goToProfileImage = new Intent(OptionActivity.this, ProfileImageActivity.class);
             goToProfileImage.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(goToProfileImage);

@@ -22,6 +22,7 @@ import com.example.sayyaf.homecare.accounts.User;
 import com.example.sayyaf.homecare.communication.VideoCallScreenActivity;
 import com.example.sayyaf.homecare.communication.ChatActivity;
 import com.example.sayyaf.homecare.communication.SinchService;
+import com.example.sayyaf.homecare.notifications.NetworkConnection;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.example.sayyaf.homecare.communication.VoiceCallScreenActivity;
 import com.google.firebase.database.DatabaseReference;
@@ -89,6 +90,11 @@ public class ContactUserListAdapter extends ArrayAdapter<User>{
         chatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!NetworkConnection.getConnection()){
+                    NetworkConnection.requestNetworkConnection(context);
+                    return;
+                }
+
                 String chatDB = users.get(i).getChatDatabase().get(this_device.getId());
 
                 // look up the common chat room in chat activtity
@@ -123,6 +129,10 @@ public class ContactUserListAdapter extends ArrayAdapter<User>{
     }
 
     private void videoCallButtonClicked(User user) {
+        if(!NetworkConnection.getConnection()){
+            NetworkConnection.requestNetworkConnection(context);
+            return;
+        }
 
         try {
             Call call = sinchServiceInterface.callUserVideo(user.getId() + "," + user.getName());
@@ -145,6 +155,10 @@ public class ContactUserListAdapter extends ArrayAdapter<User>{
     }
 
     private void voiceCallButtonClicked(User user) {
+        if(!NetworkConnection.getConnection()){
+            NetworkConnection.requestNetworkConnection(context);
+            return;
+        }
 
         try {
             Call call = sinchServiceInterface.callUser(user.getId() + "," + user.getName());

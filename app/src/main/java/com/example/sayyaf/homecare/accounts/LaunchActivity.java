@@ -24,7 +24,9 @@ public class LaunchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
-        if (auth.getCurrentUser() != null) {
+        if (auth.getCurrentUser() != null
+                && !UserAppVersionController
+                .getUserAppVersionController().getCurrentUserId().equals("")) {
             // already signed in
 
             Intent goToMenu = new Intent(this, MainActivity.class);
