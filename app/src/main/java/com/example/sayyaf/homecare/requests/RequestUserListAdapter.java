@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.User;
+import com.example.sayyaf.homecare.notifications.NetworkConnection;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.storage.FirebaseStorage;
@@ -75,15 +76,24 @@ public class RequestUserListAdapter extends ArrayAdapter<User> {
         contactEmail.setText(requestEmail);
 
         // set profile image if there is one
-        if(users.get(i).gethasProfileImage())
+        if(!users.get(i).getProfileImage().equals("no Image")){
+            loadImageToView(userRequestImage, users.get(i).getProfileImage());
+        }
+
+        /*if(users.get(i).gethasProfileImage())
             FirebaseStorage.getInstance()
                     .getReference("UserProfileImage").child(users.get(i).getId()).getDownloadUrl()
-                    .addOnSuccessListener(onDownloadSuccess(userRequestImage));
+                    .addOnSuccessListener(onDownloadSuccess(userRequestImage));*/
 
         //On click, current user has chosen to accept friend request
         acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(!NetworkConnection.getConnection()){
+                    NetworkConnection.requestNetworkConnection(context);
+                    return;
+                }
+
                 RequestController.acceptRequest(ref, requestEmail, requestId, currentUser);
                 refreshView();
             }
@@ -93,6 +103,11 @@ public class RequestUserListAdapter extends ArrayAdapter<User> {
         declineButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(!NetworkConnection.getConnection()){
+                    NetworkConnection.requestNetworkConnection(context);
+                    return;
+                }
+
                 RequestController.declineRequest(ref, requestId, currentUser);
                 refreshView();
             }
@@ -106,6 +121,16 @@ public class RequestUserListAdapter extends ArrayAdapter<User> {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         activity.startActivity(intent);
         activity.finish();
+    }
+
+    private void loadImageToView(ImageView userImage, String profileImageUri){
+        Glide.with(context.getApplicationContext())
+                .load(profileImageUri)
+                .apply(new RequestOptions()
+                        .override(100, 100) // resize image in pixel
+                        .centerCrop()
+                        .dontAnimate())
+                .into(userImage);
     }
 
     // load user image if download success

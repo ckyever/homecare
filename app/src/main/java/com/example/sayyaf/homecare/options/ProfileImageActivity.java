@@ -3,11 +3,13 @@ package com.example.sayyaf.homecare.options;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -19,7 +21,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.UserAppVersionController;
@@ -124,26 +130,27 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
 
         Query profileImgRef = FirebaseDatabase.getInstance()
                 .getReference("User")
-                .child(UserAppVersionController.getUserAppVersionController().getCurrentUserId()).child("hasProfileImage");
+                .child(UserAppVersionController.getUserAppVersionController()
+                        .getCurrentUserId()).child("profileImage");
 
         profileImgRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
+                if(dataSnapshot.exists()) {
+                    String profileImageUri = dataSnapshot.getValue(String.class);
 
-                    boolean hasProfileImage = dataSnapshot.getValue(Boolean.class);
+                    System.out.println("May exist");
 
-                    if(hasProfileImage){
-                        showProgress("Loading ...");
+                    // load profile image if user have set
+                    if(!profileImageUri.equals("no Image")){
+                        System.out.println("Exist");
 
-                        FirebaseStorage.getInstance()
-                                .getReference("UserProfileImage")
-                                .child(UserAppVersionController.getUserAppVersionController().getCurrentUserId())
-                                .getDownloadUrl()
-                                .addOnSuccessListener(onDownloadSuccess())
-                                .addOnFailureListener(onDownloadFailure());
+                        loadImageToView(profileImageUri);
                     }
 
+                }
+                else{
+                    System.out.println("Not exist");
                 }
             }
 
@@ -155,101 +162,50 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
 
     }
 
-    private void uploadProfileImage(){
-        if(imagePath != null){
+    private void loadImageToView(String profileImageUri){
+        showProgress("Loading ...");
 
-            uploadComplete = false;
+        Glide.with(getApplicationContext())
+                .load(profileImageUri)
+                .apply(new RequestOptions()
+                        .dontAnimate()
+                        .skipMemoryCache(true))
+                .listener(new RequestListener<Drawable>(){
 
-            StorageReference storageRef = FirebaseStorage.getInstance()
-                    .getReference("UserProfileImage").child(
-                            UserAppVersionController.getUserAppVersionController().getCurrentUserId());
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model,
+                                                Target<Drawable> target, boolean isFirstResource) {
 
-            storageRef.putFile(imagePath)
-                    .addOnCompleteListener(onUploadCompleteAction())
-                    .addOnFailureListener(onUploadFailureAction());
+                        Toast.makeText(ProfileImageActivity.this,
+                                "Unable to load the profile image",
+                                Toast.LENGTH_SHORT).show();
 
+                        endProgress();
+                        return false;
+                    }
 
-            Toast.makeText(ProfileImageActivity.this, "Profile image is uploading",
-                    Toast.LENGTH_SHORT).show();
-
-            returnToOptions();
-
-        }
-        else{
-            Toast.makeText(ProfileImageActivity.this, "No image was selected",
-                    Toast.LENGTH_SHORT).show();
-        }
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model,
+                                                   Target<Drawable> target,
+                                                   DataSource dataSource, boolean isFirstResource) {
+                        endProgress();
+                        return false;
+                    }
+                })
+                .into(profileImage);
     }
 
     private void selectImage(){
         Intent imageSelectIntent = new Intent();
+
+        // get image from phone
         imageSelectIntent.setType("image/*");
         imageSelectIntent.setAction(Intent.ACTION_GET_CONTENT);
 
         startActivityForResult(imageSelectIntent, imageSelectReqCode);
     }
 
-    private OnSuccessListener<Uri> onDownloadSuccess(){
-        return new OnSuccessListener<Uri>(){
-            @Override
-            public void onSuccess(Uri userImagePath) {
-
-                Glide.with(getApplicationContext())
-                        .load(userImagePath.toString())
-                        .apply(new RequestOptions().dontAnimate())
-                        .into(profileImage);
-
-                endProgress();
-            }
-        };
-    }
-
-    private OnFailureListener onDownloadFailure(){
-        return new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(ProfileImageActivity.this, "Profile image is not loaded",
-                        Toast.LENGTH_SHORT).show();
-
-                endProgress();
-            }
-        };
-    }
-
-    private OnCompleteListener<UploadTask.TaskSnapshot> onUploadCompleteAction(){
-
-        return new OnCompleteListener<UploadTask.TaskSnapshot>(){
-            @Override
-            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                Toast.makeText(ProfileImageActivity.this, "Profile image is updated",
-                        Toast.LENGTH_SHORT).show();
-
-                uploadComplete = true;
-
-                FirebaseDatabase.getInstance()
-                        .getReference("User")
-                        .child(UserAppVersionController
-                                .getUserAppVersionController().getCurrentUserId())
-                        .child("hasProfileImage").setValue(true);
-
-            }
-        };
-    }
-
-    private OnFailureListener onUploadFailureAction(){
-
-        return new OnFailureListener(){
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(ProfileImageActivity.this, "Cannot update profile image",
-                        Toast.LENGTH_SHORT).show();
-
-                uploadComplete = true;
-            }
-        };
-
-    }
-
+    // show selected image in view
     @Override
     protected void onActivityResult(int reqCode, int resCode, Intent intent){
         super.onActivityResult(reqCode, resCode, intent);
@@ -286,6 +242,105 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
         endProgress();
 
     }
+
+    private void uploadProfileImage(){
+        // check if image is selected
+        if(imagePath != null){
+
+            uploadComplete = false;
+
+            StorageReference storageRef = FirebaseStorage.getInstance()
+                    .getReference("UserProfileImage").child(
+                            UserAppVersionController.getUserAppVersionController().getCurrentUserId());
+
+            // try to upload image
+            storageRef.putFile(imagePath)
+                    .addOnCompleteListener(onUploadCompleteAction())
+                    .addOnFailureListener(onUploadFailureAction());
+
+            Toast.makeText(ProfileImageActivity.this, "Profile image is uploading",
+                    Toast.LENGTH_SHORT).show();
+
+            // do upload process in background (allow user to access other activities)
+            returnToOptions();
+
+        }
+        else{
+            Toast.makeText(ProfileImageActivity.this, "No image was selected",
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // Upload success into Storage
+    private OnCompleteListener<UploadTask.TaskSnapshot> onUploadCompleteAction(){
+
+        return new OnCompleteListener<UploadTask.TaskSnapshot>(){
+            @Override
+            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+
+                FirebaseStorage.getInstance()
+                        .getReference("UserProfileImage")
+                        .child(UserAppVersionController.getUserAppVersionController().getCurrentUserId())
+                        .getDownloadUrl()
+                        .addOnSuccessListener(onUploadedUriSuccess())
+                        .addOnFailureListener(onUploadedUriFailure());
+
+            }
+        };
+    }
+
+    // Upload failed
+    private OnFailureListener onUploadFailureAction(){
+
+        return new OnFailureListener(){
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(ProfileImageActivity.this, "Cannot update profile image",
+                        Toast.LENGTH_SHORT).show();
+
+                uploadComplete = true;
+                endProgress();
+            }
+        };
+
+    }
+
+    // get reference to the image link
+    private OnSuccessListener<Uri> onUploadedUriSuccess(){
+        return new OnSuccessListener<Uri>(){
+                @Override
+                public void onSuccess(Uri userImagePath) {
+
+                    FirebaseDatabase.getInstance()
+                            .getReference("User")
+                            .child(UserAppVersionController
+                                    .getUserAppVersionController().getCurrentUserId())
+                            .child("profileImage").setValue(userImagePath.toString());
+
+                    Toast.makeText(ProfileImageActivity.this, "Profile image is updated",
+                            Toast.LENGTH_SHORT).show();
+
+                    uploadComplete = true;
+                    endProgress();
+            }
+        };
+    }
+
+    // unable to get the image link reference
+    private OnFailureListener onUploadedUriFailure(){
+        return new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(ProfileImageActivity.this, "Cannot update profile image",
+                        Toast.LENGTH_SHORT).show();
+
+                uploadComplete = true;
+
+                endProgress();
+            }
+        };
+    }
+
 
     // show either upload or download progress
     private void showProgress(String message){

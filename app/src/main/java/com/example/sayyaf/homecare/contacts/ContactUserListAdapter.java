@@ -64,7 +64,8 @@ public class ContactUserListAdapter extends ArrayAdapter<User>{
     public View getView(int i, View v, ViewGroup viewGroup) {
 
         // location the UI contact block
-        LayoutInflater inflater = (LayoutInflater) activity.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+        LayoutInflater inflater =
+                (LayoutInflater) activity.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
 
         v = inflater.inflate(R.layout.contact_block, null);
 
@@ -81,10 +82,14 @@ public class ContactUserListAdapter extends ArrayAdapter<User>{
         contactEmail.setText(users.get(i).getEmail());
 
         // set profile image if there is one
-        if(users.get(i).gethasProfileImage())
+        if(!users.get(i).getProfileImage().equals("no Image")){
+            loadImageToView(userImage, users.get(i).getProfileImage());
+        }
+
+        /*if(users.get(i).gethasProfileImage())
             FirebaseStorage.getInstance()
                     .getReference("UserProfileImage").child(users.get(i).getId()).getDownloadUrl()
-                    .addOnSuccessListener(onDownloadSuccess(userImage));
+                    .addOnSuccessListener(onDownloadSuccess(userImage));*/
 
         // assoicate button to private chat page
         chatButton.setOnClickListener(new View.OnClickListener() {
@@ -180,8 +185,18 @@ public class ContactUserListAdapter extends ArrayAdapter<User>{
 
     }
 
+    private void loadImageToView(ImageView userImage, String profileImageUri){
+        Glide.with(context.getApplicationContext())
+                .load(profileImageUri)
+                .apply(new RequestOptions()
+                        .override(100, 100) // resize image in pixel
+                        .centerCrop()
+                        .dontAnimate())
+                .into(userImage);
+    }
+
     // load user image if download success
-    private OnSuccessListener<Uri> onDownloadSuccess(ImageView userImage){
+    /*private OnSuccessListener<Uri> onDownloadSuccess(ImageView userImage){
         return new OnSuccessListener<Uri>(){
             @Override
             public void onSuccess(Uri userImagePath) {
@@ -196,5 +211,5 @@ public class ContactUserListAdapter extends ArrayAdapter<User>{
 
             }
         };
-    }
+    }*/
 }
