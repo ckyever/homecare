@@ -175,7 +175,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     // Broadcast receiver that listens to latitude and longitude updates from TrackingService
     // and stores it in mLatLng and moves the camera to the new latlng if applicable.
-    BroadcastReceiver bReceiver = new BroadcastReceiver() {
+    protected BroadcastReceiver bReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, "Getting intent extras");
@@ -596,5 +596,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
         builder.show();
+    }
+
+    @Override
+    protected void onStop() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(bReceiver);
+        super.onStop();
     }
 }

@@ -2,9 +2,10 @@ package com.example.sayyaf.homecare.mapping;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
 
 import com.example.sayyaf.homecare.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -26,18 +27,28 @@ import com.google.maps.android.ui.IconGenerator;
 
 import java.util.HashMap;
 
-public class TrackingActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class TrackingActivity extends AppCompatActivity implements OnMapReadyCallback,
+        GoogleMap.OnCameraMoveStartedListener {
 
     private static final String TAG = "TrackingActivity";
     private static final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+    private static final int MAP_ZOOM = 300;
 
     private GoogleMap mMap;
     private HashMap<String, Marker> mMarkers = new HashMap<>();
+    private Boolean isLocationButtonOn = true;
+    LatLngBounds.Builder mBuilder;
+
+    private ImageView mLocationButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tracking);
+
+        mLocationButton = (ImageView) findViewById(R.id.ic_mylocation);
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -48,6 +59,8 @@ public class TrackingActivity extends AppCompatActivity implements OnMapReadyCal
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         getAllLocations();
+        enableMyLocationButton();
+        mMap.setOnCameraMoveStartedListener(this);
     }
 
     /**
@@ -155,10 +168,60 @@ public class TrackingActivity extends AppCompatActivity implements OnMapReadyCal
         }
 
         // Build boundaries so we can show all markers at once on upon starting the activity
-        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        mBuilder = new LatLngBounds.Builder();
         for (Marker marker : mMarkers.values()) {
-            builder.include(marker.getPosition());
+            mBuilder.include(marker.getPosition());
         }
-        mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 300));
+        cameraFollow();
+    }
+
+    /**
+     * Listens to clicks on the "My Location" image view and imitates a toggleable button, changing
+     * the boolean isLocationButtonOn, which dictates whether the camera should be updating to keep
+     * all markers in view via the method cameraFollow().
+     */
+    private void enableMyLocationButton() {
+        mLocationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Change image view to indicate button is toggled on
+                if (!isLocationButtonOn) {
+                    mLocationButton.setImageResource(R.drawable.ic_mylocationon);
+                    isLocationButtonOn = true;
+                    // Centre and zoom camera on location after pressing
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(mBuilder.build(), MAP_ZOOM));
+                }
+                // Change image view to indicate button is toggled off
+                else if (isLocationButtonOn) {
+                    mLocationButton.setImageResource(R.drawable.ic_mylocationoff);
+                    isLocationButtonOn = false;
+                }
+            }
+        });
+    }
+
+    /**
+     * If the user performs a gesture that changes the map camera and the "my location" button is
+     * toggled on, turn it off to allow the user to move freely again
+     */
+    @Override
+    public void onCameraMoveStarted(int reason) {
+        if (reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE &&
+                isLocationButtonOn == true) {
+            mLocationButton.performClick();
+        }
+    }
+
+    /**
+     * When called checks the "My Location" button is toggled on and moves the camera to show all
+     * current markers.
+     */
+    private void cameraFollow() {
+        if (isLocationButtonOn) {
+            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(mBuilder.build(), MAP_ZOOM));
+        }
+        else {
+            // Do nothing
+        }
     }
 }
