@@ -159,12 +159,15 @@ public class EmergencyCallActivity extends AppCompatActivity implements View.OnC
                         this_device = s.getValue(User.class);
 
                         if(checkHasFriends()) {
-                            EmergencyMsg msg = new EmergencyMsg(this_device.getId(), this_device.getName());
-                            // ChatMessage ct = new ChatMessage("", this_device.getName());
+                            EmergencyMsg msg = new EmergencyMsg(
+                                    UserAppVersionController.getUserAppVersionController()
+                                            .getCurrentUserId(), this_device.getName());
+                            //ChatMessage ct = new ChatMessage("", this_device.getName());
 
                             // send emergency contents to all friends
                             for (String friendId : this_device.getFriends().keySet()) {
                                 sendNotification(friendId, msg);
+                                //sendNotification(friendId, ct);
                             }
 
                             Toast.makeText(EmergencyCallActivity.this,
@@ -211,6 +214,7 @@ public class EmergencyCallActivity extends AppCompatActivity implements View.OnC
     }*/
 
     // caregiver will receive it if they have network connection and logged in
+    //private void sendNotification(String friendId, ChatMessage ct){
     private void sendNotification(String friendId, EmergencyMsg msg){
         FirebaseDatabase.getInstance().getReference("EmergencyMsg")
                 .child(friendId).push().setValue(msg);

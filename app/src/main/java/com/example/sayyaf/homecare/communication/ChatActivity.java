@@ -105,7 +105,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                         "Please wait until another image is uploaded," +
                                 "you may still send text messages without images",
                         Toast.LENGTH_SHORT).show();
-                
+
                 return;
             }
 

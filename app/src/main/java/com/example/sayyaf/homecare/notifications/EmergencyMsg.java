@@ -4,34 +4,26 @@ import java.util.Date;
 
 public class EmergencyMsg {
 
-    private String emergencyMsgSenderId;
-    private String emergencyMsgSender;
-    private long emergencyMsgTime;
-
-    // private String imageSouce;
+    private String messageSenderId;
+    private String messageSender;
+    private long messageTime;
 
     public EmergencyMsg() {}
 
-    public EmergencyMsg(String emergencyMsgSenderId, String emergencyMsgSender) {
-        this.emergencyMsgSenderId = emergencyMsgSenderId;
-        this.emergencyMsgSender = emergencyMsgSender;
-        emergencyMsgTime = new Date().getTime();
+    public EmergencyMsg(String messageSenderId, String messageSender) {
+        this.messageSenderId = messageSenderId;
+        this.messageSender = messageSender;
+        messageTime = new Date().getTime();
     }
 
-    public String getEmergencyMsgSenderId() {
-        return emergencyMsgSenderId;
-    }
+    public String getMessageSender() { return messageSender; }
 
-    public void setEmergencyMsgSenderId(String emergencyMsgSenderId) {
-        this.emergencyMsgSenderId = emergencyMsgSenderId;
-    }
+    public void setMessageSender(String messageSender) { this.messageSender = messageSender; }
 
-    public String getEmergencyMsgSender() {
-        return emergencyMsgSender;
-    }
+    public String getMessageSenderId() { return messageSenderId; }
 
-    public void setEmergencyMsgSender(String messageSender) { this.emergencyMsgSender = emergencyMsgSender; }
+    public void setMessageSenderId(String messageSenderId) { this.messageSenderId = messageSenderId; }
 
-    public long getEmergencyMsgTime() { return emergencyMsgTime; }
+    public long getMessageTime() { return messageTime; }
 
 }

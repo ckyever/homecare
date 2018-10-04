@@ -66,7 +66,9 @@ public class EmergencyMsgListener extends IntentService {
 
         emergencyRef = FirebaseDatabase.getInstance()
                 .getReference("EmergencyMsg")
-                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                .child(UserAppVersionController
+                        .getUserAppVersionController()
+                        .getCurrentUserId());
 
         notificationListener = setUpNotificationListener();
 
@@ -79,6 +81,14 @@ public class EmergencyMsgListener extends IntentService {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
 
+                    for(DataSnapshot s : dataSnapshot.getChildren()){
+
+                        EmergencyMsg msg = s.getValue(EmergencyMsg.class);
+
+                        setNotification(msg.getMessageSender(), msg.getMessageTime());
+
+                    }
+
                     DisplayManager dm = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
 
                     for (Display display : dm.getDisplays()) {
@@ -90,37 +100,14 @@ public class EmergencyMsgListener extends IntentService {
                         }
                     }
 
-                    ArrayList<String> senders = new ArrayList<String>();
-                    ArrayList<Long> times = new ArrayList<Long>();
-
-                    // info of userId
-                    // ArrayList<String> senderIds = new ArrayList<String>();
-
-                    for(DataSnapshot s : dataSnapshot.getChildren()){
-
-                        // ChatMessage ct = s.getValue(ChatMessage.class);
-                        EmergencyMsg msg = s.getValue(EmergencyMsg.class);
-
-                        senders.add(msg.getEmergencyMsgSender());
-                        times.add(msg.getEmergencyMsgTime());
-
-                        // senderIds.add(msg.getEmergencyMsgSenderId());
-
-                    }
-
-                    for(int i = 0; i < senders.size(); i++){
-                        // setNotification(senders.get(i), senderIds.get(i), times.get(i));
-                        setNotification(senders.get(i), times.get(i));
-                    }
-
                     // remove calls when user receive the emergency calls
                     FirebaseDatabase.getInstance()
                             .getReference("EmergencyMsg")
                             .child(UserAppVersionController
                                     .getUserAppVersionController().getCurrentUserId())
                             .removeValue();
-
                 }
+
             }
 
             @Override
@@ -134,10 +121,10 @@ public class EmergencyMsgListener extends IntentService {
         NotificationCompat.Builder notificationbulider = null;
 
         Intent goToContact = new Intent(this, ContactChatActivity.class);
-        PendingIntent pendingGoToContact = PendingIntent.getActivity(this, emergencyID, goToContact, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingGoToContact = PendingIntent.getActivity(this, 0, goToContact, 0);
 
         Intent goToTracking = new Intent(this, TrackingActivity.class);
-        PendingIntent pendingGoToTracking = PendingIntent.getActivity(this, emergencyID, goToTracking, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingGoToTracking = PendingIntent.getActivity(this, 0, goToTracking, 0);
 
 
         notificationbulider =
@@ -169,6 +156,5 @@ public class EmergencyMsgListener extends IntentService {
         }
 
     }
-
 
 }
