@@ -32,6 +32,8 @@ import java.util.ArrayList;
 
 public class EmergencyMsgListener extends IntentService {
 
+    private final int initEmergencyID = 10;
+
     private int emergencyID;
     private static Query emergencyRef;
     private static ValueEventListener notificationListener;
@@ -60,7 +62,7 @@ public class EmergencyMsgListener extends IntentService {
 
     // start tracking emergency message mailbox
     private void listenToEmergencyMsg(){
-        emergencyID = 10;
+        emergencyID = initEmergencyID;
 
         emergencyRef = FirebaseDatabase.getInstance()
                 .getReference("EmergencyMsg")
@@ -152,7 +154,12 @@ public class EmergencyMsgListener extends IntentService {
         manager.notify(emergencyID, notificationbulider.build());
 
         // increment id to avoid override previous notification
-        emergencyID++;
+        if(emergencyID >= Integer.MAX_VALUE){
+            emergencyID = initEmergencyID;
+        }
+        else{
+            emergencyID++;
+        }
 
     }
 

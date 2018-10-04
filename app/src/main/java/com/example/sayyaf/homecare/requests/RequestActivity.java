@@ -16,6 +16,7 @@ import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.User;
 import com.example.sayyaf.homecare.accounts.UserAppVersionController;
 import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
+import com.example.sayyaf.homecare.notifications.NetworkConnection;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -151,6 +152,12 @@ public class RequestActivity extends AppCompatActivity implements RequestsUserLi
 
     @Override
     public void onClick(View view) {
+
+        if(!NetworkConnection.getConnection()){
+            NetworkConnection.requestNetworkConnection(RequestActivity.this);
+            return;
+        }
+
         if(view == helpButton){
             EmergencyCallActivity.setBackToActivity(RequestActivity.class);
 

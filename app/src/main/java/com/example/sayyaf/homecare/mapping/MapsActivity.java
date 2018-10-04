@@ -36,6 +36,8 @@ import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.UserAppVersionController;
 import com.example.sayyaf.homecare.contacts.ContactUpdateActivity;
 import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
+import com.example.sayyaf.homecare.notifications.NetworkConnection;
+import com.example.sayyaf.homecare.requests.RequestActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.AutocompletePrediction;
@@ -128,6 +130,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onClick(View view) {
+        if(!NetworkConnection.getConnection()){
+            NetworkConnection.requestNetworkConnection(MapsActivity.this);
+            return;
+        }
+
         if(view == helpButton){
             EmergencyCallActivity.setBackToActivity(MapsActivity.class);
 

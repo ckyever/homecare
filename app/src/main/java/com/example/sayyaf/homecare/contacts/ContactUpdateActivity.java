@@ -16,7 +16,7 @@ import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.User;
 import com.example.sayyaf.homecare.accounts.UserAppVersionController;
 import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
-import com.example.sayyaf.homecare.options.OptionActivity;
+import com.example.sayyaf.homecare.notifications.NetworkConnection;
 import com.example.sayyaf.homecare.requests.RequestController;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -70,6 +70,11 @@ public class ContactUpdateActivity extends AppCompatActivity implements View.OnC
 
         //Retrieve the entered email
         final String email = mUserEmail.getText().toString().trim();
+
+        if(!NetworkConnection.getConnection()){
+            NetworkConnection.requestNetworkConnection(ContactUpdateActivity.this);
+            return;
+        }
 
         if(view == helpButton){
             EmergencyCallActivity.setBackToActivity(ContactUpdateActivity.class);
