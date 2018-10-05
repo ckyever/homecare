@@ -15,6 +15,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.example.sayyaf.homecare.accounts.UserAppVersionController;
+import com.example.sayyaf.homecare.notifications.EmergencyMsgListener;
 import com.example.sayyaf.homecare.notifications.NotificationChannels;
 import com.example.sayyaf.homecare.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -30,6 +32,10 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class TrackingService extends Service {
     private static final String TAG = "TrackingService";
+
+    FusedLocationProviderClient mClient;
+    LocationCallback mLocationCallback;
+    LocationRequest mRequest;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -70,7 +76,9 @@ public class TrackingService extends Service {
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, "received stop broadcast");
             // Stop the service when the notification is tapped
-            unregisterReceiver(stopReceiver);
+            if (stopReceiver != null) {
+                unregisterReceiver(stopReceiver);
+            }
             stopSelf();
         }
     };
@@ -81,12 +89,11 @@ public class TrackingService extends Service {
      * Realtime Database.
      */
     private void requestLocationUpdates() {
-        LocationRequest request = new LocationRequest();
-        request.setInterval(10000);
-        request.setFastestInterval(5000);
-        request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        FusedLocationProviderClient client =
-                LocationServices.getFusedLocationProviderClient(this);
+        mRequest = new LocationRequest();
+        mRequest.setInterval(10000);
+        mRequest.setFastestInterval(5000);
+        mRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mClient = LocationServices.getFusedLocationProviderClient(this);
         int permission = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION);
 
@@ -98,7 +105,7 @@ public class TrackingService extends Service {
         if (permission == PackageManager.PERMISSION_GRANTED) {
             // Request location updates and when an update is
             // received, store it under the database path User/uid/location
-            client.requestLocationUpdates(request, new LocationCallback() {
+            mClient.requestLocationUpdates(mRequest, mLocationCallback = new LocationCallback() {
                 @Override
                 public void onLocationResult(LocationResult locationResult) {
 
@@ -122,6 +129,15 @@ public class TrackingService extends Service {
         intent.putExtra("Latitude", location.getLatitude());
         intent.putExtra("Longitude", location.getLongitude());
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
+    @Override
+    public void onDestroy() {
+        if (mClient != null) {
+            mClient.removeLocationUpdates(mLocationCallback);
+        }
+        stopSelf();
+        super.onDestroy();
     }
 
 }

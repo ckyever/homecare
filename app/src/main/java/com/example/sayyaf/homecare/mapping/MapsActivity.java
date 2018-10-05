@@ -31,10 +31,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.UserAppVersionController;
-import com.example.sayyaf.homecare.contacts.ContactUpdateActivity;
 import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
 import com.example.sayyaf.homecare.notifications.NetworkConnection;
 import com.example.sayyaf.homecare.requests.RequestActivity;
@@ -70,13 +68,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
-        View.OnClickListener {
+        View.OnClickListener, GoogleMap.OnCameraMoveStartedListener {
 
     private static final String TAG = "MapsActivity";
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final String COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_REQUEST_CODE = 1;
-    private static final float STREET_ZOOM = 17;
+    private static final int STREET_ZOOM = 17;
     private static final LatLngBounds LAT_LNG_BOUNDS =
             new LatLngBounds(new LatLng(-90, -180), new LatLng(90, 180));
 
@@ -177,7 +175,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     // Broadcast receiver that listens to latitude and longitude updates from TrackingService
     // and stores it in mLatLng and moves the camera to the new latlng if applicable.
-    BroadcastReceiver bReceiver = new BroadcastReceiver() {
+    protected BroadcastReceiver bReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, "Getting intent extras");
@@ -260,19 +258,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
-     * Here the behaviour is to add the current users location on the map, enable the "My Location"
-     * button which can center and follow the users real time location as they move, enable the
-     * zoom assist buttons, and initialise the location search bar.
+     * Here the behaviour is to enable the zoom assist buttons, add the current users location on
+     * the map, enable the "My Location" button which can center and follow the users real time
+     * location as they move, initialise the location search bar, and create listener for camera
+     * movements initiated by user.
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.getUiSettings().setZoomControlsEnabled(true);
+        mMap.getUiSettings().setMapToolbarEnabled(false);
 
         getDeviceLocation();
         enableMyLocationButton();
-
-        mMap.getUiSettings().setZoomControlsEnabled(true);
         initialiseSearch();
+        mMap.setOnCameraMoveStartedListener(this);
     }
 
     /**
@@ -342,6 +342,18 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
             }
         });
+    }
+
+    /**
+     * If the user performs a gesture that changes the map camera and the "my location" button is
+     * toggled on, turn it off to allow the user to move freely again
+     */
+    @Override
+    public void onCameraMoveStarted(int reason) {
+        if (reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE &&
+                isLocationButtonOn == true) {
+            mLocationButton.performClick();
+        }
     }
 
     /**
@@ -584,5 +596,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
         builder.show();
+    }
+
+    @Override
+    protected void onStop() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(bReceiver);
+        super.onStop();
     }
 }
