@@ -329,7 +329,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View view) {
                 // Change image view to indicate button is toggled on
-                if (!isLocationButtonOn) {
+                if (!isLocationButtonOn && mLatLng != null) {
                     mLocationButton.setImageResource(R.drawable.ic_mylocationon);
                     isLocationButtonOn = true;
                     // Centre and zoom camera on location after pressing
