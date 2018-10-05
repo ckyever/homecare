@@ -128,26 +128,16 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             if(imagePath != null){
 
                 if(!uploadComplete){
-                    Toast.makeText(ChatActivity.this,
-                            "Please wait until another image is uploaded," +
-                                    "you may still send text messages without images",
-                            Toast.LENGTH_SHORT).show();
-
-                    // reset selected image
-                    selectImage.setImageResource(R.drawable.ic_menu_gallery);
-                    imagePath = null;
+                    showSendImgNotice("Please wait until another image is uploaded, " +
+                            "you may still send text messages without images");
                     return;
                 }
 
-                Toast.makeText(ChatActivity.this,
-                        "Your message may not be sent instantly," +
-                                "depends on the upload time of the image",
-                        Toast.LENGTH_SHORT).show();
                 chatController.sendMsg(textMsg, imagePath, ChatActivity.this);
 
-                // reset selected image
-                selectImage.setImageResource(R.drawable.ic_menu_gallery);
-                imagePath = null;
+                showSendImgNotice("Your message may not be sent instantly, " +
+                        "depends on the upload time of the image");
+
                 return;
             }
 
@@ -162,6 +152,14 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(intent);
             finish();
        }
+    }
+
+    private void showSendImgNotice(String noticeMsg){
+        Toast.makeText(ChatActivity.this, noticeMsg, Toast.LENGTH_SHORT).show();
+
+        // reset selected image
+        selectImage.setImageResource(R.drawable.ic_menu_gallery);
+        imagePath = null;
     }
 
     private void selectImage(){
@@ -192,7 +190,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                             .Media
                             .getBitmap(getContentResolver(), imagePath);
 
-                    bitmap = bitMapScaling(bitmap, bitmap.getWidth(), bitmap.getHeight());
                     selectImage.setImageBitmap(bitmap);
 
                 }
@@ -206,33 +203,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             }
 
         }
-
-    }
-
-
-
-    // lower resolution for performance
-    private Bitmap bitMapScaling(Bitmap bitmap, int originalX, int originalY){
-        // possible max size to display on phone
-        int maxSize = 1000;
-
-        // not need to resize if both sides are small
-        if(originalX < maxSize && originalY < maxSize) return bitmap;
-
-        int exportX;
-        int exportY;
-
-        // find the longest side
-        if(originalX > originalY){
-            exportX = maxSize;
-            exportY = (originalY * maxSize) / originalX;
-        }
-        else{
-            exportY = maxSize;
-            exportX = (originalX * maxSize) / originalY;
-        }
-
-        return Bitmap.createScaledBitmap(bitmap, exportX, exportY, false);
 
     }
 

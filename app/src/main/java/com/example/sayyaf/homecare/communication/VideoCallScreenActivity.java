@@ -43,7 +43,6 @@ public class VideoCallScreenActivity extends BaseActivity {
 
 
     private String mCallId;
-    Button mPauseVideo;
     private TextView mCallDuration;
     private TextView mCallState;
     private TextView mCallerName;
@@ -80,7 +79,6 @@ public class VideoCallScreenActivity extends BaseActivity {
         mCallerName.setText(getIntent().getStringExtra("name"));
         mCallState = (TextView) findViewById(R.id.callState);
         Button endCallButton = (Button) findViewById(R.id.hangupButton);
-        mPauseVideo = (Button) findViewById(R.id.pauseVideo);
         string = getIntent().getStringExtra("name");
 
         endCallButton.setOnClickListener(new OnClickListener() {
@@ -90,21 +88,6 @@ public class VideoCallScreenActivity extends BaseActivity {
             }
         });
 
-        mPauseVideo.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Button b = (Button) view;
-                String text = b.getText().toString();
-                if(text.equals("VIDEO ON")) {
-                    b.setText("VIDEO OFF");
-                   resumeCall();
-                }
-                else {
-                    b.setText("VIDEO ON");
-                    pauseCall();
-                }
-            }
-        });
         mCallId = getIntent().getStringExtra(SinchService.CALL_ID);
     }
 
@@ -307,7 +290,7 @@ public class VideoCallScreenActivity extends BaseActivity {
             Log.d(TAG, "Call ended. Reason: " + cause.toString());
             mAudioPlayer.stopProgressTone();
             setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
-            String endMsg = "Call ended: " + call.getDetails().toString();
+            String endMsg = "Call ended";
             Toast.makeText(VideoCallScreenActivity.this, endMsg, Toast.LENGTH_LONG).show();
 
             endCall();
