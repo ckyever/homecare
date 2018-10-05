@@ -64,14 +64,6 @@
 
     </RelativeLayout>
 
-    <Button
-        android:id="@+id/pauseVideo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:orientation="horizontal"
-        android:text="Video Off" />
 
     <RelativeLayout
         android:id="@+id/bottomPanel"
