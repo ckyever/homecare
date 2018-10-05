@@ -80,53 +80,39 @@ public class ChatController {
 
                 ChatMessage ct = this.getItem(position);
 
-                if(ct.getMessageSender().equals(this_device.getName())){
-
-                    // use UI element represent the sent is from this device
-                    if(ct.getImageSource().equals("no Image")){
+                // see if chat message has image source
+                if(ct.getImageSource().equals("no Image")){
+                    if(ct.getMessageSender().equals(this_device.getName())){
                         v = LayoutInflater.from(chatActivity.getApplicationContext()).
                                 inflate(msg_block_this_device, viewGroup, false);
                     }
                     else{
                         v = LayoutInflater.from(chatActivity.getApplicationContext()).
-                                inflate(img_msg_block_this_device, viewGroup, false);
-
-                        ProgressBar progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
-                        TextView progressBarMsg = (TextView) v.findViewById(R.id.progressBarMsg);
-
-                        showProgress(progressBar, progressBarMsg);
-
-                        ImageView imageSrc = (ImageView) v.findViewById(R.id.imageSrc);
-
-                        // Set image
-                        loadImageToView(chatActivity, ct.getImageSource(), imageSrc,
-                                progressBar, progressBarMsg);
-                    }
-
-                }
-                else{
-
-                    // use UI element represent the sent is from the other user
-                    if(ct.getImageSource().equals("no Image")){
-                        v = LayoutInflater.from(chatActivity.getApplicationContext()).
                                 inflate(msg_block_contact_person, viewGroup, false);
                     }
-                    else {
+                }
+                else{
+                    if(ct.getMessageSender().equals(this_device.getName())){
+                        v = LayoutInflater.from(chatActivity.getApplicationContext()).
+                                inflate(img_msg_block_this_device, viewGroup, false);
+
+                    }
+                    else{
                         v = LayoutInflater.from(chatActivity.getApplicationContext()).
                                 inflate(img_msg_block_contact_person, viewGroup, false);
 
-                        ProgressBar progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
-                        TextView progressBarMsg = (TextView) v.findViewById(R.id.progressBarMsg);
-
-                        showProgress(progressBar, progressBarMsg);
-
-                        ImageView imageSrc = (ImageView) v.findViewById(R.id.imageSrc);
-
-                        // Set image
-                        loadImageToView(chatActivity, ct.getImageSource(), imageSrc,
-                                progressBar, progressBarMsg);
                     }
 
+                    ProgressBar progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
+                    TextView progressBarMsg = (TextView) v.findViewById(R.id.progressBarMsg);
+
+                    showProgress(progressBar, progressBarMsg);
+
+                    ImageView imageSrc = (ImageView) v.findViewById(R.id.imageSrc);
+
+                    // Set image
+                    loadImageToView(chatActivity, ct.getImageSource(), imageSrc,
+                            progressBar, progressBarMsg);
                 }
 
                 // Call out to subclass to marshall this model into the provided view

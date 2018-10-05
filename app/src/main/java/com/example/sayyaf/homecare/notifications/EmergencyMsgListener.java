@@ -86,6 +86,7 @@ public class EmergencyMsgListener extends IntentService {
                         EmergencyMsg msg = s.getValue(EmergencyMsg.class);
 
                         setNotification(msg.getMessageSender(), msg.getMessageTime());
+                        // setNotification(msg.getMessageSender(), msg.getMessageSenderId(), msg.getMessageTime());
 
                     }
 
@@ -117,6 +118,7 @@ public class EmergencyMsgListener extends IntentService {
         };
     }
 
+    // private void setNotification(String name, String id, long time){
     private void setNotification(String name, long time){
         NotificationCompat.Builder notificationbulider = null;
 
@@ -124,7 +126,8 @@ public class EmergencyMsgListener extends IntentService {
         PendingIntent pendingGoToContact = PendingIntent.getActivity(this, 0, goToContact, 0);
 
         Intent goToTracking = new Intent(this, TrackingActivity.class);
-        PendingIntent pendingGoToTracking = PendingIntent.getActivity(this, 0, goToTracking, 0);
+        // PendingIntent pendingGoToTracking = PendingIntent.getActivity(this, 0, goToTracking, 0);
+        PendingIntent pendingGoToTracking = PendingIntent.getActivity(this, emergencyID, goToTracking, PendingIntent.FLAG_UPDATE_CURRENT);
 
 
         notificationbulider =
