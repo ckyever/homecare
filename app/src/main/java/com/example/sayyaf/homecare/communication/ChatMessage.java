@@ -7,21 +7,21 @@ public class ChatMessage {
     private String messageSender;
     private long messageTime;
 
-    //private String imageSouce;
+    private String imageSource;
 
     public ChatMessage() {}
 
     public ChatMessage(String messageText, String messageSender) {
         this.messageText = messageText;
         this.messageSender = messageSender;
-        //this.imageSouce = "no Image";
+        this.imageSource = "no Image";
         messageTime = new Date().getTime();
     }
 
-    public ChatMessage(String messageText, String messageSender, String imageSouce) {
+    public ChatMessage(String messageText, String messageSender, String imageSource) {
         this.messageText = messageText;
         this.messageSender = messageSender;
-        //this.imageSouce = imageSouce;
+        this.imageSource = imageSource;
         messageTime = new Date().getTime();
     }
 
@@ -33,9 +33,9 @@ public class ChatMessage {
         this.messageText = messageText;
     }
 
-    //public String getImageSouce() { return imageSouce; }
+    public String getImageSource() { return imageSource; }
 
-    //public void setImageSouce(String imageSouce) { this.imageSouce = imageSouce; }
+    public void setImageSource(String imageSource) { this.imageSource = imageSource; }
 
     public String getMessageSender() {
         return messageSender;

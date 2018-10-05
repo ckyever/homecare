@@ -191,7 +191,8 @@ public class ContactUserListAdapter extends ArrayAdapter<User>{
                 .apply(new RequestOptions()
                         .override(100, 100) // resize image in pixel
                         .centerCrop()
-                        .dontAnimate())
+                        .dontAnimate()
+                        .skipMemoryCache(true))
                 .into(userImage);
     }
 

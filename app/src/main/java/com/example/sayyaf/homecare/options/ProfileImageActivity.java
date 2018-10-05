@@ -225,6 +225,8 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
                             .Media
                             .getBitmap(getContentResolver(), imagePath);
 
+                    bitmap = bitMapScaling(bitmap, bitmap.getWidth(), bitmap.getHeight());
+
                     profileImage.setImageBitmap(bitmap);
 
                 }
@@ -240,6 +242,31 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
         }
 
         endProgress();
+
+    }
+
+    // lower resolution for performance
+    private Bitmap bitMapScaling(Bitmap bitmap, int originalX, int originalY){
+        // possible max size to display on phone
+        int maxSize = 1000;
+
+        // not need to resize if both sides are small
+        if(originalX < maxSize && originalY < maxSize) return bitmap;
+
+        int exportX;
+        int exportY;
+
+        // find the longest side
+        if(originalX > originalY){
+            exportX = maxSize;
+            exportY = (originalY * maxSize) / originalX;
+        }
+        else{
+            exportY = maxSize;
+            exportX = (originalX * maxSize) / originalY;
+        }
+
+        return Bitmap.createScaledBitmap(bitmap, exportX, exportY, false);
 
     }
 

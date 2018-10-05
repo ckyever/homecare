@@ -66,7 +66,9 @@ public class EmergencyMsgListener extends IntentService {
 
         emergencyRef = FirebaseDatabase.getInstance()
                 .getReference("EmergencyMsg")
-                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                .child(UserAppVersionController
+                        .getUserAppVersionController()
+                        .getCurrentUserId());
 
         notificationListener = setUpNotificationListener();
 
@@ -79,6 +81,14 @@ public class EmergencyMsgListener extends IntentService {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
 
+                    for(DataSnapshot s : dataSnapshot.getChildren()){
+
+                        EmergencyMsg msg = s.getValue(EmergencyMsg.class);
+
+                        setNotification(msg.getMessageSender(), msg.getMessageTime());
+
+                    }
+
                     DisplayManager dm = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
 
                     for (Display display : dm.getDisplays()) {
@@ -90,30 +100,14 @@ public class EmergencyMsgListener extends IntentService {
                         }
                     }
 
-                    ArrayList<String> senders = new ArrayList<String>();
-                    ArrayList<Long> times = new ArrayList<Long>();
-
-                    for(DataSnapshot s : dataSnapshot.getChildren()){
-
-                        ChatMessage ct = s.getValue(ChatMessage.class);
-
-                        senders.add(ct.getMessageSender());
-                        times.add(ct.getMessageTime());
-
-                    }
-
-                    for(int i = 0; i < senders.size(); i++){
-                        setNotification(senders.get(i), times.get(i));
-                    }
-
                     // remove calls when user receive the emergency calls
                     FirebaseDatabase.getInstance()
                             .getReference("EmergencyMsg")
                             .child(UserAppVersionController
                                     .getUserAppVersionController().getCurrentUserId())
                             .removeValue();
-
                 }
+
             }
 
             @Override
@@ -162,6 +156,5 @@ public class EmergencyMsgListener extends IntentService {
         }
 
     }
-
 
 }
