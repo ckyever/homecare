@@ -1,5 +1,6 @@
 package com.example.sayyaf.homecare.mapping;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +13,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -28,10 +30,11 @@ import com.google.maps.android.ui.IconGenerator;
 import java.util.HashMap;
 
 public class TrackingActivity extends AppCompatActivity implements OnMapReadyCallback,
-        GoogleMap.OnCameraMoveStartedListener {
+        GoogleMap.OnCameraMoveStartedListener, GoogleMap.OnMarkerClickListener {
 
     private static final String TAG = "TrackingActivity";
     private static final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+    private static final int STREET_ZOOM = 17;
     private static final int MAP_ZOOM = 300;
 
     private GoogleMap mMap;
@@ -61,6 +64,7 @@ public class TrackingActivity extends AppCompatActivity implements OnMapReadyCal
         getAllLocations();
         enableMyLocationButton();
         mMap.setOnCameraMoveStartedListener(this);
+        mMap.setOnMarkerClickListener(this);
     }
 
     /**
@@ -157,9 +161,14 @@ public class TrackingActivity extends AppCompatActivity implements OnMapReadyCal
 
         // New marker, so place it
         if (!mMarkers.containsKey(key)) {
-            Marker mMarker = mMap.addMarker(new MarkerOptions().position(location));
+            // Create icon that represents the user
+            Bitmap icon = iconFactory.makeIcon(name);
+
+            // Add this icon as a marker
+            Marker mMarker = mMap.addMarker(new MarkerOptions()
+                    .position(location)
+                    .icon(BitmapDescriptorFactory.fromBitmap(icon)));
             mMarkers.put(key, mMarker);
-            mMarker.setIcon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(name)));
         }
 
         // Existing marker, update its location
@@ -223,5 +232,15 @@ public class TrackingActivity extends AppCompatActivity implements OnMapReadyCal
         else {
             // Do nothing
         }
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        // First turn off "My Location" button
+        if (isLocationButtonOn) {
+            mLocationButton.performClick();
+        }
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), STREET_ZOOM));
+        return true;
     }
 }
