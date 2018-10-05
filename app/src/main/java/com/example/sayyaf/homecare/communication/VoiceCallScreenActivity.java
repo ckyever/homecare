@@ -184,7 +184,6 @@ public class VoiceCallScreenActivity extends BaseActivity {
 
         @Override
         public void onShouldSendPushNotification(Call call, List<PushPair> pushPairs) {
-            // Send a push through your push provider here, e.g. GCM
         }
 
     }
