@@ -7,154 +7,152 @@
     android:background="@color/background"
     tools:context=".MainActivity">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="3">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:weightSum="2">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="116dp"
-        android:layout_height="33dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="Logo"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.16000003" />
+            <Button
+                android:id="@+id/mapButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/round_button"
+                android:paddingTop="55dp"
+                android:text="Tracking"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:drawableTop="@drawable/ic_map"
+                android:drawablePadding="25dp" />
 
-    <Button
-        android:id="@+id/mapButton"
-        android:layout_width="128dp"
-        android:layout_height="56dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/round_button"
-        android:text="Tracking"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toTopOf="@+id/friendRequests"
-        app:layout_constraintEnd_toStartOf="@+id/optionContacts"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+            <Button
+                android:id="@+id/optionContacts"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/round_button"
+                android:onClick="onClick"
+                android:paddingTop="55dp"
+                android:text="Contacts"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:drawableTop="@drawable/ic_contacts"
+                android:drawablePadding="25dp" />
 
-    <Button
-        android:id="@+id/optionHelp"
-        android:layout_width="128dp"
-        android:layout_height="56dp"
-        android:layout_marginBottom="32dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:background="#FF0000"
-        android:onClick="onClick"
-        android:enabled="false"
-        android:visibility="invisible"
-        android:text="Help Me!"
-        android:textSize="20sp"
-        android:textColor="#FFFF00"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/options"
-        app:layout_constraintHorizontal_bias="0.444"
-        app:layout_constraintEnd_toEndOf="parent" />
+        </LinearLayout>
 
-    <Button
-        android:id="@+id/contactsUpdate"
-        android:layout_width="128dp"
-        android:layout_height="56dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/round_button"
-        android:text="Add Contacts"
-        app:layout_constraintBottom_toTopOf="@+id/logoutButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/friendRequests"
-        app:layout_constraintTop_toBottomOf="@+id/optionContacts" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:weightSum="2">
 
-    <Button
-        android:id="@+id/friendRequests"
-        android:layout_width="128dp"
-        android:layout_height="56dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/round_button"
-        android:text="friend requests"
-        app:layout_constraintBottom_toTopOf="@+id/optionScreenshare"
-        app:layout_constraintEnd_toStartOf="@+id/contactsUpdate"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mapButton" />
+            <Button
+                android:id="@+id/friendRequests"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/round_button"
+                android:paddingTop="55dp"
+                android:text="friend requests"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:drawableTop="@drawable/ic_friend_requests"
+                android:drawablePadding="25dp" />
 
-    <Button
-        android:id="@+id/logoutButton"
-        android:layout_width="128dp"
-        android:layout_height="56dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/round_button"
-        android:text="Logout"
-        app:layout_constraintBottom_toTopOf="@+id/optionHelp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/optionScreenshare"
-        app:layout_constraintTop_toBottomOf="@+id/contactsUpdate"/>
+            <Button
+                android:id="@+id/contactsUpdate"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/round_button"
+                android:paddingTop="55dp"
+                android:text="Add Contacts"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:drawableTop="@drawable/ic_add_contacts"
+                android:drawablePadding="25dp" />
 
-    <Button
-        android:id="@+id/options"
-        android:layout_width="128dp"
-        android:layout_height="56dp"
-        android:layout_marginBottom="32dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:background="@drawable/round_button"
-        android:text="Options"
-        app:layout_constraintEnd_toStartOf="@+id/optionHelp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        </LinearLayout>
 
-    <Button
-        android:id="@+id/optionContacts"
-        android:layout_width="128dp"
-        android:layout_height="56dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/round_button"
-        android:onClick="onClick"
-        android:text="Contacts"
-        app:layout_constraintBottom_toTopOf="@+id/contactsUpdate"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/mapButton"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:weightSum="2">
 
-    <Button
-        android:id="@+id/optionScreenshare"
-        android:layout_width="128dp"
-        android:layout_height="56dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/round_button"
-        android:onClick="onClick"
-        android:text="Share Screen"
-        app:layout_constraintBottom_toTopOf="@id/options"
-        app:layout_constraintEnd_toStartOf="@+id/logoutButton"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/friendRequests" />
+            <Button
+                android:id="@+id/options"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/round_button"
+                android:paddingTop="55dp"
+                android:text="Options"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:drawableTop="@drawable/ic_options"
+                android:drawablePadding="25dp" />
+
+            <Button
+                android:id="@+id/logoutButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/round_button"
+                android:paddingTop="55dp"
+                android:text="Logout"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:drawableTop="@drawable/ic_logout"
+                android:drawablePadding="25dp" />
+
+        </LinearLayout>
+
+        <!--
+        <Button
+            android:id="@+id/optionScreenshare"
+            android:layout_width="128dp"
+            android:layout_height="56dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/round_button"
+            android:onClick="onClick"
+            android:text="Share Screen" />
+            -->
+
+        <Button
+            android:id="@+id/optionHelp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="#FF0000"
+            android:enabled="false"
+            android:onClick="onClick"
+            android:text="Help Me!"
+            android:textColor="#FFFF00"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:visibility="invisible" />
+
+    </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
-
-<!--
-
--->
