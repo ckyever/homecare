@@ -5,4 +5,7 @@
     <color name="colorAccent">#546ed2</color>
     <color name="greyish">#fff2f1f2</color>
     <color name="blue">#4a80f5</color>
+    <color name="background">#EBF4FA</color>
+    <color name="button">#FFFFFF</color>
+    <color name="button_outline">#444444</color>
 </resources>
