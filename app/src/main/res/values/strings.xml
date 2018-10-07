@@ -4,4 +4,13 @@
     <string name="tracking_title">Caregivers can view your location</string>
     <string name="tracking_notification">Tap to disable tracking</string>
     <string name="title_activity_tracking">Tracking</string>
+    <string name="directions_error">Please input a location first</string>
+    <string name="get_device_location_error">Unable to get current location</string>
+    <string name="tracking_stop">stop</string>
+    <string name="latitude_key">Latitude</string>
+    <string name="longitude_key">Longitude</string>
+    <string name="firebase_user_path">User/</string>
+    <string name="firebase_location_path">/location</string>
+    <string name="firebase_friends_path">/friends</string>
+    <string name="firebase_name_path">/name</string>
 </resources>
