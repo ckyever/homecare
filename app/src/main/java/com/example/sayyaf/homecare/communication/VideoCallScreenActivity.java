@@ -67,7 +67,6 @@ public class VideoCallScreenActivity extends BaseActivity {
         }
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,6 +93,9 @@ public class VideoCallScreenActivity extends BaseActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
+        //
+        super.onSaveInstanceState(savedInstanceState);
+        //
         savedInstanceState.putBoolean(ADDED_LISTENER, mAddedListener);
     }
 
@@ -148,16 +150,26 @@ public class VideoCallScreenActivity extends BaseActivity {
     public void onBackPressed() {
     }
 
-
-    /**
-     * Handles call ending. Hangs up the call and stops the ringing tone if necessary
-     */
-    private void endCall() {
+    // avoid call continue after swipe
+    @Override
+    protected void onDestroy(){
         mAudioPlayer.stopProgressTone();
         Call call = getSinchServiceInterface().getCall(mCallId);
         if (call != null) {
             call.hangup();
         }
+        super.onDestroy();
+    }
+
+    /**
+     * Handles call ending. Hangs up the call and stops the ringing tone if necessary
+     */
+    private void endCall() {
+        /*mAudioPlayer.stopProgressTone();
+        Call call = getSinchServiceInterface().getCall(mCallId);
+        if (call != null) {
+            call.hangup();
+        }*/
         finish();
     }
 

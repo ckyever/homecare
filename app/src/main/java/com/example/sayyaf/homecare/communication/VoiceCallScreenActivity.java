@@ -1,6 +1,7 @@
 package com.example.sayyaf.homecare.communication;
 
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -8,7 +9,12 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.sayyaf.homecare.R;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.sinch.android.rtc.PushPair;
 import com.sinch.android.rtc.calling.Call;
@@ -55,7 +61,6 @@ public class VoiceCallScreenActivity extends BaseActivity {
             });
         }
     }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,11 +90,44 @@ public class VoiceCallScreenActivity extends BaseActivity {
             call.addCallListener(new SinchCallListener());
             mCallerName.setText(name);
             mCallState.setText(call.getState().toString());
-            FirebaseStorage.getInstance()
+
+            // speed up image download, old method try to download url for twice
+            Query profilePicUriRef =  FirebaseDatabase.getInstance() .getReference("User")
+                    .child(call.getRemoteUserId().split(",")[0])
+                    .child("profileImage");
+
+            profilePicUriRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.exists()) {
+                        String userImageUriString = dataSnapshot.getValue(String.class);
+
+                        if(userImageUriString.equals("no Image"))
+                            return;
+
+                        Glide.with(VoiceCallScreenActivity.this)
+                                .load(userImageUriString)
+                                .apply(new RequestOptions()
+                                        .override(100, 100) // resize image in pixel
+                                        .centerCrop()
+                                        .dontAnimate())
+                                .into(profilePic);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+            //
+
+            /*FirebaseStorage.getInstance()
                     .getReference("UserProfileImage")
                     .child(call.getRemoteUserId().split(",")[0])
                     .getDownloadUrl()
-                    .addOnSuccessListener(onDownloadSuccess(profilePic));
+                    .addOnSuccessListener(onDownloadSuccess(profilePic));*/
+
         } else {
             Log.e(TAG, "Started with invalid callId, aborting.");
             finish();
@@ -116,12 +154,23 @@ public class VoiceCallScreenActivity extends BaseActivity {
         // User should exit activity by ending call, not by going back.
     }
 
-    private void endCall() {
+    // avoid call continue after swipe
+    @Override
+    protected void onDestroy(){
         mAudioPlayer.stopProgressTone();
         Call call = getSinchServiceInterface().getCall(mCallId);
         if (call != null) {
             call.hangup();
         }
+        super.onDestroy();
+    }
+
+    private void endCall() {
+        /*mAudioPlayer.stopProgressTone();
+        Call call = getSinchServiceInterface().getCall(mCallId);
+        if (call != null) {
+            call.hangup();
+        }*/
         finish();
     }
 

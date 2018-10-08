@@ -123,11 +123,13 @@ public class EmergencyMsgListener extends IntentService {
         NotificationCompat.Builder notificationbulider = null;
 
         Intent goToContact = new Intent(this, ContactChatActivity.class);
+        goToContact.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingGoToContact = PendingIntent.getActivity(this, 0, goToContact, 0);
 
         Intent goToTracking = new Intent(this, TrackingActivity.class);
+        goToTracking.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         // PendingIntent pendingGoToTracking = PendingIntent.getActivity(this, 0, goToTracking, 0);
-        PendingIntent pendingGoToTracking = PendingIntent.getActivity(this, emergencyID, goToTracking, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingGoToTracking = PendingIntent.getActivity(this, 0, goToTracking, 0);
 
 
         notificationbulider =

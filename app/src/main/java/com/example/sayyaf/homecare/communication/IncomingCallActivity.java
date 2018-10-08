@@ -126,12 +126,28 @@ public class IncomingCallActivity extends BaseActivity {
      * The method called when the call has been declined. Hangs up the call
      */
     private void declineClicked() {
+        /*mAudioPlayer.stopRingtone();
+        Call call = getSinchServiceInterface().getCall(mCallId);
+        if (call != null) {
+            call.hangup();
+        }*/
+        finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        declineClicked();
+    }
+
+    // avoid call continue after swipe
+    @Override
+    protected void onDestroy(){
         mAudioPlayer.stopRingtone();
         Call call = getSinchServiceInterface().getCall(mCallId);
         if (call != null) {
             call.hangup();
         }
-        finish();
+        super.onDestroy();
     }
 
     /**

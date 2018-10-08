@@ -56,11 +56,14 @@
         </activity>
         <activity android:name=".requests.RequestActivity">
         </activity>
-        <activity android:name=".communication.VideoCallScreenActivity">
+        <activity android:name=".communication.VideoCallScreenActivity"
+            android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".communication.VoiceCallScreenActivity">
+        <activity android:name=".communication.VoiceCallScreenActivity"
+            android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".communication.IncomingCallActivity">
+        <activity android:name=".communication.IncomingCallActivity"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".contacts.ContactChatActivity"
@@ -71,9 +74,11 @@
             android:name=".communication.ChatActivity"
             android:windowSoftInputMode="stateHidden" >
         </activity>
-        <activity android:name=".accounts.LoginActivity">
+        <activity android:name=".accounts.LoginActivity"
+            android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".accounts.AccountRegisterActivity" />
+        <activity android:name=".accounts.AccountRegisterActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".mapping.MapsActivity"
             android:label="@string/title_activity_maps"/>

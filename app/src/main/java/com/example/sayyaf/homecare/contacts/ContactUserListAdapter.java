@@ -192,7 +192,8 @@ public class ContactUserListAdapter extends ArrayAdapter<User>{
                         .override(100, 100) // resize image in pixel
                         .centerCrop()
                         .dontAnimate()
-                        .skipMemoryCache(true))
+                        .skipMemoryCache(true)
+                        .error(R.mipmap.ic_launcher_round))
                 .into(userImage);
     }
 
