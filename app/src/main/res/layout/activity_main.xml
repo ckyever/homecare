@@ -27,12 +27,11 @@
                 android:layout_margin="10dp"
                 android:layout_weight="1"
                 android:background="@drawable/round_button"
-                android:paddingTop="55dp"
+                android:paddingTop="50dp"
+                android:paddingBottom="10dp"
                 android:text="Tracking"
-                android:textAlignment="center"
                 android:textSize="18sp"
-                android:drawableTop="@drawable/ic_map"
-                android:drawablePadding="25dp" />
+                android:drawableTop="@drawable/ic_map" />
 
             <Button
                 android:id="@+id/optionContacts"
@@ -42,12 +41,12 @@
                 android:layout_weight="1"
                 android:background="@drawable/round_button"
                 android:onClick="onClick"
-                android:paddingTop="55dp"
+                android:paddingTop="50dp"
+                android:paddingBottom="10dp"
                 android:text="Contacts"
                 android:textAlignment="center"
                 android:textSize="18sp"
-                android:drawableTop="@drawable/ic_contacts"
-                android:drawablePadding="25dp" />
+                android:drawableTop="@drawable/ic_contacts" />
 
         </LinearLayout>
 
@@ -65,12 +64,12 @@
                 android:layout_margin="10dp"
                 android:layout_weight="1"
                 android:background="@drawable/round_button"
-                android:paddingTop="55dp"
+                android:paddingTop="50dp"
+                android:paddingBottom="10dp"
                 android:text="friend requests"
                 android:textAlignment="center"
                 android:textSize="18sp"
-                android:drawableTop="@drawable/ic_friend_requests"
-                android:drawablePadding="25dp" />
+                android:drawableTop="@drawable/ic_friend_requests" />
 
             <Button
                 android:id="@+id/contactsUpdate"
@@ -79,12 +78,12 @@
                 android:layout_margin="10dp"
                 android:layout_weight="1"
                 android:background="@drawable/round_button"
-                android:paddingTop="55dp"
+                android:paddingTop="50dp"
+                android:paddingBottom="10dp"
                 android:text="Add Contacts"
                 android:textAlignment="center"
                 android:textSize="18sp"
-                android:drawableTop="@drawable/ic_add_contacts"
-                android:drawablePadding="25dp" />
+                android:drawableTop="@drawable/ic_add_contacts" />
 
         </LinearLayout>
 
@@ -102,12 +101,12 @@
                 android:layout_margin="10dp"
                 android:layout_weight="1"
                 android:background="@drawable/round_button"
-                android:paddingTop="55dp"
+                android:paddingTop="50dp"
+                android:paddingBottom="10dp"
                 android:text="Options"
                 android:textAlignment="center"
                 android:textSize="18sp"
-                android:drawableTop="@drawable/ic_options"
-                android:drawablePadding="25dp" />
+                android:drawableTop="@drawable/ic_options" />
 
             <Button
                 android:id="@+id/logoutButton"
@@ -116,12 +115,12 @@
                 android:layout_margin="10dp"
                 android:layout_weight="1"
                 android:background="@drawable/round_button"
-                android:paddingTop="55dp"
+                android:paddingTop="50dp"
+                android:paddingBottom="10dp"
                 android:text="Logout"
                 android:textAlignment="center"
                 android:textSize="18sp"
-                android:drawableTop="@drawable/ic_logout"
-                android:drawablePadding="25dp" />
+                android:drawableTop="@drawable/ic_logout" />
 
         </LinearLayout>
 
