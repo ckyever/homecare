@@ -34,7 +34,7 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="url" value="jar:file:/Applications/Android%20Studio.app/Contents/plugins/android/lib/android.jar!/images/material_design_icons/content/ic_remove_black_24dp.xml" />
+                                                <entry key="url" value="jar:file:/Applications/Android%20Studio.app/Contents/plugins/android/lib/android.jar!/images/material_design_icons/content/ic_block_black_24dp.xml" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -44,7 +44,9 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="outputName" value="ic_remove" />
+                                      <entry key="outputName" value="ic_decline" />
+                                      <entry key="theme" value="CUSTOM" />
+                                      <entry key="themeColor" value="272727" />
                                     </map>
                                   </option>
                                 </PersistentState>

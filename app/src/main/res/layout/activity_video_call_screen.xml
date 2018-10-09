@@ -51,7 +51,7 @@
         android:layout_height="0dp"
         android:padding="0dip"
         android:layout_weight="3"
-        android:background="@drawable/callbg" android:orientation="vertical">
+        android:background="@mipmap/ic_launcher_round" android:orientation="vertical">
 
         <RelativeLayout android:id="@+id/remoteVideo" android:layout_width="wrap_content"
             android:layout_height="wrap_content" android:layout_alignParentLeft="true"

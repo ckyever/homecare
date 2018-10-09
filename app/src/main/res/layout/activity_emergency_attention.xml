@@ -8,11 +8,11 @@
 
     <TextView
         android:id="@+id/notice1"
-        android:textColor="#FF0000"
+        android:textColor="@color/emergencyBackground"
         android:textStyle="bold"
         android:textSize="35sp"
         android:textAlignment="center"
-        android:text="You get emergency\n call from the\n assisted person"
+        android:text="You have received\n an emergency\n notification from an\n assisted person"
         android:layout_marginTop="100sp"
         android:layout_marginBottom="100sp"
         android:layout_width="wrap_content"
@@ -26,7 +26,7 @@
 
     <TextView
         android:id="@+id/notice2"
-        android:textColor="#FF0000"
+        android:textColor="@color/emergencyBackground"
         android:textStyle="bold"
         android:textSize="25sp"
         android:textAlignment="center"

@@ -100,7 +100,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
-                android:background="@color/colorAccent"
+                android:background="@drawable/round_button_accented"
+                android:textColor="@android:color/white"
                 android:padding="10dp"
                 android:text="Sign up" />
 
