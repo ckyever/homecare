@@ -42,6 +42,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private Button sendMsg;
     private Button helpButton;
 
+    private Button homeButton;
+
     private ProgressBar progressBar;
     private TextView progressBarMsg;
 
@@ -61,6 +63,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
         sendMsg = (Button) findViewById(R.id.sendMsg);
         helpButton = (Button) findViewById(R.id.optionHelp);
+
+        homeButton = (Button) findViewById(R.id.optionMenu);
 
         selectImage = (ImageView) findViewById(R.id.selectImage);
 
@@ -111,6 +115,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
             selectImage();
             return;
+        }
+
+        if(v == homeButton){
+            chatController.returnToMenu(this);
         }
 
         if(!NetworkConnection.getConnection()){

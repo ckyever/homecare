@@ -7,7 +7,7 @@
 
     <TextView
         android:id="@+id/usernameRequest"
-        android:textColor="#0000FF"
+        android:textColor="@color/green"
         android:textAlignment="textStart"
         android:layout_width="0sp"
         android:layout_height="wrap_content"
@@ -57,6 +57,18 @@
         app:layout_constraintTop_toBottomOf="@id/contactEmailRequest"
         app:layout_constraintBottom_toBottomOf="@id/declineButton"/>
 
+    <TextView
+        android:id="@+id/spacing3"
+        android:layout_width="0sp"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10sp"
+        android:paddingRight="10sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@android:color/white"
+        android:textSize="5sp"
+        app:layout_constraintTop_toBottomOf="@id/declineButton"/>
+
     <Button
         android:id="@+id/declineButton"
         android:text="Decline"
@@ -64,7 +76,10 @@
         android:layout_height="wrap_content"
         android:paddingLeft="10sp"
         android:paddingRight="10sp"
-        android:layout_marginBottom="5sp"
+        android:layout_marginBottom="10sp"
+        android:background="@drawable/round_button_grey"
+        android:drawableLeft="@drawable/ic_cab_done_holo"
+        android:drawableTint="@color/button_outline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/contactEmailRequest"
         app:layout_constraintStart_toEndOf="@id/acceptButton"
@@ -76,8 +91,11 @@
         android:layout_height="wrap_content"
         android:paddingLeft="10sp"
         android:paddingRight="10sp"
+        android:layout_marginBottom="10sp"
         android:text="Accept"
         android:textSize="20sp"
+        android:background="@drawable/round_button_grey"
+        android:drawableLeft="@drawable/ic_cab_done_holo_light"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/declineButton"
         app:layout_constraintTop_toBottomOf="@id/contactEmailRequest" />
