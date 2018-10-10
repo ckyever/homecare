@@ -29,6 +29,7 @@ import com.bumptech.glide.request.target.Target;
 import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.UserAppVersionController;
+import com.example.sayyaf.homecare.contacts.ContactChatActivity;
 import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
 import com.example.sayyaf.homecare.notifications.NetworkConnection;
 import com.example.sayyaf.homecare.requests.RequestActivity;
@@ -65,6 +66,7 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
     private FloatingActionButton confirmChangeButton;
 
     private Button helpButton;
+    private Button homeButton;
 
     private Uri imagePath;
 
@@ -85,6 +87,7 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
         progressBarMsg = (TextView) findViewById(R.id.progressBarMsg);
 
         helpButton = (Button) findViewById(R.id.optionHelp);
+        homeButton = (Button) findViewById(R.id.optionMenu);
 
         // activate help button on assisted person version
         UserAppVersionController.getUserAppVersionController().resetButton(helpButton);
@@ -103,6 +106,10 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
         if(v == selectImage || v == selectImageButton){
             selectImage();
             return;
+        }
+
+        if(v == homeButton){
+            goToMenu();
         }
 
         if(!NetworkConnection.getConnection()){
@@ -355,6 +362,13 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
         progressBarMsg.setVisibility(View.GONE);
     }
 
+    private void goToMenu(){
+        // back to menu page
+        Intent goToMenu = new Intent(ProfileImageActivity.this, MainActivity.class);
+        goToMenu.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(goToMenu);
+        finish();
+    }
 
     @Override
     public void onBackPressed() {

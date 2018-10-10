@@ -22,6 +22,7 @@ public class OptionActivity extends AppCompatActivity implements View.OnClickLis
     private TextView changeImageText;
 
     private Button helpButton;
+    private Button homeButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +31,9 @@ public class OptionActivity extends AppCompatActivity implements View.OnClickLis
 
         changeImageButton = (FloatingActionButton) findViewById(R.id.changeImageButton);
         changeImageText = (TextView) findViewById(R.id.changeImage);
+
         helpButton = (Button) findViewById(R.id.optionHelp);
+        homeButton = (Button) findViewById(R.id.optionMenu);
 
         // activate help button on assisted person version
         UserAppVersionController.getUserAppVersionController().resetButton(helpButton);
@@ -38,6 +41,11 @@ public class OptionActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onClick(View v) {
+
+        if(v == homeButton){
+            goToMenu();
+        }
+
         if(!NetworkConnection.getConnection()){
             NetworkConnection.requestNetworkConnection(OptionActivity.this);
             return;
@@ -68,14 +76,14 @@ public class OptionActivity extends AppCompatActivity implements View.OnClickLis
 
     }
 
-
-
-    @Override
-    public void onBackPressed() {
+    private void goToMenu(){
         // back to menu page
         Intent goToMenu = new Intent(OptionActivity.this, MainActivity.class);
         goToMenu.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(goToMenu);
         finish();
     }
+
+    @Override
+    public void onBackPressed() { goToMenu(); }
 }

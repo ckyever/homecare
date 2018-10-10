@@ -64,10 +64,13 @@
         android:id="@+id/searchUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="5sp"
         android:text="Search\nUser"
         android:onClick="onClick"
         android:textSize="15sp"
         android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:background="@drawable/round_button_accented"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
@@ -75,10 +78,13 @@
         android:id="@+id/refreshList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="5sp"
         android:text="Refresh\nList"
         android:onClick="onClick"
         android:textSize="15sp"
         android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:background="@drawable/round_button_accented"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 

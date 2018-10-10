@@ -39,7 +39,9 @@ public class ContactUpdateActivity extends AppCompatActivity implements View.OnC
     private User currentUser;
     private String uid;
     private Button mRemoveUserButton;
+
     private Button helpButton;
+    private Button homeButton;
 
     public static final String TAG = ContactUpdateActivity.class.getSimpleName();
 
@@ -52,7 +54,9 @@ public class ContactUpdateActivity extends AppCompatActivity implements View.OnC
         mAddUserButton = (Button) findViewById(R.id.addContact);
         mUserEmail = (EditText) findViewById(R.id.contactEmail);
         mRemoveUserButton = (Button) findViewById(R.id.removeContact);
+
         helpButton = (Button) findViewById(R.id.optionHelp);
+        homeButton = (Button) findViewById(R.id.optionMenu);
 
         // activate help button on assisted person version
         UserAppVersionController.getUserAppVersionController().resetButton(helpButton);
@@ -70,6 +74,10 @@ public class ContactUpdateActivity extends AppCompatActivity implements View.OnC
 
         //Retrieve the entered email
         final String email = mUserEmail.getText().toString().trim();
+
+        if(view == homeButton){
+            goToMenu();
+        }
 
         if(!NetworkConnection.getConnection()){
             NetworkConnection.requestNetworkConnection(ContactUpdateActivity.this);
@@ -271,7 +279,8 @@ public class ContactUpdateActivity extends AppCompatActivity implements View.OnC
         }
     }
 
-    private void backToMenu(){
+    private void goToMenu(){
+        // back to menu page
         Intent goToMenu = new Intent(ContactUpdateActivity.this, MainActivity.class);
         goToMenu.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(goToMenu);
@@ -287,7 +296,7 @@ public class ContactUpdateActivity extends AppCompatActivity implements View.OnC
 
     @Override
     public void onBackPressed() {
-        backToMenu();
+        goToMenu();
     }
 
 }
