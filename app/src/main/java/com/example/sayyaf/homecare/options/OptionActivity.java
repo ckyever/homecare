@@ -20,6 +20,10 @@ public class OptionActivity extends AppCompatActivity implements View.OnClickLis
 
     private FloatingActionButton changeImageButton;
     private TextView changeImageText;
+    private FloatingActionButton changeEmailButton;
+    private TextView changeEmailText;
+    private FloatingActionButton changePasswordButton;
+    private TextView changePasswordText;
 
     private Button helpButton;
     private Button homeButton;
@@ -31,6 +35,10 @@ public class OptionActivity extends AppCompatActivity implements View.OnClickLis
 
         changeImageButton = (FloatingActionButton) findViewById(R.id.changeImageButton);
         changeImageText = (TextView) findViewById(R.id.changeImage);
+        changeEmailButton = (FloatingActionButton) findViewById(R.id.changeEmailButton);
+        changeEmailText = (TextView) findViewById(R.id.updateEmail);
+        changePasswordButton = (FloatingActionButton) findViewById(R.id.changePasswordButton);
+        changePasswordText = (TextView) findViewById(R.id.updatePassword);
 
         helpButton = (Button) findViewById(R.id.optionHelp);
         homeButton = (Button) findViewById(R.id.optionMenu);
@@ -62,6 +70,20 @@ public class OptionActivity extends AppCompatActivity implements View.OnClickLis
             Intent goToProfileImage = new Intent(OptionActivity.this, ProfileImageActivity.class);
             goToProfileImage.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(goToProfileImage);
+            finish();
+        }
+
+        if(v == changeEmailText || v == changeEmailButton) {
+            Intent updateEmail = new Intent(OptionActivity.this, UpdateEmailActivity.class);
+            updateEmail.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(updateEmail);
+            finish();
+        }
+
+        if(v == changePasswordText || v == changePasswordButton) {
+            Intent updatePassword = new Intent(OptionActivity.this, UpdatePasswordActivity.class);
+            updatePassword.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(updatePassword);
             finish();
         }
 

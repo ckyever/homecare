@@ -165,8 +165,8 @@ public class ContactUpdateActivity extends AppCompatActivity implements View.OnC
 
                                 /* Removes the friend request for the receiver, and removes
                                 request sent for the current user */
-                                RequestController.removeRequest(ref, currentUser.getId(), user);
-                                RequestController.removeSentRequest(ref, currentUser.getId(), user);
+                                RequestController.removeRequest(ref, currentUser, user);
+                                RequestController.removeSentRequest(ref, currentUser, user);
 
                                 Toast.makeText(ContactUpdateActivity.this,
                                         "Friend request is removed",
@@ -241,7 +241,7 @@ public class ContactUpdateActivity extends AppCompatActivity implements View.OnC
                             /* informs the current user about a sent request, and adds the
                                 request to the receiver
                              */
-                            RequestController.addSentRequest(ref, user.getId(), user.getEmail(), uid);
+                            RequestController.addSentRequest(ref, user, currentUser);
                             RequestController.addReceiverRequest(ref, user.getId(), currentUser.getEmail(), uid);
 
                             Toast.makeText(ContactUpdateActivity.this, "Request Sent",
