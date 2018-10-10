@@ -66,6 +66,49 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
+
+    <TextView
+        android:id="@+id/changeEmail"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10sp"
+        android:layout_marginStart="10sp"
+        android:layout_marginTop="92dp"
+        android:background="@android:color/white"
+        android:onClick="onClick"
+        android:paddingBottom="15sp"
+        android:paddingStart="10sp"
+        android:paddingTop="15sp"
+        android:text="Update Email Address"
+        android:textColor="@color/colorAccent"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/titleBar" />
+
+    <TextView
+        android:id="@+id/changePassword"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10sp"
+        android:layout_marginStart="10sp"
+        android:layout_marginTop="174dp"
+        android:background="@android:color/white"
+        android:onClick="onClick"
+        android:paddingBottom="15sp"
+        android:paddingStart="10sp"
+        android:paddingTop="15sp"
+        android:text="Update Password"
+        android:textColor="@color/colorAccent"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/titleBar" />
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/changeImageButton"
         android:layout_width="wrap_content"
@@ -78,6 +121,32 @@
         app:layout_constraintEnd_toEndOf="@id/changeImage"
         app:layout_constraintTop_toTopOf="@id/changeImage"
         app:layout_constraintBottom_toBottomOf="@id/changeImage" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/changeEmailButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onClick"
+        android:layout_marginEnd="10sp"
+        android:paddingTop="10sp"
+        android:paddingBottom="10sp"
+        app:srcCompat="@android:drawable/ic_media_play"
+        app:layout_constraintEnd_toEndOf="@id/changeEmail"
+        app:layout_constraintTop_toTopOf="@id/changeEmail"
+        app:layout_constraintBottom_toBottomOf="@id/changeEmail" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/changePasswordButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onClick"
+        android:layout_marginEnd="10sp"
+        android:paddingTop="10sp"
+        android:paddingBottom="10sp"
+        app:srcCompat="@android:drawable/ic_media_play"
+        app:layout_constraintEnd_toEndOf="@id/changePassword"
+        app:layout_constraintTop_toTopOf="@id/changePassword"
+        app:layout_constraintBottom_toBottomOf="@id/changePassword" />
 
     <Button
         android:id="@+id/optionMenu"
