@@ -242,7 +242,7 @@ public class ContactUpdateActivity extends AppCompatActivity implements View.OnC
                                 request to the receiver
                              */
                             RequestController.addSentRequest(ref, user, currentUser);
-                            RequestController.addReceiverRequest(ref, user.getId(), currentUser.getEmail(), uid);
+                            RequestController.addReceiverRequest(ref, user, currentUser);
 
                             Toast.makeText(ContactUpdateActivity.this, "Request Sent",
                                     Toast.LENGTH_SHORT).show();
