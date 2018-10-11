@@ -102,6 +102,14 @@
             android:screenOrientation="portrait" />
 
         <activity
+            android:name=".options.UpdateEmailActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".options.UpdatePasswordActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
             android:name=".options.ProfileImageActivity"
             android:screenOrientation="portrait" />
 
