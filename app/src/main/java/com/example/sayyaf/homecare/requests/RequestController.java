@@ -63,27 +63,26 @@ public class RequestController {
         ref.child("User").child(currentId)
                 .child("requestsSent")
                 .child(otherUser.getId())
-                .setValue(otherUser.getEmail());
+                .setValue(otherUser.getName());
     }
 
     /**
      * Used to add a request to requests
      * @param ref reference to Firebase Realtime Database
-     * @param otherId id of the request receiver
-     * @param currentId id of the request sender
+     * @param otherUser the request receiver
+     * @param currentUser user currently signed in
      */
-    public static void addReceiverRequest(DatabaseReference ref, String otherId, String currentEmail,
-                                    String currentId) {
+    public static void addReceiverRequest(DatabaseReference ref, User otherUser, User currentUser) {
 
      // Add request to receivers requests
-        ref.child("User").child(otherId)
+        ref.child("User").child(otherUser.getId())
                 .child("requests")
                 .push();
 
-        ref.child("User").child(otherId)
+        ref.child("User").child(otherUser.getId())
                 .child("requests")
-                .child(currentId)
-                .setValue(currentEmail);
+                .child(currentUser.getId())
+                .setValue(currentUser.getName());
 
     }
 
@@ -152,7 +151,7 @@ public class RequestController {
                 .child(otherUser.getId())
                 .child("friends")
                 .child(currentUser.getId())
-                .setValue(currentUser.getEmail());
+                .setValue(currentUser.getName());
     }
 
     /**
