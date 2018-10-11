@@ -64,7 +64,7 @@ public class TrackingService extends Service {
                 .setContentText(getString(R.string.tracking_notification))
                 .setOngoing(true)
                 .setContentIntent(broadcastIntent)
-                .setSmallIcon(R.drawable.ic_tracking);
+                .setSmallIcon(R.drawable.ic_notification);
         startForeground(1, builder.build());
     }
 
