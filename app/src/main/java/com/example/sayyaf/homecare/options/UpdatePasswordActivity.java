@@ -22,7 +22,7 @@ public class UpdatePasswordActivity extends AppCompatActivity {
     }
 
 
-
+/*
     public void updatePassword() {
         FirebaseUser user;
         user = FirebaseAuth.getInstance().getCurrentUser();
@@ -53,4 +53,5 @@ public class UpdatePasswordActivity extends AppCompatActivity {
             }
         });
     }
+    */
 }

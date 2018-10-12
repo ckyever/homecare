@@ -58,7 +58,7 @@ public class NotificationService extends Service {
 
         notificationbulider =
                 new NotificationCompat.Builder(this, NotificationChannels.getForegroundCH())
-                        .setSmallIcon(R.drawable.ic_launcher_background)
+                        .setSmallIcon(R.drawable.ic_notification)
                         .setContentTitle("Welcome to HomeCare")
                         .setContentText("You have logged in")
                         .setDefaults(Notification.DEFAULT_ALL)
