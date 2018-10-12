@@ -157,7 +157,7 @@ public class VoiceCallScreenActivity extends BaseActivity {
     // avoid call continue after swipe
     @Override
     protected void onDestroy(){
-        mAudioPlayer.stopProgressTone();
+        // mAudioPlayer.stopProgressTone();
         Call call = getSinchServiceInterface().getCall(mCallId);
         if (call != null) {
             call.hangup();

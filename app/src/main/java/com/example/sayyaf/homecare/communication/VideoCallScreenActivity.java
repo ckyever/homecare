@@ -153,7 +153,7 @@ public class VideoCallScreenActivity extends BaseActivity {
     // avoid call continue after swipe
     @Override
     protected void onDestroy(){
-        mAudioPlayer.stopProgressTone();
+        // mAudioPlayer.stopProgressTone();
         Call call = getSinchServiceInterface().getCall(mCallId);
         if (call != null) {
             call.hangup();
@@ -255,6 +255,22 @@ public class VideoCallScreenActivity extends BaseActivity {
         }
     }
 
+
+    //
+    private void removeLocalView() {
+        if (mRemoteVideoViewAdded || getSinchServiceInterface() == null) {
+            return; //early
+        }
+        final VideoController vc = getSinchServiceInterface().getVideoController();
+        if (vc != null) {
+            RelativeLayout view = (RelativeLayout) findViewById(R.id.localVideo);
+            view.removeView(vc.getLocalView());
+            mRemoteVideoViewAdded = false;
+        }
+    }
+    //
+
+
     private void removeRemoteView() {
         if (mRemoteVideoViewAdded || getSinchServiceInterface() == null) {
             return; //early
@@ -300,6 +316,10 @@ public class VideoCallScreenActivity extends BaseActivity {
         public void onCallEnded(Call call) {
             CallEndCause cause = call.getDetails().getEndCause();
             Log.d(TAG, "Call ended. Reason: " + cause.toString());
+
+            removeRemoteView();
+            removeLocalView();
+
             mAudioPlayer.stopProgressTone();
             setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
             String endMsg = "Call ended";
