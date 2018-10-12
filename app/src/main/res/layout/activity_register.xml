@@ -83,7 +83,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
                     android:background="@android:color/white"
-                    android:text="Are you a caregiver?" />
+                    android:text="Are you a caregiver?"
+                    android:textSize="18sp"/>
 
                 <RadioButton
                     android:id="@+id/assistedPerson"
@@ -91,7 +92,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
                     android:background="@android:color/white"
-                    android:text="Are you an assisted person?" />
+                    android:text="Are you an assisted person?"
+                    android:textSize="18sp"/>
             </RadioGroup>
 
 
@@ -112,7 +114,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="20dp"
                 android:text="Already have an account? Log in here!"
-                android:textSize="15sp"
+                android:textSize="19sp"
                 android:textStyle="bold" />
 
         </LinearLayout>
