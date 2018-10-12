@@ -16,11 +16,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sayyaf.homecare.R;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.ProviderQueryResult;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -69,7 +74,7 @@ public class AccountRegisterActivity extends AppCompatActivity implements View.O
     private void validateFields() {
 
         if(mNameEditText.getText().length()>0 && mEmailEditText.getText().length()>0 &&
-                mPasswordEditText.getText().length()>=6 &&
+                mPasswordEditText.getText().length()> 0 &&
                 mConfirmPasswordEditText.getText().length()>0 && (mCaregiver.isChecked() ||
                 mAssistedPerson.isChecked())){
             mCreateUserButton.setEnabled(true);
@@ -118,10 +123,7 @@ public class AccountRegisterActivity extends AppCompatActivity implements View.O
         }
 
         if (view == mCreateUserButton) {
-            if(createNewUser()) {
-                startActivity(intent);
-                finish();
-            }
+           createNewUser();
         }
 
         if (view == mAssistedPerson || view == mCaregiver) {
@@ -136,7 +138,7 @@ public class AccountRegisterActivity extends AppCompatActivity implements View.O
         * register the user with the Firebase Authentication Service. If that is successful,
         * links the user to the Real time database
         */
-    private boolean createNewUser() {
+    private void createNewUser() {
         final String name = mNameEditText.getText().toString().trim();
         final String email = mEmailEditText.getText().toString().trim();
         String password = mPasswordEditText.getText().toString().trim();
@@ -145,48 +147,62 @@ public class AccountRegisterActivity extends AppCompatActivity implements View.O
         final boolean isCaregiver = mCaregiver.isChecked();
         final DatabaseReference  myRef= FirebaseDatabase.getInstance().getReference("User");
         final User newUser =  new User(name, email, isCaregiver);
+        final Intent intent = new Intent(AccountRegisterActivity.this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
 
         /* Checks password and confirm password match */
         if(!password.equals(confirmPassword)) {
             Toast.makeText(AccountRegisterActivity.this, "Password and confirm password don't match",
                     Toast.LENGTH_SHORT).show();
-            return false;
+            return;
         }
 
         /* Checks that the email address given follows the requisite pattern */
         if(!isValidEmail(email)) {
             Toast.makeText(AccountRegisterActivity.this, "Email is invalid",
                     Toast.LENGTH_SHORT).show();
-            return false;
+            return;
         }
 
         /* If email is valid, adds user to the Authentication service. If that succeeds, adds them
             to the Real Time database
          */
         if(isValidEmail(email)) {
-            mAuth.createUserWithEmailAndPassword(email, password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-                        @Override
-                        public void onSuccess(AuthResult auth) {
-                                Log.d(TAG, "Authentication successful");
-                                fbUser =FirebaseAuth.getInstance().getCurrentUser();
-                                String userId = fbUser.getUid();
-                                newUser.setId(userId);
-                                //myRef.child(userId);
-                                myRef.child(userId).setValue(newUser);
-
-
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
+            mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(AccountRegisterActivity.this, "Authentication failed. Please try again later",
-                            Toast.LENGTH_SHORT).show();
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if (task.isSuccessful()) {
+                        Log.d(TAG, "Authentication successful");
+                        fbUser = FirebaseAuth.getInstance().getCurrentUser();
+                        String userId = fbUser.getUid();
+                        newUser.setId(userId);
+                        //myRef.child(userId);
+                        myRef.child(userId).setValue(newUser);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        try {
+                            throw task.getException();
+                        } catch (FirebaseAuthWeakPasswordException e) {
+                            Toast.makeText(AccountRegisterActivity.this, "Password length is too short",
+                                    Toast.LENGTH_SHORT).show();
+
+                        } catch (FirebaseAuthUserCollisionException e) {
+                            Toast.makeText(AccountRegisterActivity.this, "Account already exists with this email address. " +
+                                            "Please try again",
+                                    Toast.LENGTH_SHORT).show();
+                        } catch (Exception e) {
+                            Log.e(TAG, e.getMessage());
+                            Toast.makeText(AccountRegisterActivity.this, "Account creation was unsuccessful. " +
+                                            "Please try again",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
                 }
             });
-
         }
-        return true;
     }
 
     public static boolean isValidEmail(CharSequence target) {
@@ -201,6 +217,5 @@ public class AccountRegisterActivity extends AppCompatActivity implements View.O
         startActivity(intent);
         finish();
     }
-
 
 }
