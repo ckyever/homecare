@@ -19,8 +19,13 @@ import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+/**
+ * Activity to allow users to update the email address registered to their account
+ */
 
 public class UpdateEmailActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -72,12 +77,20 @@ public class UpdateEmailActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
+    /**
+     * Attempts to update user email. Checks the entered email for correct format
+     * followed by attempted account update.
+     */
     public void updateEmail() {
         final String email = changeEmailText.getText().toString().trim();
+
+        //Ensures entered email address follows requisite email string pattern
         if(isValidEmail(email)) {
+            //Calls the Firebase Authentication user email update method
             mAuth.getInstance().getCurrentUser().updateEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
+                    //If successfully updated in Firebase Authentication, update in Real Time Database
                     if (task.isSuccessful()) {
                         Log.d(TAG, "User email address updated.");
                         String userId = mAuth.getInstance().getCurrentUser().getUid();
@@ -90,9 +103,26 @@ public class UpdateEmailActivity extends AppCompatActivity implements View.OnCli
                                 "Email successfully updated", Toast.LENGTH_SHORT).show();
                     }
 
+                    //Something went wrong in the update
                     else {
-                        Toast.makeText(UpdateEmailActivity.this,
-                                "Email update unsuccessful  please try again", Toast.LENGTH_SHORT).show();
+                        try {
+                            if (task.getException() != null) {
+                                throw task.getException();
+                            }
+                            else{
+                                Toast.makeText(UpdateEmailActivity.this,
+                                        "Email update unsuccessful  please try again", Toast.LENGTH_SHORT).show();
+                            }
+
+                         //Entered email registered to a user already
+                        }catch(FirebaseAuthUserCollisionException e) {
+                            Toast.makeText(UpdateEmailActivity.this, "Account already exists with this email address. " +
+                                            "Please try again",
+                                    Toast.LENGTH_SHORT).show();
+                        } catch (Exception e) {
+                            Toast.makeText(UpdateEmailActivity.this,
+                                    "Email update unsuccessful  please try again", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }
             });
@@ -105,7 +135,11 @@ public class UpdateEmailActivity extends AppCompatActivity implements View.OnCli
     }
 
 
-
+    /**
+     * Method to test pattern of user entered email addresses
+     * @param target target character sequence to be pattern matched
+     * @return
+     */
     public static boolean isValidEmail(CharSequence target) {
         return !TextUtils.isEmpty(target) &&
                 android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();

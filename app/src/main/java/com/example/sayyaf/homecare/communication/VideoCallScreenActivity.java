@@ -310,7 +310,7 @@ public class VideoCallScreenActivity extends BaseActivity {
     private class SinchCallListener implements VideoCallListener {
         /**
          * Asynchronous method that handles the call ending
-         * @param call
+         * @param call call object to represent call taking place
          */
         @Override
         public void onCallEnded(Call call) {
