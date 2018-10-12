@@ -147,16 +147,14 @@ public class EmergencyCallActivity extends AppCompatActivity implements View.OnC
 
         Query userRef = FirebaseDatabase.getInstance()
                 .getReference("User")
-                .orderByChild("id")
-                .equalTo(UserAppVersionController
+                .child(UserAppVersionController
                         .getUserAppVersionController().getCurrentUserId());
 
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
-                    for(DataSnapshot s : dataSnapshot.getChildren()){
-                        this_device = s.getValue(User.class);
+                        this_device = dataSnapshot.getValue(User.class);
 
                         if(checkHasFriends()) {
                             EmergencyMsg msg = new EmergencyMsg(
@@ -170,6 +168,8 @@ public class EmergencyCallActivity extends AppCompatActivity implements View.OnC
                                 //sendNotification(friendId, ct);
                             }
 
+                            FirebaseDatabase.getInstance().getApp().getApplicationContext();
+
                             Toast.makeText(EmergencyCallActivity.this,
                                     "Emergency Notification is sent", Toast.LENGTH_SHORT).show();
 
@@ -179,9 +179,10 @@ public class EmergencyCallActivity extends AppCompatActivity implements View.OnC
                                     "User need at least one added caregiver", Toast.LENGTH_SHORT).show();
                         }
 
-                        backToLastActivity();
-                    }
                 }
+
+                backToLastActivity();
+
             }
 
             @Override
@@ -196,22 +197,6 @@ public class EmergencyCallActivity extends AppCompatActivity implements View.OnC
                 && this_device.getFriends() != null
                 && !this_device.getFriends().isEmpty());
     }
-
-    /*private void fireEmergencyNotification(){
-
-        ChatMessage ct = new ChatMessage("", this_device.getName());
-
-        // send emergency contents to all friends
-        for(String friendId : this_device.getFriends().keySet()){
-            sendNotification(friendId, ct);
-        }
-
-        Toast.makeText(EmergencyCallActivity.this,
-                "Emergency Notification is sent", Toast.LENGTH_SHORT).show();
-
-        backToLastActivity();
-
-    }*/
 
     // caregiver will receive it if they have network connection and logged in
     //private void sendNotification(String friendId, ChatMessage ct){

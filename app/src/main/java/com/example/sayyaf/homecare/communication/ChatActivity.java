@@ -28,7 +28,9 @@ import com.example.sayyaf.homecare.options.ProfileImageActivity;
 import com.example.sayyaf.homecare.requests.RequestActivity;
 import com.google.firebase.database.DatabaseReference;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class ChatActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -41,12 +43,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private ListView msgView;
     private Button sendMsg;
     private Button helpButton;
-
+    
     private Button homeButton;
-
     private ProgressBar progressBar;
     private TextView progressBarMsg;
-
     private ImageView selectImage;
     private Uri imagePath;
 
@@ -67,9 +67,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         homeButton = (Button) findViewById(R.id.optionMenu);
 
         selectImage = (ImageView) findViewById(R.id.selectImage);
-
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        progressBarMsg = (TextView) findViewById(R.id.progressBarMsg);
 
         // activate help button on assisted person version
         UserAppVersionController.getUserAppVersionController().resetButton(helpButton);
@@ -95,6 +92,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         uploadComplete = isComplete;
     }
 
+    public static boolean isUploading(){
+        return !uploadComplete;
+    }
+
     // set up chat pair from the account list
     public static void setUpChatController(User this_device, User contact_person, DatabaseReference chatDB){
         chatController = new ChatController(this_device, contact_person, chatDB);
@@ -107,7 +108,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             if(!uploadComplete){
                 Toast.makeText(ChatActivity.this,
                         "Please wait until another image is uploaded," +
-                                "you may still send text messages without images",
+                                " you may still send text messages without images",
                         Toast.LENGTH_SHORT).show();
 
                 return;
@@ -132,7 +133,15 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
         }
 
-       if(v == sendMsg){
+        if(v == sendMsg){
+
+            if(trimmedContent().length() == 0){
+                Toast.makeText(ChatActivity.this, "Cannot send empty message",
+                        Toast.LENGTH_SHORT).show();
+
+                return;
+            }
+
             if(imagePath != null){
 
                 if(!uploadComplete){
@@ -149,8 +158,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 return;
             }
 
-           chatController.sendMsg(textMsg);
-       }
+            chatController.sendMsg(textMsg);
+        }
 
        if(v == helpButton){
             EmergencyCallActivity.setBackToActivity(ChatActivity.class);
@@ -192,11 +201,26 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
             if(imagePath != null){
 
+                File file = new File(imagePath.getPath());
+
                 try{
+                    InputStream is = getContentResolver().openInputStream(imagePath);
+                    getContentResolver().getType(imagePath);
+                    int sizeInMB = is.available() / 1000000;
+
+                    if(sizeInMB > 4){
+                        showSendImgNotice("File size is too large, " +
+                                "should be less than 5 MB");
+
+                        return;
+                    }
+
                     Bitmap bitmap = MediaStore
                             .Images
                             .Media
                             .getBitmap(getContentResolver(), imagePath);
+
+                    bitmap = bitMapScaling(bitmap, bitmap.getWidth(), bitmap.getHeight());
 
                     selectImage.setImageBitmap(bitmap);
 
@@ -214,18 +238,49 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    @Override
+    // lower resolution for performance
+    private Bitmap bitMapScaling(Bitmap bitmap, int originalX, int originalY){
+        // possible max size to display on phone
+        int maxSize = 500;
+        // not need to resize if both sides are small
+        if(originalX < maxSize && originalY < maxSize) return bitmap;
+        int exportX;
+        int exportY;
+        // find the longest side
+        if(originalX > originalY){
+            exportX = maxSize;
+            exportY = (originalY * maxSize) / originalX;
+        }
+        else{
+            exportY = maxSize;
+            exportX = (originalX * maxSize) / originalY;
+        }
+        return Bitmap.createScaledBitmap(bitmap, exportX, exportY, false);
+    }
+
+    // get rid of spaces before and after string
+    private String trimmedContent(){
+        return textMsg.getText().toString().trim();
+    }
+
+    /*@Override
     protected void onStart() {
         // listen to chat database changes and update the view
         super.onStart();
         chatController.listenToChatChanges();
-    }
+    }*/
 
-    @Override
+    /*@Override
     protected void onPause(){
         // stop listen to chat database and update view
         chatController.stopListenToChatChanges();
         super.onPause();
+    }*/
+
+    @Override
+    protected void onDestroy(){
+        chatController.stopListenToChatChanges();
+        super.onDestroy();
     }
 
     @Override

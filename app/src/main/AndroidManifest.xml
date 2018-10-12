@@ -61,6 +61,7 @@
             android:name=".communication.IncomingCallActivity"
             android:screenOrientation="portrait" />
 
+
         <activity
             android:name=".contacts.ContactChatActivity"
             android:windowSoftInputMode="stateHidden"
@@ -78,6 +79,7 @@
         <activity
             android:name=".accounts.AccountRegisterActivity"
             android:screenOrientation="portrait" />
+
 
         <activity
             android:name=".mapping.MapsActivity"

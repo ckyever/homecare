@@ -3,6 +3,11 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.sayyaf.homecare.R;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.sinch.android.rtc.MissingPermissionException;
 import com.sinch.android.rtc.PushPair;
@@ -14,6 +19,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
@@ -66,11 +72,43 @@ public class IncomingCallActivity extends BaseActivity {
             //Break the caller id to get the name of the call sender
             String callerName= call.getRemoteUserId().split(",")[1];
             remoteUser.setText(callerName);
-            FirebaseStorage.getInstance()
+
+            // speed up image download, old method try to download url for twice
+            Query profilePicUriRef =  FirebaseDatabase.getInstance() .getReference("User")
+                    .child(call.getRemoteUserId().split(",")[0])
+                    .child("profileImage");
+
+            profilePicUriRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.exists()) {
+                        String userImageUriString = dataSnapshot.getValue(String.class);
+
+                        if(userImageUriString.equals("no Image"))
+                            return;
+
+                        Glide.with(IncomingCallActivity.this)
+                                .load(userImageUriString)
+                                .apply(new RequestOptions()
+                                        .override(100, 100) // resize image in pixel
+                                        .centerCrop()
+                                        .dontAnimate())
+                                .into(profilePic);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+
+            /*FirebaseStorage.getInstance()
                     .getReference("UserProfileImage")
                     .child(call.getRemoteUserId().split(",")[0])
                     .getDownloadUrl()
-                    .addOnSuccessListener(onDownloadSuccess(profilePic));
+                    .addOnSuccessListener(onDownloadSuccess(profilePic));*/
         } else {
             Log.e(TAG, "Started with invalid callId, aborting");
             finish();
@@ -126,12 +164,28 @@ public class IncomingCallActivity extends BaseActivity {
      * The method called when the call has been declined. Hangs up the call
      */
     private void declineClicked() {
+        /*mAudioPlayer.stopRingtone();
+        Call call = getSinchServiceInterface().getCall(mCallId);
+        if (call != null) {
+            call.hangup();
+        }*/
+        finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        declineClicked();
+    }
+
+    // avoid call continue after swipe
+    @Override
+    protected void onDestroy(){
         mAudioPlayer.stopRingtone();
         Call call = getSinchServiceInterface().getCall(mCallId);
         if (call != null) {
             call.hangup();
         }
-        finish();
+        super.onDestroy();
     }
 
     /**

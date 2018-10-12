@@ -29,7 +29,11 @@ import com.bumptech.glide.request.target.Target;
 import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.UserAppVersionController;
+<<<<<<< HEAD
 import com.example.sayyaf.homecare.contacts.ContactChatActivity;
+=======
+import com.example.sayyaf.homecare.communication.ChatActivity;
+>>>>>>> master
 import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
 import com.example.sayyaf.homecare.notifications.NetworkConnection;
 import com.example.sayyaf.homecare.requests.RequestActivity;
@@ -48,6 +52,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 public class ProfileImageActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -176,16 +181,13 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
                 .load(profileImageUri)
                 .apply(new RequestOptions()
                         .dontAnimate()
-                        .skipMemoryCache(true))
+                        .skipMemoryCache(true)
+                        .error(R.mipmap.ic_launcher_round))
                 .listener(new RequestListener<Drawable>(){
 
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model,
                                                 Target<Drawable> target, boolean isFirstResource) {
-
-                        Toast.makeText(ProfileImageActivity.this,
-                                "Unable to load the profile image",
-                                Toast.LENGTH_SHORT).show();
 
                         endProgress();
                         return false;
@@ -227,10 +229,28 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
             if(imagePath != null){
 
                 try{
+
+                    InputStream is = getContentResolver().openInputStream(imagePath);
+                    getContentResolver().getType(imagePath);
+                    int sizeInMB = is.available() / 1000000;
+
+                    if(sizeInMB > 4){
+                        Toast.makeText(ProfileImageActivity.this, "File size is too large, " +
+                                        "should be less than 5 MB",
+                                Toast.LENGTH_SHORT).show();
+
+                        imagePath = null;
+                        profileImage.setImageResource(R.mipmap.ic_launcher_round);
+                        endProgress();
+                        return;
+                    }
+
                     Bitmap bitmap = MediaStore
                             .Images
                             .Media
                             .getBitmap(getContentResolver(), imagePath);
+
+                    bitmap = bitMapScaling(bitmap, bitmap.getWidth(), bitmap.getHeight());
 
                     profileImage.setImageBitmap(bitmap);
 
@@ -248,6 +268,26 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
 
         endProgress();
 
+    }
+
+    // lower resolution for performance
+    private Bitmap bitMapScaling(Bitmap bitmap, int originalX, int originalY){
+        // possible max size to display on phone
+        int maxSize = 1000;
+        // not need to resize if both sides are small
+        if(originalX < maxSize && originalY < maxSize) return bitmap;
+        int exportX;
+        int exportY;
+        // find the longest side
+        if(originalX > originalY){
+            exportX = maxSize;
+            exportY = (originalY * maxSize) / originalX;
+        }
+        else{
+            exportY = maxSize;
+            exportX = (originalX * maxSize) / originalY;
+        }
+        return Bitmap.createScaledBitmap(bitmap, exportX, exportY, false);
     }
 
     private void uploadProfileImage(){
@@ -285,6 +325,15 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
             @Override
             public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
 
+                if(!NetworkConnection.getConnection()){
+                    Toast.makeText(ProfileImageActivity.this, "Cannot update profile image",
+                            Toast.LENGTH_SHORT).show();
+
+                    uploadComplete = true;
+                    endProgress();
+                    return;
+                }
+
                 FirebaseStorage.getInstance()
                         .getReference("UserProfileImage")
                         .child(UserAppVersionController.getUserAppVersionController().getCurrentUserId())
@@ -317,6 +366,15 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
         return new OnSuccessListener<Uri>(){
                 @Override
                 public void onSuccess(Uri userImagePath) {
+
+                    if(!NetworkConnection.getConnection()){
+                        Toast.makeText(ProfileImageActivity.this, "Cannot update profile image",
+                                Toast.LENGTH_SHORT).show();
+
+                        uploadComplete = true;
+                        endProgress();
+                        return;
+                    }
 
                     FirebaseDatabase.getInstance()
                             .getReference("User")

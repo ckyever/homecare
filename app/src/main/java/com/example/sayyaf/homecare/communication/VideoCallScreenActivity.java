@@ -67,7 +67,6 @@ public class VideoCallScreenActivity extends BaseActivity {
         }
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,6 +93,9 @@ public class VideoCallScreenActivity extends BaseActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
+        //
+        super.onSaveInstanceState(savedInstanceState);
+        //
         savedInstanceState.putBoolean(ADDED_LISTENER, mAddedListener);
     }
 
@@ -148,16 +150,26 @@ public class VideoCallScreenActivity extends BaseActivity {
     public void onBackPressed() {
     }
 
+    // avoid call continue after swipe
+    @Override
+    protected void onDestroy(){
+        // mAudioPlayer.stopProgressTone();
+        Call call = getSinchServiceInterface().getCall(mCallId);
+        if (call != null) {
+            call.hangup();
+        }
+        super.onDestroy();
+    }
 
     /**
      * Handles call ending. Hangs up the call and stops the ringing tone if necessary
      */
     private void endCall() {
-        mAudioPlayer.stopProgressTone();
+        /*mAudioPlayer.stopProgressTone();
         Call call = getSinchServiceInterface().getCall(mCallId);
         if (call != null) {
             call.hangup();
-        }
+        }*/
         finish();
     }
 
@@ -243,6 +255,22 @@ public class VideoCallScreenActivity extends BaseActivity {
         }
     }
 
+
+    //
+    private void removeLocalView() {
+        if (mRemoteVideoViewAdded || getSinchServiceInterface() == null) {
+            return; //early
+        }
+        final VideoController vc = getSinchServiceInterface().getVideoController();
+        if (vc != null) {
+            RelativeLayout view = (RelativeLayout) findViewById(R.id.localVideo);
+            view.removeView(vc.getLocalView());
+            mRemoteVideoViewAdded = false;
+        }
+    }
+    //
+
+
     private void removeRemoteView() {
         if (mRemoteVideoViewAdded || getSinchServiceInterface() == null) {
             return; //early
@@ -288,6 +316,10 @@ public class VideoCallScreenActivity extends BaseActivity {
         public void onCallEnded(Call call) {
             CallEndCause cause = call.getDetails().getEndCause();
             Log.d(TAG, "Call ended. Reason: " + cause.toString());
+
+            removeRemoteView();
+            removeLocalView();
+
             mAudioPlayer.stopProgressTone();
             setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
             String endMsg = "Call ended";

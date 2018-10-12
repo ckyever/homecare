@@ -70,6 +70,7 @@ import java.util.List;
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
         View.OnClickListener, GoogleMap.OnCameraMoveStartedListener {
 
+    // Constants
     private static final String TAG = "MapsActivity";
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final String COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
@@ -78,23 +79,31 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final LatLngBounds LAT_LNG_BOUNDS =
             new LatLngBounds(new LatLng(-90, -180), new LatLng(90, 180));
 
+    // Map variables
     private GoogleMap mMap;
     private Boolean mLocationPermissionsGranted = false;
+
+    // Location variables
     private FusedLocationProviderClient mFusedLocationClient;
     private Location initialLocation;
     private LatLng initialLatLng;
+    private LatLng mLatLng;
+
+    // Autocomplete variables
     private PlaceAutocompleteAdapter mPlaceAutocompleteAdapter;
     private GeoDataClient mGeoDataClient;
     private PlaceInfo mPlace;
     private Marker locationSearched;
+
+    // Directions variables
     private GeoApiContext mGeoApiContext;
-    private LatLng mLatLng;
-    private Boolean isLocationButtonOn = false;
     private Polyline polyline;
     private TravelMode travelMode;
     private AutocompleteFilter filter;
 
+    // Buttons
     private ImageView mLocationButton;
+    private Boolean isLocationButtonOn = false;
     private AutoCompleteTextView mInputSearchTextView;
     private Button mDirectionsButton;
     private Button helpButton;
@@ -104,19 +113,19 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        mLocationButton = (ImageView) findViewById(R.id.ic_mylocation);
-        mInputSearchTextView = (AutoCompleteTextView) findViewById(R.id.inputSearch);
-
-        mDirectionsButton = (Button) findViewById(R.id.directions);
+        // Setup buttons
+        mLocationButton = findViewById(R.id.ic_mylocation);
+        mInputSearchTextView = findViewById(R.id.inputSearch);
+        mDirectionsButton = findViewById(R.id.directions);
         mDirectionsButton.setOnClickListener(this);
+        helpButton = findViewById(R.id.optionHelp);
 
-        helpButton = (Button) findViewById(R.id.optionHelp);
-
-        // Activate help button on assisted person version
+        // Makes help button visible on assisted person's screen
         UserAppVersionController.getUserAppVersionController().resetButton(helpButton);
 
         // Get location permissions then initialise the map
         getLocationPermission();
+
         locationSearched = null;
         polyline = null;
 
@@ -138,7 +147,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         if(view == helpButton){
             EmergencyCallActivity.setBackToActivity(MapsActivity.class);
-
             Intent intent = new Intent(MapsActivity.this,
                     EmergencyCallActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -151,7 +159,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 // pop up window to select mode of transport
                 transportModePopUp();
             } else {
-                Toast.makeText(MapsActivity.this, "No location searched for directions",
+                Toast.makeText(MapsActivity.this, R.string.directions_error,
                         Toast.LENGTH_SHORT).show();
             }
         }
@@ -176,18 +184,20 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 com.example.sayyaf.homecare.mapping.TrackingService.class));
     }
 
-    // Broadcast receiver that listens to latitude and longitude updates from TrackingService
-    // and stores it in mLatLng and moves the camera to the new latlng if applicable.
+    // Broadcast receiver that listens to latlng updates from TrackingService and moves the camera
+    // to the new LatLng if applicable.
     protected BroadcastReceiver bReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, "Getting intent extras");
             Bundle intentExtras = intent.getExtras();
 
+            // LatLng is stored in intent extras by TrackingService
             if (intentExtras != null) {
                 double latitude = intentExtras.getDouble("Latitude");
                 double longitude = intentExtras.getDouble("Longitude");
                 mLatLng = new LatLng(latitude, longitude);
+                // Move camera to new position if applicable
                 cameraFollow();
             }
         }
@@ -306,8 +316,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         // Unable to get device's location
                         else {
                             Toast.makeText(MapsActivity.this,
-                                    "Unable to get current location",
-                                    Toast.LENGTH_SHORT).show();
+                                    R.string.get_device_location_error, Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -514,16 +523,20 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onResult(DirectionsResult result) {
                 Log.d(TAG, "calculateDirections: routes: " + result.routes[0].toString());
-                Log.d(TAG, "calculateDirections: duration: " + result.routes[0].legs[0].duration);
-                Log.d(TAG, "calculateDirections: distance: " + result.routes[0].legs[0].distance);
-                Log.d(TAG, "calculateDirections: geocodedWayPoints: " + result.geocodedWaypoints[0].toString());
+                Log.d(TAG, "calculateDirections: duration: " +
+                        result.routes[0].legs[0].duration);
+                Log.d(TAG, "calculateDirections: distance: " +
+                        result.routes[0].legs[0].distance);
+                Log.d(TAG, "calculateDirections: geocodedWayPoints: " +
+                        result.geocodedWaypoints[0].toString());
 
                 addPolylineToMap(result);
             }
 
             @Override
             public void onFailure(Throwable e) {
-                Log.e(TAG, "calculateDirections: Failed to get directions: " + e.getMessage() );
+                Log.e(TAG, "calculateDirections: Failed to get directions: "
+                        + e.getMessage() );
 
             }
         });
@@ -538,7 +551,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                 for(DirectionsRoute route: result.routes){
                     Log.d(TAG, "run: leg: " + route.legs[0].toString());
-                    List<com.google.maps.model.LatLng> decodedPath = PolylineEncoding.decode(route.overviewPolyline.getEncodedPath());
+                    List<com.google.maps.model.LatLng> decodedPath =
+                            PolylineEncoding.decode(route.overviewPolyline.getEncodedPath());
 
                     List<LatLng> newDecodedPath = new ArrayList<>();
 
@@ -555,7 +569,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                     // draw route on map
                     polyline = mMap.addPolyline(new PolylineOptions().addAll(newDecodedPath));
-                    polyline.setColor(ContextCompat.getColor(getApplicationContext(), R.color.blue));
+                    polyline.setColor(ContextCompat.getColor(getApplicationContext(),
+                            R.color.blue));
                     // polyline.setClickable(true);
 
                     // add trip duration to marker

@@ -35,6 +35,7 @@ public class LaunchActivity extends AppCompatActivity {
             finish();
         } else {
             // not signed in
+
             Intent goToLogIn = new Intent(this, LoginActivity.class);
             goToLogIn.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(goToLogIn);

@@ -13,6 +13,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.sayyaf.homecare.communication.ChatActivity;
 import com.example.sayyaf.homecare.mapping.TrackingService;
 import com.example.sayyaf.homecare.accounts.LaunchActivity;
 import com.example.sayyaf.homecare.accounts.User;
@@ -23,6 +24,7 @@ import com.example.sayyaf.homecare.notifications.NotificationService;
 import com.example.sayyaf.homecare.communication.BaseActivity;
 import com.example.sayyaf.homecare.communication.SinchService;
 import com.example.sayyaf.homecare.options.OptionActivity;
+import com.example.sayyaf.homecare.options.ProfileImageActivity;
 import com.example.sayyaf.homecare.requests.RequestActivity;
 import com.example.sayyaf.homecare.accounts.LoginActivity;
 import com.example.sayyaf.homecare.contacts.ContactChatActivity;
@@ -36,6 +38,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
 import com.sinch.android.rtc.SinchError;
 
 
@@ -136,6 +139,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
     public void onClick(View view) {
 
         if(view == logoutButton){
+            if(ProfileImageActivity.isUploading() | ChatActivity.isUploading()){
+                Toast.makeText(MainActivity.this, "Wait for image upload",
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             logout();
             return;
         }
