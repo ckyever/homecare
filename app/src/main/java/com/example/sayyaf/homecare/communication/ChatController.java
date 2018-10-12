@@ -148,7 +148,8 @@ public class ChatController {
                 .load(profileImageUri)
                 .apply(new RequestOptions()
                         .fitCenter()
-                        .dontAnimate())
+                        .dontAnimate()
+                        .error(R.drawable.ic_image_loading_error))
                 .listener(new RequestListener<Drawable>(){
 
                     @Override

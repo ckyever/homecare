@@ -19,7 +19,7 @@ public class User {
         this.name = name;
         this.email = email;
         this.isCaregiver = isCaregiver;
-        this.profileImage = "no image";
+        this.profileImage = "no Image";
         //this.friends = new ArrayList<>();
         this.friends = new HashMap<>();
         this.chatDatabase = new HashMap<>();
