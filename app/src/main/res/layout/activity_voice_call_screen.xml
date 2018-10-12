@@ -27,7 +27,7 @@
             android:paddingEnd="10sp"
             android:textAlignment="center"
             android:background="@color/colorAccent"
-            android:text="Sample user"
+            android:text="@string/sample_call_name"
             android:textColor="@android:color/white"
             android:textStyle="bold"
             android:textSize="28sp"/>
@@ -37,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="Ringing"
+            android:text="@string/call_status"
             android:textAllCaps="true"
             android:textSize="16sp" />
 
@@ -48,7 +48,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="8dp"
             android:layout_marginTop="4dp"
-            android:text="00:00"
+            android:text="@string/call_duration"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textSize="16sp" />
 
@@ -86,7 +86,7 @@
             android:drawableLeft="@drawable/ic_hangup"
             android:drawablePadding="10sp"
             android:drawableTint="@android:color/white"
-            android:text= "End Call"
+            android:text= "@string/end_call"
             android:textSize="22sp"
             android:textColor="@android:color/white"
             android:paddingTop="20dp" />

@@ -27,7 +27,7 @@
             android:paddingEnd="10sp"
             android:textAlignment="center"
             android:background="@color/colorAccent"
-            android:text="Sample user"
+            android:text="@string/sample_call_name"
             android:textColor="@android:color/white"
             android:textStyle="bold"
             android:textSize="28sp"/>
@@ -37,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="Incoming call"
+            android:text="@string/incoming_call"
             android:textSize="16sp"
             android:textAllCaps="true"
             />
@@ -71,9 +71,9 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="22dp"
             android:background="@drawable/round_button_accented"
-            android:backgroundTint="#3CB371"
+            android:backgroundTint="@color/acceptCall"
             android:drawableLeft="@drawable/ic_acceptCall"
             android:drawablePadding="20sp"
             android:drawableTint="@android:color/white"
@@ -81,7 +81,7 @@
             android:paddingEnd="25sp"
             android:paddingStart="20sp"
             android:paddingTop="20dp"
-            android:text="Answer"
+            android:text="@string/accept"
             android:textSize="17sp"
             android:textColor="@android:color/white" />
 
@@ -91,9 +91,9 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:layout_marginEnd="20dp"
+            android:layout_marginEnd="22dp"
             android:background="@drawable/round_button_accented"
-            android:backgroundTint="#DC143C"
+            android:backgroundTint="@color/declineCall"
             android:drawableLeft="@drawable/ic_hangup"
             android:drawablePadding="20sp"
             android:drawableTint="@android:color/white"
@@ -101,11 +101,9 @@
             android:paddingEnd="25sp"
             android:paddingStart="20sp"
             android:paddingTop="20dp"
-            android:text="Decline"
+            android:text="@string/decline"
             android:textSize="17sp"
-
             android:textColor="@android:color/white" />
-        android:layout_toRightOf="@+id/answerButton"/>
 
     </RelativeLayout>
 

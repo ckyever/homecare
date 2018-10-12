@@ -12,4 +12,6 @@
     <color name="emergencyText">#FFFF00</color>
     <color name="emergencyBackground">#FF0000</color>
     <color name="green">#6ad66b</color>
+    <color name="acceptCall">#3CB371</color>
+    <color name="declineCall">#DC143C</color>
 </resources>
