@@ -29,11 +29,8 @@ import com.bumptech.glide.request.target.Target;
 import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.UserAppVersionController;
-<<<<<<< HEAD
 import com.example.sayyaf.homecare.contacts.ContactChatActivity;
-=======
 import com.example.sayyaf.homecare.communication.ChatActivity;
->>>>>>> master
 import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
 import com.example.sayyaf.homecare.notifications.NetworkConnection;
 import com.example.sayyaf.homecare.requests.RequestActivity;
