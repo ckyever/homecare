@@ -43,7 +43,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private ListView msgView;
     private Button sendMsg;
     private Button helpButton;
-    
+
     private Button homeButton;
     private ProgressBar progressBar;
     private TextView progressBarMsg;

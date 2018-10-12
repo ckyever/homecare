@@ -163,7 +163,9 @@
         android:paddingEnd="10sp"
         android:layout_marginStart="5sp"
         android:background="@color/background"
+
         android:drawableLeft="@drawable/ic_menu_home"
+
         android:drawableTint="@color/blue"
         android:drawablePadding="5sp"
         android:onClick="onClick"

@@ -83,14 +83,23 @@
         android:layout_height="0dp"
         android:background="@color/colorPrimary"
         android:layout_weight="1">
+
         <Button
             android:id="@+id/hangupButton"
-            android:paddingBottom="20dp"
-            android:paddingTop="20dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:background="@drawable/button_end"/>
+            android:paddingStart="20sp"
+            android:paddingEnd="20sp"
+            android:background="@drawable/round_button_accented"
+            android:backgroundTint="#DC143C"
+            android:paddingBottom="20dp"
+            android:drawableLeft="@drawable/ic_hangup"
+            android:drawablePadding="20sp"
+            android:drawableTint="@android:color/white"
+            android:text= "End Call"
+            android:textColor="@android:color/white"
+            android:paddingTop="20dp" />
 
     </RelativeLayout>
 
