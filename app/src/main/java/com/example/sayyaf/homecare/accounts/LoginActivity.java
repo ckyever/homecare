@@ -84,7 +84,7 @@ public class LoginActivity  extends AppCompatActivity implements View.OnClickLis
     };
 
     //Checks that a user has entered values for both username and password
-    private void validateFields() {
+    public void validateFields() {
 
         if(mEmailEditText.getText().length() > 0 && mPasswordEditText.getText().length() > 0) {
             mLoginButton.setEnabled(true);
@@ -195,5 +195,26 @@ public class LoginActivity  extends AppCompatActivity implements View.OnClickLis
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
+    }
+
+
+    public TextView getmRegisterTextView() {
+        return mRegisterTextView;
+    }
+
+    public EditText getmEmailEditText() {
+        return mEmailEditText;
+    }
+
+    public EditText getmPasswordEditText() {
+        return mPasswordEditText;
+    }
+
+    public Button getmLoginButton() {
+        return mLoginButton;
+    }
+
+    public TextWatcher getTextWatcher() {
+        return textWatcher;
     }
 }
