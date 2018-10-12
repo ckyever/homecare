@@ -34,6 +34,10 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+    * Activity to handle voice calling within the application. Uses WebRTC for calling
+    * and runs on the Sinch backend
+    */
 public class VoiceCallScreenActivity extends BaseActivity {
     static final String TAG = VoiceCallScreenActivity.class.getSimpleName();
 
@@ -51,6 +55,9 @@ public class VoiceCallScreenActivity extends BaseActivity {
 
     private class UpdateCallDurationTask extends TimerTask {
 
+        /**
+         * Task to continuously update how long the call has been going
+         */
         @Override
         public void run() {
             VoiceCallScreenActivity.this.runOnUiThread(new Runnable() {
@@ -83,6 +90,10 @@ public class VoiceCallScreenActivity extends BaseActivity {
         mCallId = getIntent().getStringExtra(SinchService.CALL_ID);
     }
 
+    /**
+     * When the sinch service is connected to the activity, sets the neccessary listeners
+     * to find out if call is accepted or rejected
+     */
     @Override
     public void onServiceConnected() {
         Call call = getSinchServiceInterface().getCall(mCallId);
@@ -120,13 +131,6 @@ public class VoiceCallScreenActivity extends BaseActivity {
 
                 }
             });
-            //
-
-            /*FirebaseStorage.getInstance()
-                    .getReference("UserProfileImage")
-                    .child(call.getRemoteUserId().split(",")[0])
-                    .getDownloadUrl()
-                    .addOnSuccessListener(onDownloadSuccess(profilePic));*/
 
         } else {
             Log.e(TAG, "Started with invalid callId, aborting.");
@@ -157,7 +161,7 @@ public class VoiceCallScreenActivity extends BaseActivity {
     // avoid call continue after swipe
     @Override
     protected void onDestroy(){
-        // mAudioPlayer.stopProgressTone();
+        mAudioPlayer.stopProgressTone();
         Call call = getSinchServiceInterface().getCall(mCallId);
         if (call != null) {
             call.hangup();
@@ -166,26 +170,35 @@ public class VoiceCallScreenActivity extends BaseActivity {
     }
 
     private void endCall() {
-        /*mAudioPlayer.stopProgressTone();
+        mAudioPlayer.stopProgressTone();
         Call call = getSinchServiceInterface().getCall(mCallId);
         if (call != null) {
             call.hangup();
-        }*/
+        }
         finish();
     }
 
+    /**
+     * Sets the format of the timespan of call shown to user
+     * @param totalSeconds amount of time call has been established
+     * @return
+     */
     private String formatTimespan(int totalSeconds) {
         long minutes = totalSeconds / 60;
         long seconds = totalSeconds % 60;
         return String.format(Locale.US, "%02d:%02d", minutes, seconds);
     }
 
+    /**
+     * Updates the call duration on the users devices
+     */
     private void updateCallDuration() {
         Call call = getSinchServiceInterface().getCall(mCallId);
         if (call != null) {
             mCallDuration.setText(formatTimespan(call.getDetails().getDuration()));
         }
     }
+
 
     private OnSuccessListener<Uri> onDownloadSuccess(ImageView userImage){
         return new OnSuccessListener<Uri>(){
@@ -206,6 +219,11 @@ public class VoiceCallScreenActivity extends BaseActivity {
 
     private class SinchCallListener implements CallListener {
 
+        /**
+         * Called when call has been ended. Sets the volume to default, stops the progress
+         * tone if still playing and ends the call for the current user.
+         * @param call
+         */
         @Override
         public void onCallEnded(Call call) {
             CallEndCause cause = call.getDetails().getEndCause();
@@ -217,6 +235,11 @@ public class VoiceCallScreenActivity extends BaseActivity {
             endCall();
         }
 
+        /**
+         * Called when the call is established.
+         * Sets volume control and stops progress tone
+         * @param call
+         */
         @Override
         public void onCallEstablished(Call call) {
             Log.d(TAG, "Call established");

@@ -21,7 +21,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/white"
-            android:hint="Email"
+            android:hint="@string/login_email"
             android:inputType="textEmailAddress"
             android:nextFocusDown="@+id/passwordEditText"
             android:padding="10dp"
@@ -34,7 +34,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/white"
-            android:hint="Password"
+            android:hint="@string/login_password"
             android:inputType="textPassword"
             android:nextFocusDown="@+id/passwordEditText"
             android:padding="10dp"
@@ -47,7 +47,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
-            android:text="Log in"
+            android:text="@string/login_button"
             android:background="@drawable/round_button_accented"
             android:layout_marginTop="15dp"
             android:textColor="@android:color/white" />
@@ -59,7 +59,7 @@
             android:layout_marginTop="20dp"
             android:textStyle="bold"
             android:textSize="19sp"
-            android:text="Don't have an account? Sign up here!"
+            android:text="@string/login_to_register_transition"
             android:layout_gravity="center_horizontal" />
 
     </LinearLayout>
@@ -67,7 +67,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Login"
+        android:text="@string/login_title"
         android:textColor="@android:color/black"
         android:textColorHint="@android:color/black"
         android:textSize="30dp"
@@ -87,7 +87,7 @@
 
     <TextView
         android:id="@+id/progressBarMsg"
-        android:text="Loading ..."
+        android:text="@string/progress_bar_msg"
         android:textStyle="bold"
         android:textAlignment="center"
         android:textSize="30sp"

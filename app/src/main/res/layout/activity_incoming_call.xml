@@ -27,7 +27,7 @@
             android:paddingEnd="10sp"
             android:textAlignment="center"
             android:background="@color/colorAccent"
-            android:text="Sample user"
+            android:text="@string/sample_call_name"
             android:textColor="@android:color/white"
             android:textStyle="bold"
             android:textSize="28sp"/>
@@ -37,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="Incoming call"
+            android:text="@string/incoming_call"
             android:textSize="16sp"
             android:textAllCaps="true"
             />
@@ -60,23 +60,50 @@
         android:id="@+id/bottomPanel"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/colorPrimary"
-        android:layout_weight="1"
         android:layout_gravity="center"
+        android:layout_weight="1"
+        android:background="@color/colorPrimary"
         android:gravity="center">
 
         <Button
             android:id="@+id/answerButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/button_accept"
-            />
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="22dp"
+            android:background="@drawable/round_button_accented"
+            android:backgroundTint="@color/acceptCall"
+            android:drawableLeft="@drawable/ic_acceptCall"
+            android:drawablePadding="20sp"
+            android:drawableTint="@android:color/white"
+            android:paddingBottom="20dp"
+            android:paddingEnd="25sp"
+            android:paddingStart="20sp"
+            android:paddingTop="20dp"
+            android:text="@string/accept"
+            android:textSize="17sp"
+            android:textColor="@android:color/white" />
+
         <Button
             android:id="@+id/declineButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/button_decline"
-            android:layout_toRightOf="@+id/answerButton"/>
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="22dp"
+            android:background="@drawable/round_button_accented"
+            android:backgroundTint="@color/declineCall"
+            android:drawableLeft="@drawable/ic_hangup"
+            android:drawablePadding="20sp"
+            android:drawableTint="@android:color/white"
+            android:paddingBottom="20dp"
+            android:paddingEnd="25sp"
+            android:paddingStart="20sp"
+            android:paddingTop="20dp"
+            android:text="@string/decline"
+            android:textSize="17sp"
+            android:textColor="@android:color/white" />
 
     </RelativeLayout>
 

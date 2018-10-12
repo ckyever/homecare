@@ -27,7 +27,7 @@
             android:paddingEnd="10sp"
             android:textAlignment="center"
             android:background="@color/colorAccent"
-            android:text="Sample user"
+            android:text="@string/sample_call_name"
             android:textColor="@android:color/white"
             android:textStyle="bold"
             android:textSize="28sp"/>
@@ -37,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="Ringing"
+            android:text="@string/call_status"
             android:textAllCaps="true"
             android:textSize="16sp" />
 
@@ -48,7 +48,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="8dp"
             android:layout_marginTop="4dp"
-            android:text="00:00"
+            android:text="@string/call_duration"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textSize="16sp" />
 
@@ -69,16 +69,27 @@
         android:id="@+id/bottomPanelVoice"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:paddingStart="20sp"
+        android:paddingEnd="20sp"
         android:background="@color/colorPrimary"
         android:layout_weight="1">
         <Button
             android:id="@+id/hangupButtonVoice"
-            android:paddingBottom="20dp"
-            android:paddingTop="20dp"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:background="@drawable/button_end"/>
+            android:paddingStart="90sp"
+            android:paddingEnd="100sp"
+            android:background="@drawable/round_button_accented"
+            android:backgroundTint="#DC143C"
+            android:paddingBottom="20dp"
+            android:drawableLeft="@drawable/ic_hangup"
+            android:drawablePadding="10sp"
+            android:drawableTint="@android:color/white"
+            android:text= "@string/end_call"
+            android:textSize="22sp"
+            android:textColor="@android:color/white"
+            android:paddingTop="20dp" />
 
     </RelativeLayout>
 
