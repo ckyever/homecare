@@ -27,7 +27,6 @@
             android:padding="10dp"
             android:layout_marginBottom="10dp"
             android:textColor="@android:color/black"
-            android:textColorHint="@android:color/black"
             android:textSize="20sp" />
 
         <EditText
@@ -40,7 +39,6 @@
             android:nextFocusDown="@+id/passwordEditText"
             android:padding="10dp"
             android:textColor="@android:color/black"
-            android:textColorHint="@android:color/black"
             android:textSize="20sp" />
 
 
@@ -50,20 +48,17 @@
             android:layout_height="wrap_content"
             android:padding="10dp"
             android:text="Log in"
-            android:background="@color/colorAccent"
+            android:background="@drawable/round_button_accented"
             android:layout_marginTop="15dp"
-            android:textColor="@android:color/black"
-            android:textColorHint="@android:color/black" />
+            android:textColor="@android:color/white" />
 
         <TextView
             android:id="@+id/registerTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:textColor="@android:color/black"
-            android:textColorHint="@android:color/black"
             android:textStyle="bold"
-            android:textSize="15sp"
+            android:textSize="19sp"
             android:text="Don't have an account? Sign up here!"
             android:layout_gravity="center_horizontal" />
 

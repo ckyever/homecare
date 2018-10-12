@@ -15,6 +15,7 @@ import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.User;
 import com.example.sayyaf.homecare.accounts.UserAppVersionController;
+import com.example.sayyaf.homecare.contacts.ContactChatActivity;
 import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
 import com.example.sayyaf.homecare.notifications.NetworkConnection;
 import com.google.firebase.auth.FirebaseAuth;
@@ -40,6 +41,7 @@ public class RequestActivity extends AppCompatActivity implements RequestsUserLi
     private RequestUserListAdapter requestUserListAdapter;
 
     private Button helpButton;
+    private Button homeButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +51,8 @@ public class RequestActivity extends AppCompatActivity implements RequestsUserLi
         requestsView = (ListView) findViewById(R.id.requestsView);
 
         helpButton = (Button) findViewById(R.id.optionHelp);
+
+        homeButton = (Button) findViewById(R.id.optionMenu);
 
         // activate help button on assisted person version
         UserAppVersionController.getUserAppVersionController().resetButton(helpButton);
@@ -141,17 +145,12 @@ public class RequestActivity extends AppCompatActivity implements RequestsUserLi
         });
     }
 
-
-    @Override
-    public void onBackPressed() {
-        Intent goToMenu = new Intent(RequestActivity.this, MainActivity.class);
-        goToMenu.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(goToMenu);
-        finish();
-    }
-
     @Override
     public void onClick(View view) {
+
+        if(view == homeButton){
+            goToMenu();
+        }
 
         if(!NetworkConnection.getConnection()){
             NetworkConnection.requestNetworkConnection(RequestActivity.this);
@@ -166,5 +165,18 @@ public class RequestActivity extends AppCompatActivity implements RequestsUserLi
             startActivity(intent);
             finish();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        goToMenu();
+    }
+
+    private void goToMenu(){
+        // back to menu page
+        Intent goToMenu = new Intent(RequestActivity.this, MainActivity.class);
+        goToMenu.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(goToMenu);
+        finish();
     }
 }

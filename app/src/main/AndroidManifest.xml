@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.sayyaf.homecare">
 
     <!-- permissions needed for webRTC realtime chat -->
@@ -7,29 +8,15 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <uses-permission android:name="android.permission.CAMERA"/>
-    <!--
-             The API key for Google Maps-based APIs is defined as a string resource.
-             (See the file "res/values/google_maps_api.xml").
-             Note that the API key is linked to the encryption key used to sign the APK.
-             You need a different API key for each encryption key, including the release key that is used to
-             sign the APK for publishing.
-             You can define the keys for the debug and release targets in src/debug/ and src/release/. 
-    -->
+    <!-- permissions needed for google map api -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
 
-
-    <!--
-         The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
-         Google Maps Android API v2, but you must specify either coarse or fine
-         location permissions for the 'MyLocation' functionality. 
-    -->
     <application
         android:name=".notifications.NotificationChannels"
         android:allowBackup="true"
@@ -37,7 +24,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:ignore="GoogleAppIndexingWarning">
 
         <activity
             android:name=".accounts.LaunchActivity"
@@ -49,53 +37,88 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".MainActivity"
-            android:screenOrientation="portrait" >
-        </activity>
-        <activity android:name=".contacts.ContactUpdateActivity">
-        </activity>
-        <activity android:name=".requests.RequestActivity">
-        </activity>
-        <activity android:name=".communication.VideoCallScreenActivity"
-            android:screenOrientation="portrait">
-        </activity>
-        <activity android:name=".communication.VoiceCallScreenActivity"
-            android:screenOrientation="portrait">
-        </activity>
-        <activity android:name=".communication.IncomingCallActivity"
-            android:screenOrientation="portrait">
-        </activity>
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".contacts.ContactUpdateActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".requests.RequestActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".communication.VideoCallScreenActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".communication.VoiceCallScreenActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".communication.IncomingCallActivity"
+            android:screenOrientation="portrait" />
+
+
         <activity
             android:name=".contacts.ContactChatActivity"
             android:windowSoftInputMode="stateHidden"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:screenOrientation="portrait" />
+
         <activity
             android:name=".communication.ChatActivity"
-            android:windowSoftInputMode="stateHidden" >
-        </activity>
-        <activity android:name=".accounts.LoginActivity"
-            android:screenOrientation="portrait">
-        </activity>
-        <activity android:name=".accounts.AccountRegisterActivity"
-            android:screenOrientation="portrait"/>
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".accounts.LoginActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".accounts.AccountRegisterActivity"
+            android:screenOrientation="portrait" />
+
+
         <activity
             android:name=".mapping.MapsActivity"
-            android:label="@string/title_activity_maps"/>
-
-        <activity android:name=".notifications.EmergencyCallActivity"
+            android:label="@string/title_activity_maps"
             android:screenOrientation="portrait" />
 
-        <activity android:name=".notifications.EmergencyAttentionActivity"
+        <activity
+            android:name=".mapping.TrackingActivity"
+            android:label="@string/title_activity_tracking"
             android:screenOrientation="portrait" />
 
-        <activity android:name=".options.OptionActivity" />
-        <activity android:name=".options.ProfileImageActivity"
+        <activity
+            android:name=".notifications.EmergencyCallActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".notifications.EmergencyAttentionActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".options.OptionActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".options.UpdateEmailActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".options.UpdatePasswordActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".options.ProfileImageActivity"
             android:screenOrientation="portrait" />
 
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
@@ -115,16 +138,9 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity
-            android:name=".mapping.TrackingActivity"
-            android:label="@string/title_activity_tracking"></activity>
         <service
             android:name=".communication.SinchService"
-            android:enabled="true"/>
+            android:enabled="true" />
     </application>
 
-</manifest><!--
-     <application
-        <service android:name=".NotificationService" />
-     </application>
--->
+</manifest>

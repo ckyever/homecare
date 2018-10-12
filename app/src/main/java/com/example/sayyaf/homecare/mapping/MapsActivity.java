@@ -37,6 +37,7 @@ import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
 import com.example.sayyaf.homecare.notifications.NetworkConnection;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.AutocompletePrediction;
 import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.Place;
@@ -98,6 +99,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GeoApiContext mGeoApiContext;
     private Polyline polyline;
     private TravelMode travelMode;
+    private AutocompleteFilter filter;
 
     // Buttons
     private ImageView mLocationButton;
@@ -132,6 +134,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     .apiKey(getString(R.string.google_maps_key))
                     .build();
         }
+
+        filter = new AutocompleteFilter.Builder().setCountry("AU").build();
     }
 
     @Override
@@ -410,7 +414,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void initialiseSearch() {
         mGeoDataClient = Places.getGeoDataClient(this);
         mPlaceAutocompleteAdapter = new PlaceAutocompleteAdapter
-                (this, mGeoDataClient, LAT_LNG_BOUNDS, null);
+                (this, mGeoDataClient, LAT_LNG_BOUNDS, filter);
         mInputSearchTextView.setOnItemClickListener(mAutocompleteClickListener);
         mInputSearchTextView.setAdapter(mPlaceAutocompleteAdapter);
         mInputSearchTextView.setImeActionLabel("Search", EditorInfo.IME_ACTION_SEARCH);
