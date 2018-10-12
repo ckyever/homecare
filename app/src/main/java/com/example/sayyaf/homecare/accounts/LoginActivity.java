@@ -118,9 +118,13 @@ public class LoginActivity  extends AppCompatActivity implements View.OnClickLis
         String email = mEmailEditText.getText().toString();
         String password = mPasswordEditText.getText().toString();
 
+        // logout user to prevent error
+        FirebaseUser user = mAuth.getCurrentUser();
+        if(user != null) FirebaseAuth.getInstance().signOut();
+
         showProgress();
 
-        //Firebase Authentication service use to check for successful sign in
+        // Firebase Authentication service use to check for successful sign in
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnSuccessListener(this, new OnSuccessListener<AuthResult>() {
                     @Override
@@ -154,7 +158,7 @@ public class LoginActivity  extends AppCompatActivity implements View.OnClickLis
 
                             @Override
                             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                                endProgress();
                             }
                         });
 
@@ -176,12 +180,14 @@ public class LoginActivity  extends AppCompatActivity implements View.OnClickLis
     private void showProgress(){
         progressBar.setVisibility(View.VISIBLE);
         progressBarMsg.setVisibility(View.VISIBLE);
+        mLoginButton.setEnabled(false);
     }
 
     // remove progress bar after finish
     private void endProgress(){
         progressBar.setVisibility(View.GONE);
         progressBarMsg.setVisibility(View.GONE);
+        mLoginButton.setEnabled(true);
     }
 
     public void onBackPressed() {

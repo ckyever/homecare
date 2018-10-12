@@ -7,7 +7,7 @@
 
     <TextView
         android:id="@+id/usernameRequest"
-        android:textColor="#0000FF"
+        android:textColor="@color/green"
         android:textAlignment="textStart"
         android:layout_width="0sp"
         android:layout_height="wrap_content"
@@ -57,14 +57,30 @@
         app:layout_constraintTop_toBottomOf="@id/contactEmailRequest"
         app:layout_constraintBottom_toBottomOf="@id/declineButton"/>
 
+    <TextView
+        android:id="@+id/spacing3"
+        android:layout_width="0sp"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10sp"
+        android:paddingRight="10sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@android:color/white"
+        android:textSize="5sp"
+        app:layout_constraintTop_toBottomOf="@id/declineButton"/>
+
     <Button
         android:id="@+id/declineButton"
-        android:text="Decline"
+        android:text="@string/decline"
+        android:textColor="@android:color/white"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingLeft="10sp"
         android:paddingRight="10sp"
-        android:layout_marginBottom="5sp"
+        android:layout_marginBottom="10sp"
+        android:background="@drawable/round_button_accented"
+        android:drawableLeft="@drawable/ic_decline"
+        android:drawablePadding="5dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/contactEmailRequest"
         app:layout_constraintStart_toEndOf="@id/acceptButton"
@@ -76,8 +92,12 @@
         android:layout_height="wrap_content"
         android:paddingLeft="10sp"
         android:paddingRight="10sp"
-        android:text="Accept"
+        android:layout_marginBottom="10sp"
+        android:text="@string/accept"
+        android:textColor="@android:color/white"
         android:textSize="20sp"
+        android:background="@drawable/round_button_accented"
+        android:drawableLeft="@drawable/ic_accept"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/declineButton"
         app:layout_constraintTop_toBottomOf="@id/contactEmailRequest" />
@@ -101,80 +121,3 @@
 
 </android.support.constraint.ConstraintLayout>
 
-<!--
-
-<TextView
-        android:id="@+id/usernameRequest"
-        android:layout_width="0sp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:background="@android:color/white"
-        android:paddingLeft="10sp"
-        android:paddingRight="10sp"
-        android:textAlignment="textStart"
-        android:textColor="#0000FF"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/spacingRequest"
-        android:layout_width="0sp"
-        android:layout_height="19dp"
-        android:layout_alignParentStart="true"
-        android:background="@android:color/white"
-        android:paddingLeft="10sp"
-        android:paddingRight="10sp"
-        android:paddingTop="5sp"
-        android:textColor="@android:color/black"
-        android:textSize="10sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/usernameRequest" />
-
-    <TextView
-        android:id="@+id/contactEmailRequest"
-        android:layout_width="0sp"
-        android:layout_height="55dp"
-        android:layout_alignParentStart="true"
-        android:background="@android:color/white"
-        android:paddingLeft="10sp"
-        android:paddingRight="10sp"
-        android:paddingTop="5sp"
-        android:textColor="@android:color/black"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/spacingRequest" />
-
-    <Button
-        android:id="@+id/acceptButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:paddingLeft="10sp"
-        android:paddingRight="10sp"
-        android:text="Accept"
-        android:textSize="15sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/usernameRequest" />
-
-    <Button
-        android:id="@+id/declineButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="48dp"
-        android:paddingLeft="10sp"
-        android:paddingRight="10sp"
-        android:text="Decline"
-        android:textSize="15sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/usernameRequest" />
-
--->

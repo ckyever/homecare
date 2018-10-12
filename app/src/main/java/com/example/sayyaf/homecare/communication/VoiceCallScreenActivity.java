@@ -1,6 +1,7 @@
 package com.example.sayyaf.homecare.communication;
 
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -8,7 +9,12 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.sayyaf.homecare.R;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.sinch.android.rtc.PushPair;
 import com.sinch.android.rtc.calling.Call;
@@ -28,6 +34,10 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+    * Activity to handle voice calling within the application. Uses WebRTC for calling
+    * and runs on the Sinch backend
+    */
 public class VoiceCallScreenActivity extends BaseActivity {
     static final String TAG = VoiceCallScreenActivity.class.getSimpleName();
 
@@ -45,6 +55,9 @@ public class VoiceCallScreenActivity extends BaseActivity {
 
     private class UpdateCallDurationTask extends TimerTask {
 
+        /**
+         * Task to continuously update how long the call has been going
+         */
         @Override
         public void run() {
             VoiceCallScreenActivity.this.runOnUiThread(new Runnable() {
@@ -55,7 +68,6 @@ public class VoiceCallScreenActivity extends BaseActivity {
             });
         }
     }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,6 +90,10 @@ public class VoiceCallScreenActivity extends BaseActivity {
         mCallId = getIntent().getStringExtra(SinchService.CALL_ID);
     }
 
+    /**
+     * When the sinch service is connected to the activity, sets the neccessary listeners
+     * to find out if call is accepted or rejected
+     */
     @Override
     public void onServiceConnected() {
         Call call = getSinchServiceInterface().getCall(mCallId);
@@ -85,11 +101,37 @@ public class VoiceCallScreenActivity extends BaseActivity {
             call.addCallListener(new SinchCallListener());
             mCallerName.setText(name);
             mCallState.setText(call.getState().toString());
-            FirebaseStorage.getInstance()
-                    .getReference("UserProfileImage")
+
+            // speed up image download, old method try to download url for twice
+            Query profilePicUriRef =  FirebaseDatabase.getInstance() .getReference("User")
                     .child(call.getRemoteUserId().split(",")[0])
-                    .getDownloadUrl()
-                    .addOnSuccessListener(onDownloadSuccess(profilePic));
+                    .child("profileImage");
+
+            profilePicUriRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.exists()) {
+                        String userImageUriString = dataSnapshot.getValue(String.class);
+
+                        if(userImageUriString.equals("no Image"))
+                            return;
+
+                        Glide.with(VoiceCallScreenActivity.this)
+                                .load(userImageUriString)
+                                .apply(new RequestOptions()
+                                        .override(100, 100) // resize image in pixel
+                                        .centerCrop()
+                                        .dontAnimate())
+                                .into(profilePic);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
         } else {
             Log.e(TAG, "Started with invalid callId, aborting.");
             finish();
@@ -116,6 +158,17 @@ public class VoiceCallScreenActivity extends BaseActivity {
         // User should exit activity by ending call, not by going back.
     }
 
+    // avoid call continue after swipe
+    @Override
+    protected void onDestroy(){
+        mAudioPlayer.stopProgressTone();
+        Call call = getSinchServiceInterface().getCall(mCallId);
+        if (call != null) {
+            call.hangup();
+        }
+        super.onDestroy();
+    }
+
     private void endCall() {
         mAudioPlayer.stopProgressTone();
         Call call = getSinchServiceInterface().getCall(mCallId);
@@ -125,18 +178,27 @@ public class VoiceCallScreenActivity extends BaseActivity {
         finish();
     }
 
+    /**
+     * Sets the format of the timespan of call shown to user
+     * @param totalSeconds amount of time call has been established
+     * @return
+     */
     private String formatTimespan(int totalSeconds) {
         long minutes = totalSeconds / 60;
         long seconds = totalSeconds % 60;
         return String.format(Locale.US, "%02d:%02d", minutes, seconds);
     }
 
+    /**
+     * Updates the call duration on the users devices
+     */
     private void updateCallDuration() {
         Call call = getSinchServiceInterface().getCall(mCallId);
         if (call != null) {
             mCallDuration.setText(formatTimespan(call.getDetails().getDuration()));
         }
     }
+
 
     private OnSuccessListener<Uri> onDownloadSuccess(ImageView userImage){
         return new OnSuccessListener<Uri>(){
@@ -157,6 +219,11 @@ public class VoiceCallScreenActivity extends BaseActivity {
 
     private class SinchCallListener implements CallListener {
 
+        /**
+         * Called when call has been ended. Sets the volume to default, stops the progress
+         * tone if still playing and ends the call for the current user.
+         * @param call
+         */
         @Override
         public void onCallEnded(Call call) {
             CallEndCause cause = call.getDetails().getEndCause();
@@ -168,6 +235,11 @@ public class VoiceCallScreenActivity extends BaseActivity {
             endCall();
         }
 
+        /**
+         * Called when the call is established.
+         * Sets volume control and stops progress tone
+         * @param call
+         */
         @Override
         public void onCallEstablished(Call call) {
             Log.d(TAG, "Call established");

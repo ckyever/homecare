@@ -94,7 +94,7 @@ public class RequestUserListAdapter extends ArrayAdapter<User> {
                     return;
                 }
 
-                RequestController.acceptRequest(ref, requestEmail, requestId, currentUser);
+                RequestController.acceptRequest(ref, users.get(i), currentUser);
                 refreshView();
             }
         });
@@ -108,7 +108,7 @@ public class RequestUserListAdapter extends ArrayAdapter<User> {
                     return;
                 }
 
-                RequestController.declineRequest(ref, requestId, currentUser);
+                RequestController.declineRequest(ref, users.get(i), currentUser);
                 refreshView();
             }
         });

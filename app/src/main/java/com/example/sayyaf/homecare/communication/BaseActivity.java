@@ -75,7 +75,6 @@ public abstract class BaseActivity extends /*Activity*/AppCompatActivity impleme
     }
 
 
-
     //Initialises the Sinch messenger backend
     private Messenger messenger = new Messenger(new Handler() {
         @Override

@@ -44,6 +44,8 @@ public class ContactChatActivity extends BaseActivity implements View.OnClickLis
     private Button refreshList;
     private Button helpButton;
 
+    private Button homeButton;
+
     private ProgressBar progressBar;
     private TextView progressBarMsg;
 
@@ -65,6 +67,8 @@ public class ContactChatActivity extends BaseActivity implements View.OnClickLis
         refreshList = (Button) findViewById(R.id.refreshList);
         helpButton = (Button) findViewById(R.id.optionHelp);
 
+        homeButton = (Button) findViewById(R.id.optionMenu);
+
         contactView = (ListView) findViewById(R.id.contactView);
 
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
@@ -85,6 +89,10 @@ public class ContactChatActivity extends BaseActivity implements View.OnClickLis
     public void onClick(View v) {
 
         String starter = textInputs.getText().toString().trim();
+
+        if(v == homeButton){
+            goToMenu();
+        }
 
         if(!NetworkConnection.getConnection()){
             NetworkConnection.requestNetworkConnection(ContactChatActivity.this);
@@ -277,13 +285,17 @@ public class ContactChatActivity extends BaseActivity implements View.OnClickLis
         return username.startsWith(starter) || email.startsWith(starter);
     }
 
-    @Override
-    public void onBackPressed() {
+    private void goToMenu(){
         // back to menu page
         Intent goToMenu = new Intent(ContactChatActivity.this, MainActivity.class);
         goToMenu.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(goToMenu);
         finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        goToMenu();
     }
 
 }

@@ -4,4 +4,50 @@
     <string name="tracking_title">Caregivers can view your location</string>
     <string name="tracking_notification">Tap to disable tracking</string>
     <string name="title_activity_tracking">Tracking</string>
+    <string name="directions_error">Please input a location first</string>
+    <string name="get_device_location_error">Unable to get current location</string>
+    <string name="tracking_stop">stop</string>
+    <string name="latitude_key">Latitude</string>
+    <string name="longitude_key">Longitude</string>
+    <string name="firebase_user_path">User/</string>
+    <string name="firebase_location_path">/location</string>
+    <string name="firebase_friends_path">/friends</string>
+    <string name="firebase_name_path">/name</string>
+    <string name="decline">Decline</string>
+    <string name="accept">Accept</string>
+    <string name="sample_call_name">Sample User</string>
+    <string name="incoming_call">Incoming Call</string>
+    <string name="end_call">End Call</string>
+    <string name="call_duration">00:00</string>
+    <string name="call_status">Ringing</string>
+    <string name="new_contact">New Contact</string>
+    <string name="contact_email_hint">Contact Email</string>
+    <string name="add_contact">Add Contact</string>
+    <string name="remove_contact">Remove Contact</string>
+    <string name="options_menu">Menu</string>
+    <string name="help">Help !</string>
+    <string name="login_email">Email</string>
+    <string name="login_password">Password</string>
+    <string name="login_button">Log In</string>
+    <string name="login_to_register_transition">Don\'t have an account? Sign up here!</string>
+    <string name="login_title">Login</string>
+    <string name="progress_bar_msg">Loading &#8230;</string>
+    <string name="register_name">Name</string>
+    <string name="register_email">Email</string>
+    <string name="register_password">Password</string>
+    <string name="register_confirm_password">Confirm Password</string>
+    <string name="register_assisted">Are you an assisted person?</string>
+    <string name="register_caregiver">Are you a caregiver?</string>
+    <string name="register_complete">Sign up</string>
+    <string name="register_to_login_transition">Already have an account? Log in here!</string>
+    <string name="requests_title">Requests</string>
+    <string name="update_email_title">Update Email</string>
+    <string name="update_email_new_email">Enter new email address</string>
+    <string name="update_password_title">Update Password</string>
+    <string name="options_page">Options</string>
+    <string name="update_password_current">Enter Current Password</string>
+    <string name="update_password_new">Enter New Password</string>
+
+
+
 </resources>

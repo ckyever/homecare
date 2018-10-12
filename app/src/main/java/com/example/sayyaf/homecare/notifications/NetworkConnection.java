@@ -13,6 +13,9 @@ import android.widget.Toast;
 import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
 
+import java.io.IOException;
+import java.net.InetAddress;
+
 import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class NetworkConnection extends BroadcastReceiver {
@@ -29,7 +32,8 @@ public class NetworkConnection extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        boolean current_connection_state;
+        // default as not connected to the internet
+        boolean current_connection_state = false;
 
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -37,11 +41,19 @@ public class NetworkConnection extends BroadcastReceiver {
 
         if (activeNetwork != null) {
             // connected to the internet
-            current_connection_state = true;
-        } else {
+            //
+            if(activeNetwork.isConnected()){
+                current_connection_state = true;
+            }
+            /*else{
+                current_connection_state = false;
+            }*/
+            //
+            // current_connection_state = true;
+        } /*else {
             // not connected to the internet
             current_connection_state = false;
-        }
+        }*/
 
         // detect state change
         if(current_connection_state != connection){

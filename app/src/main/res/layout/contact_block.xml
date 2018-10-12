@@ -7,7 +7,7 @@
 
     <TextView
         android:id="@+id/username"
-        android:textColor="#0000FF"
+        android:textColor="@color/blue"
         android:textAlignment="textStart"
         android:layout_width="0sp"
         android:layout_height="wrap_content"
@@ -57,18 +57,34 @@
         app:layout_constraintTop_toBottomOf="@id/contactEmail"
         app:layout_constraintBottom_toBottomOf="@id/chatButton"/>
 
+    <TextView
+        android:id="@+id/spacing3"
+        android:layout_width="0sp"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10sp"
+        android:paddingRight="10sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@android:color/white"
+        android:textSize="5sp"
+        app:layout_constraintTop_toBottomOf="@id/chatButton"/>
+
     <Button
         android:id="@+id/chatButton"
         android:text="Chat"
+        android:textSize="20sp"
+        android:textColor="@android:color/white"
+        android:drawableLeft="@drawable/ic_chat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingLeft="10sp"
         android:paddingRight="10sp"
-        android:layout_marginBottom="5sp"
+        android:layout_marginBottom="10sp"
+        android:background="@drawable/round_button_accented"
+        android:drawablePadding="5dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/contactEmail"
-        app:layout_constraintStart_toEndOf="@id/VideoCallButton"
-        android:textSize="20sp" />
+        app:layout_constraintStart_toEndOf="@id/VideoCallButton" />
 
     <Button
         android:id="@+id/VoiceCallButton"
@@ -76,8 +92,12 @@
         android:layout_height="wrap_content"
         android:paddingLeft="10sp"
         android:paddingRight="10sp"
+        android:layout_marginBottom="10sp"
         android:text="Call"
         android:textSize="20sp"
+        android:textColor="@android:color/white"
+        android:background="@drawable/round_button_accented"
+        android:drawableLeft="@drawable/ic_call"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/VideoCallButton"
         app:layout_constraintTop_toBottomOf="@id/contactEmail" />
@@ -88,8 +108,13 @@
         android:layout_height="wrap_content"
         android:paddingLeft="10sp"
         android:paddingRight="10sp"
+        android:layout_marginBottom="10sp"
         android:text="Video"
         android:textSize="20sp"
+        android:textColor="@android:color/white"
+        android:background="@drawable/round_button_accented"
+        android:drawablePadding="5dp"
+        android:drawableLeft="@drawable/ic_video"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/contactEmail" />
