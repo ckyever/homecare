@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">HomeCare</string>
+
+    <!-- Mapping -->
     <string name="title_activity_maps">Navigation</string>
     <string name="tracking_title">Caregivers can view your location</string>
     <string name="tracking_notification">Tap to disable tracking</string>
@@ -13,6 +15,10 @@
     <string name="firebase_location_path">/location</string>
     <string name="firebase_friends_path">/friends</string>
     <string name="firebase_name_path">/name</string>
+    <string name="search_box_hint">Enter Location</string>
+    <string name="directions_button_text">Directions</string>
+
+    <!-- Communication -->
     <string name="decline">Decline</string>
     <string name="accept">Accept</string>
     <string name="sample_call_name">Sample User</string>
@@ -20,12 +26,14 @@
     <string name="end_call">End Call</string>
     <string name="call_duration">00:00</string>
     <string name="call_status">Ringing</string>
+
+    <!-- Contacts -->
     <string name="new_contact">New Contact</string>
     <string name="contact_email_hint">Contact Email</string>
     <string name="add_contact">Add Contact</string>
     <string name="remove_contact">Remove Contact</string>
-    <string name="options_menu">Menu</string>
-    <string name="help">Help !</string>
+
+    <!-- Login/Registration -->
     <string name="login_email">Email</string>
     <string name="login_password">Password</string>
     <string name="login_button">Log In</string>
@@ -48,6 +56,8 @@
     <string name="update_password_current">Enter Current Password</string>
     <string name="update_password_new">Enter New Password</string>
 
-
+    <!-- Misc -->
+    <string name="options_menu">Menu</string>
+    <string name="help">Help !</string>
 
 </resources>
