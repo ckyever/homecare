@@ -17,6 +17,8 @@
     <string name="firebase_name_path">/name</string>
     <string name="search_box_hint">Enter Location</string>
     <string name="directions_button_text">Directions</string>
+    <string name="map_title_text">Map</string>
+    <string name="tracking_title_text">Tracking</string>
 
     <!-- Communication -->
     <string name="decline">Decline</string>

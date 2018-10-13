@@ -47,7 +47,7 @@
             android:layout_height="30dp"
             android:textSize="20sp"
             android:layout_gravity="center"
-            android:text="Maps"
+            android:text="@string/map_title_text"
             android:textAlignment="center"
             android:textColor="@android:color/white"
             android:textStyle="bold"
