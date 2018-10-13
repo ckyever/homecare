@@ -60,7 +60,6 @@ import com.google.maps.GeoApiContext;
 import com.google.maps.PendingResult;
 import com.google.maps.internal.PolylineEncoding;
 import com.google.maps.model.DirectionsResult;
-import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.TravelMode;
 
 import java.io.IOException;
@@ -510,7 +509,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         );
         DirectionsApiRequest directions = new DirectionsApiRequest(mGeoApiContext);
 
-        // directions.alternatives(true);
         directions.mode(travelMode);
         directions.origin(
                 new com.google.maps.model.LatLng(
@@ -547,15 +545,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                Log.d(TAG, "run: result routes: " + result.routes.length);
 
-                for(DirectionsRoute route: result.routes){
-                    Log.d(TAG, "run: leg: " + route.legs[0].toString());
+                    Log.d(TAG, "run: leg: " + result.routes[0].legs[0].toString());
                     List<com.google.maps.model.LatLng> decodedPath =
-                            PolylineEncoding.decode(route.overviewPolyline.getEncodedPath());
+                            PolylineEncoding.decode(result.routes[0].overviewPolyline.getEncodedPath());
 
                     List<LatLng> newDecodedPath = new ArrayList<>();
 
+                    // This loops through all the LatLng coordinates of ONE polyline.
                     // This loops through all the LatLng coordinates of ONE polyline.
                     for(com.google.maps.model.LatLng latLng: decodedPath){
 
@@ -574,7 +571,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     // polyline.setClickable(true);
 
                     // add trip duration to marker
-                    locationSearched.setSnippet("Time: " + route.legs[0].duration.toString());
+                    locationSearched.setSnippet("Time: " + result.routes[0].legs[0].duration.toString());
 
                     // set camera so current location and destination can be seen
                     LatLngBounds.Builder builder = new LatLngBounds.Builder();
@@ -583,7 +580,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(),300));
 
                 }
-            }
         });
     }
 
