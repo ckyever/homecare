@@ -82,12 +82,10 @@
 
         <activity
             android:name=".mapping.MapsActivity"
-            android:label="@string/title_activity_maps"
             android:screenOrientation="portrait" />
 
         <activity
             android:name=".mapping.TrackingActivity"
-            android:label="@string/title_activity_tracking"
             android:screenOrientation="portrait" />
 
         <activity

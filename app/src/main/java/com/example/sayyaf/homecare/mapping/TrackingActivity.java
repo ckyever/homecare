@@ -1,13 +1,16 @@
 package com.example.sayyaf.homecare.mapping;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
+import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -30,7 +33,8 @@ import com.google.maps.android.ui.IconGenerator;
 import java.util.HashMap;
 
 public class TrackingActivity extends AppCompatActivity implements OnMapReadyCallback,
-        GoogleMap.OnCameraMoveStartedListener, GoogleMap.OnMarkerClickListener {
+        GoogleMap.OnCameraMoveStartedListener, GoogleMap.OnMarkerClickListener,
+        View.OnClickListener {
 
     private static final String TAG = "TrackingActivity";
     private static final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -43,6 +47,7 @@ public class TrackingActivity extends AppCompatActivity implements OnMapReadyCal
     LatLngBounds.Builder mBuilder;
 
     private ImageView mLocationButton;
+    private Button homeButton;
 
 
     @Override
@@ -51,11 +56,27 @@ public class TrackingActivity extends AppCompatActivity implements OnMapReadyCal
         setContentView(R.layout.activity_tracking);
 
         mLocationButton = (ImageView) findViewById(R.id.ic_mylocation);
+        homeButton = (Button) findViewById(R.id.optionMenu);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+    }
+
+    @Override
+    public void onClick(View view) {
+        if(view == homeButton){
+            goToMenu();
+        }
+    }
+
+    private void goToMenu(){
+        // back to menu page
+        Intent goToMenu = new Intent(TrackingActivity.this, MainActivity.class);
+        goToMenu.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(goToMenu);
+        finish();
     }
 
     @Override
