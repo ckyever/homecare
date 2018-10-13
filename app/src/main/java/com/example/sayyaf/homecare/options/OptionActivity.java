@@ -37,7 +37,7 @@ public class OptionActivity extends AppCompatActivity implements View.OnClickLis
         changeEmailButton = (FloatingActionButton) findViewById(R.id.changeEmailButton);
         changeEmailText = (TextView) findViewById(R.id.changeEmail);
         changePasswordButton = (FloatingActionButton) findViewById(R.id.changePasswordButton);
-        //changePasswordText = (TextView) findViewById(R.id.updatePassword);
+        changePasswordText = (TextView) findViewById(R.id.changePassword);
 
         helpButton = (Button) findViewById(R.id.optionHelp);
         homeButton = (Button) findViewById(R.id.optionMenu);

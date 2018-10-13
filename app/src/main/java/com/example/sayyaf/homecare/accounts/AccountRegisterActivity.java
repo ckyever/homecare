@@ -1,6 +1,9 @@
 package com.example.sayyaf.homecare.accounts;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -122,6 +125,12 @@ public class AccountRegisterActivity extends AppCompatActivity implements View.O
             finish();
         }
 
+        if (!isNetworkAvailable()) {
+            Toast.makeText(AccountRegisterActivity.this, "No internet connection",
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if (view == mCreateUserButton) {
            createNewUser();
         }
@@ -216,6 +225,13 @@ public class AccountRegisterActivity extends AppCompatActivity implements View.O
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
 }

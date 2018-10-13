@@ -13,6 +13,7 @@ import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.UserAppVersionController;
 import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
+import com.example.sayyaf.homecare.notifications.NetworkConnection;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -54,18 +55,23 @@ public class UpdatePasswordActivity extends AppCompatActivity implements View.On
     @Override
     public void onClick(View v) {
 
-        if(v == changePasswordButton) {
-            updatePassword();
-        }
-
-        else if(v == optionsMenu){
+        if(v == optionsMenu){
             Intent intent = new Intent(UpdatePasswordActivity.this, OptionActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();
         }
 
-        else if(v == helpButton) {
+        if(!NetworkConnection.getConnection()){
+            NetworkConnection.requestNetworkConnection(UpdatePasswordActivity.this);
+            return;
+        }
+
+        if(v == changePasswordButton) {
+            updatePassword();
+        }
+
+        if(v == helpButton) {
             EmergencyCallActivity.setBackToActivity(MainActivity.class);
 
             Intent intent = new Intent(UpdatePasswordActivity.this, EmergencyCallActivity.class);
@@ -96,6 +102,7 @@ public class UpdatePasswordActivity extends AppCompatActivity implements View.On
         if(newPass.equals(oldPass)) {
             Toast.makeText(UpdatePasswordActivity.this,
                     "New password cannot be equal to old password. Please try again", Toast.LENGTH_SHORT).show();
+            return;
         }
 
         if(!newPass.equals(confirmPass)) {

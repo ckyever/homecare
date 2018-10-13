@@ -1,6 +1,9 @@
 package com.example.sayyaf.homecare.accounts;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -105,6 +108,12 @@ public class LoginActivity  extends AppCompatActivity implements View.OnClickLis
             finish();
         }
 
+        else if (!isNetworkAvailable()) {
+            Toast.makeText(LoginActivity.this, "No internet connection",
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         //Authenticates the given user details in preparation for signin
         else {
             authenticateUser();
@@ -191,10 +200,18 @@ public class LoginActivity  extends AppCompatActivity implements View.OnClickLis
     }
 
     public void onBackPressed() {
-        Intent intent = new Intent(LoginActivity.this, AccountRegisterActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
+        Intent a = new Intent(Intent.ACTION_MAIN);
+        a.addCategory(Intent.CATEGORY_HOME);
+        a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(a);
         finish();
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
 

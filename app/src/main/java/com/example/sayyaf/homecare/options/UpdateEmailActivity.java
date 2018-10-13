@@ -16,6 +16,7 @@ import com.example.sayyaf.homecare.R;
 
 import com.example.sayyaf.homecare.accounts.UserAppVersionController;
 import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
+import com.example.sayyaf.homecare.notifications.NetworkConnection;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -56,18 +57,24 @@ public class UpdateEmailActivity extends AppCompatActivity implements View.OnCli
     @Override
     public void onClick(View v) {
 
-        if(v == changeEmailButton) {
-            updateEmail();
-        }
 
-        else if(v == optionsMenu){
+        if(v == optionsMenu){
             Intent intent = new Intent(UpdateEmailActivity.this, OptionActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();
         }
 
-        else if(v == helpButton) {
+        if(!NetworkConnection.getConnection()){
+            NetworkConnection.requestNetworkConnection(UpdateEmailActivity.this);
+            return;
+        }
+
+        if(v == changeEmailButton) {
+            updateEmail();
+        }
+
+        if(v == helpButton) {
         EmergencyCallActivity.setBackToActivity(MainActivity.class);
 
         Intent intent = new Intent(UpdateEmailActivity.this, EmergencyCallActivity.class);

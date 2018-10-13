@@ -75,21 +75,21 @@
         android:layout_weight="1">
         <Button
             android:id="@+id/hangupButtonVoice"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:paddingStart="90sp"
-            android:paddingEnd="100sp"
+            android:paddingStart="20sp"
+            android:paddingEnd="20sp"
             android:background="@drawable/round_button_accented"
             android:backgroundTint="#DC143C"
             android:paddingBottom="20dp"
             android:drawableLeft="@drawable/ic_hangup"
-            android:drawablePadding="10sp"
+            android:drawablePadding="20sp"
             android:drawableTint="@android:color/white"
             android:text= "@string/end_call"
-            android:textSize="22sp"
             android:textColor="@android:color/white"
             android:paddingTop="20dp" />
+
 
     </RelativeLayout>
 

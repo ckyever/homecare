@@ -154,7 +154,8 @@ public class ContactUserListAdapter extends ArrayAdapter<User>{
             callScreen.putExtra("id", user.getId());
             context.startActivity(callScreen);
         } catch (MissingPermissionException e) {
-            //ActivityCompat.requestPermissions(context, new String[]{e.getRequiredPermission()}, 0);
+            Toast.makeText(context, "Necessary permissions for calling have not been" +
+                    " granted. Please give permissions to activate calling feature", Toast.LENGTH_LONG).show();
         }
 
     }
@@ -180,7 +181,8 @@ public class ContactUserListAdapter extends ArrayAdapter<User>{
             callScreen.putExtra("id", user.getId());
             context.startActivity(callScreen);
         } catch (MissingPermissionException e) {
-            //ActivityCompat.requestPermissions(context, new String[]{e.getRequiredPermission()}, 0);
+            Toast.makeText(context, "Necessary permissions for calling have not been" +
+                    " granted. Please give permissions to activate calling feature", Toast.LENGTH_LONG).show();
         }
 
     }
