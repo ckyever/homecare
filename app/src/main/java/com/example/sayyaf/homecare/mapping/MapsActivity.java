@@ -31,7 +31,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
+import com.example.sayyaf.homecare.accounts.AccountRegisterActivity;
+import com.example.sayyaf.homecare.accounts.LoginActivity;
 import com.example.sayyaf.homecare.accounts.UserAppVersionController;
 import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
 import com.example.sayyaf.homecare.notifications.NetworkConnection;
@@ -137,6 +140,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         filter = new AutocompleteFilter.Builder().setCountry("AU").build();
     }
 
+
+
     @Override
     public void onClick(View view) {
         if(!NetworkConnection.getConnection()){
@@ -172,6 +177,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        mapFragment.setRetainInstance(true);
 
     }
 
@@ -611,6 +617,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
         builder.show();
     }
+
+
 
     @Override
     protected void onStop() {

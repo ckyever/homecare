@@ -40,7 +40,7 @@
             android:textColor="#000"
             android:id="@+id/inputSearch"
             android:background="@null"
-            android:hint="Enter Location"
+            android:hint="@string/search_box_hint"
             android:imeOptions="actionSearch"
             android:inputType="text"/>
 
