@@ -43,6 +43,7 @@ import com.google.firebase.auth.FirebaseAuth;
 @LargeTest
 public class TestLoginActivity {
 
+
     @Rule
     public IntentsTestRule<LoginActivity> mActivityRule = new IntentsTestRule<>(LoginActivity.class);
     Activity activity;
