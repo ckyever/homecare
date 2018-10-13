@@ -11,38 +11,101 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".mapping.MapsActivity"/>
+        tools:context=".mapping.MapsActivity" />
 
     <RelativeLayout
+        android:id="@+id/linearLayout1"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
-        android:layout_marginRight="10dp"
+        android:background="@color/colorAccent">
+
+        <Button
+            android:id="@+id/optionMenu"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:paddingStart="5dp"
+            android:paddingEnd="10dp"
+            android:layout_marginLeft="5dp"
+            android:background="@color/background"
+            android:drawableLeft="@drawable/ic_menu_home"
+            android:drawableTint="@color/blue"
+            android:drawablePadding="5dp"
+            android:onClick="onClick"
+            android:text="@string/options_menu"
+            android:textColor="@color/blue"
+            android:textSize="15sp"
+            android:layout_alignParentStart="true"
+            android:layout_centerInParent="true"/>
+
+        <TextView
+            android:id="@+id/titleBar"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:textSize="20sp"
+            android:layout_gravity="center"
+            android:text="Maps"
+            android:textAlignment="center"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:layout_centerInParent="true"/>
+
+        <Button
+            android:id="@+id/optionHelp"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:background="@color/emergencyBackground"
+            android:drawableLeft="@drawable/bell_resized"
+            android:drawablePadding="5dp"
+            android:drawableTint="@color/emergencyText"
+            android:layout_marginRight="5dp"
+            android:enabled="false"
+            android:onClick="onClick"
+            android:paddingEnd="10dp"
+            android:paddingStart="10dp"
+            android:text="@string/help"
+            android:textColor="@color/emergencyText"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:visibility="invisible"
+            android:layout_alignParentEnd="true"
+            android:layout_centerInParent="true"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/linearLayout1"
         android:layout_marginLeft="10dp"
-        android:elevation="10dp"
+        android:layout_marginRight="10dp"
         android:background="#fff"
-        android:id="@+id/relativeLayout1">
+        android:elevation="10dp">
 
         <ImageView
+            android:id="@+id/magnifyingGlass"
             android:layout_width="15dp"
             android:layout_height="15dp"
-            android:id="@+id/magnifyingGlass"
             android:layout_centerVertical="true"
             android:layout_marginLeft="10dp"
-            android:src="@drawable/magnifying_glass"/>
+            android:src="@drawable/magnifying_glass" />
 
         <AutoCompleteTextView
+            android:id="@+id/inputSearch"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_toRightOf="@+id/magnifyingGlass"
             android:layout_centerVertical="true"
-            android:textSize="15sp"
-            android:textColor="#000"
-            android:id="@+id/inputSearch"
+            android:layout_toRightOf="@+id/magnifyingGlass"
             android:background="@null"
             android:hint="@string/search_box_hint"
             android:imeOptions="actionSearch"
-            android:inputType="text"/>
+            android:inputType="text"
+            android:textColor="#000"
+            android:textSize="15sp" />
 
     </RelativeLayout>
 
@@ -50,10 +113,10 @@
         android:id="@+id/ic_mylocation"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="12dp"
+        android:layout_alignParentEnd="true"
         android:layout_marginBottom="104dp"
+        android:layout_marginEnd="12dp"
         android:src="@drawable/ic_mylocationoff" />
 
     <Button
@@ -69,28 +132,10 @@
         android:textColor="@android:color/white"
         android:textSize="14sp" />
 
-    <Button
-        android:id="@+id/optionHelp"
-        android:layout_width="wrap_content"
-        android:layout_height="40sp"
-        android:layout_below="@+id/relativeLayout1"
-        android:layout_alignParentEnd="true"
-        android:paddingStart="10sp"
-        android:paddingEnd="10sp"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="10dp"
-        android:background="@color/emergencyBackground"
-        android:drawableLeft="@drawable/bell_resized"
-        android:drawableTint="@color/emergencyText"
-        android:drawablePadding="5sp"
-        android:onClick="onClick"
-        android:text="@string/help"
-        android:enabled="false"
-        android:textColor="@color/emergencyText"
-        android:textSize="15sp"
-        android:textStyle="bold"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
 </RelativeLayout>
+
+
+
+
+
+

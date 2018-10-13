@@ -33,8 +33,6 @@ import android.widget.Toast;
 
 import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
-import com.example.sayyaf.homecare.accounts.AccountRegisterActivity;
-import com.example.sayyaf.homecare.accounts.LoginActivity;
 import com.example.sayyaf.homecare.accounts.UserAppVersionController;
 import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
 import com.example.sayyaf.homecare.notifications.NetworkConnection;
@@ -109,6 +107,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private AutoCompleteTextView mInputSearchTextView;
     private Button mDirectionsButton;
     private Button helpButton;
+    private Button homeButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,6 +120,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mDirectionsButton = findViewById(R.id.directions);
         mDirectionsButton.setOnClickListener(this);
         helpButton = findViewById(R.id.optionHelp);
+        homeButton = (Button) findViewById(R.id.optionMenu);
 
         // Makes help button visible on assisted person's screen
         UserAppVersionController.getUserAppVersionController().resetButton(helpButton);
@@ -149,6 +149,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             return;
         }
 
+        if(view == homeButton){
+            goToMenu();
+        }
+
         if(view == helpButton){
             EmergencyCallActivity.setBackToActivity(MapsActivity.class);
             Intent intent = new Intent(MapsActivity.this,
@@ -167,6 +171,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    private void goToMenu(){
+        // back to menu page
+        Intent goToMenu = new Intent(MapsActivity.this, MainActivity.class);
+        goToMenu.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(goToMenu);
+        finish();
     }
 
     /**
