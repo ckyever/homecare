@@ -116,7 +116,8 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="20dp"
                 android:text="@string/register_to_login_transition"
-                android:textSize="19sp"
+                android:autoSizeMaxTextSize="20sp"
+                android:singleLine="true"
                 android:textStyle="bold" />
 
         </LinearLayout>

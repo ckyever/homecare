@@ -49,6 +49,8 @@ public class UpdatePasswordActivity extends AppCompatActivity implements View.On
         optionsMenu = (Button) findViewById(R.id.optionMenuUpdatePassword);
         helpButton = (Button) findViewById(R.id.optionHelpUpdatePassword);
         changePasswordButton.setOnClickListener(this);
+
+        // activate help button on assisted person version
         UserAppVersionController.getUserAppVersionController().resetButton(helpButton);
     }
 
@@ -62,6 +64,7 @@ public class UpdatePasswordActivity extends AppCompatActivity implements View.On
             finish();
         }
 
+        // block actions those require internet connection
         if(!NetworkConnection.getConnection()){
             NetworkConnection.requestNetworkConnection(UpdatePasswordActivity.this);
             return;
@@ -72,7 +75,7 @@ public class UpdatePasswordActivity extends AppCompatActivity implements View.On
         }
 
         if(v == helpButton) {
-            EmergencyCallActivity.setBackToActivity(MainActivity.class);
+            EmergencyCallActivity.setBackToActivity(UpdatePasswordActivity.class);
 
             Intent intent = new Intent(UpdatePasswordActivity.this, EmergencyCallActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

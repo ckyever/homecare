@@ -23,6 +23,9 @@ public class UserAppVersionController {
     private String userId;
     private boolean isCaregiver;
 
+    /* new controller creation
+     *  (the default empty user id used for clear up login state under any device crashes)
+     */
     private UserAppVersionController(){
         userId = "";
         isCaregiver = true;
@@ -45,15 +48,19 @@ public class UserAppVersionController {
         this.isCaregiver = isCaregiver;
     }
 
+    // get user type of current user
     public boolean getIsCaregiver(){
         return isCaregiver;
     }
 
+    // get user id of current user
     public String getCurrentUserId(){
         return userId;
     }
 
-    // enable help buttons on assisted person version
+    /* enable help buttons on assisted person version
+     * helpButton: the help button of the activity
+     */
     public void resetButton(Button helpButton){
         if(!isCaregiver){
             helpButton.setVisibility(View.VISIBLE);
@@ -61,7 +68,10 @@ public class UserAppVersionController {
         }
     }
 
-    // enable help buttons and provide a correct version of map button on assisted person version
+    /* enable help buttons and provide a correct version of map page on assisted person version
+     * helpButton: the help button of the activity
+     * mMapButton: either "Tracking" (for caregiver version) or "Map" (for assisted person version)
+     */
     public void resetButton(Button helpButton, Button mMapButton){
         if(!isCaregiver){
             mMapButton.setText("Map");
@@ -70,7 +80,9 @@ public class UserAppVersionController {
         }
     }
 
-    // launch correct version of map activity for both assisted person and caregiver
+    /* launch correct version of map activity for both assisted person and caregiver
+     * mainActivity: the main page of the app, allow user to access other features
+     */
     public void launchMapActivity(Context mainActivity){
         if(isCaregiver){
             Intent intent = new Intent(mainActivity, TrackingActivity.class);

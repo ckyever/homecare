@@ -158,6 +158,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
             return;
         }
 
+        // block actions those require internet connection
         if(!NetworkConnection.getConnection()){
             NetworkConnection.requestNetworkConnection(MainActivity.this);
             return;

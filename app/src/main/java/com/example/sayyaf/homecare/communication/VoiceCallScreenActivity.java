@@ -7,6 +7,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.sayyaf.homecare.ImageLoader;
 import com.example.sayyaf.homecare.R;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -115,13 +116,9 @@ public class VoiceCallScreenActivity extends BaseActivity {
                         if(userImageUriString.equals("no Image"))
                             return;
 
-                        Glide.with(VoiceCallScreenActivity.this)
-                                .load(userImageUriString)
-                                .apply(new RequestOptions()
-                                        .override(100, 100) // resize image in pixel
-                                        .centerCrop()
-                                        .dontAnimate())
-                                .into(profilePic);
+                        ImageLoader.getImageLoader().loadContactImageToView(
+                                VoiceCallScreenActivity.this,
+                                profilePic, userImageUriString);
                     }
                 }
 

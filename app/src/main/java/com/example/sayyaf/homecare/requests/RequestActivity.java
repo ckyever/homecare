@@ -152,6 +152,7 @@ public class RequestActivity extends AppCompatActivity implements RequestsUserLi
             goToMenu();
         }
 
+        // block actions those require internet connection
         if(!NetworkConnection.getConnection()){
             NetworkConnection.requestNetworkConnection(RequestActivity.this);
             return;

@@ -34,6 +34,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
+// This class handles emergency call from assisted person
 public class EmergencyCallActivity extends AppCompatActivity implements View.OnClickListener  {
 
     private static ActivityKeeper backToActivity;
@@ -75,13 +76,14 @@ public class EmergencyCallActivity extends AppCompatActivity implements View.OnC
 
     }
 
-    // set up returning path for this activity
+    // set up returning path for this activity (since there are help buttons on any other pages)
     public static void setBackToActivity(Class entryActivity){
         backToActivity = new ActivityKeeper(entryActivity);
     }
 
     @Override
     protected void onPause(){
+        // clear up timer
         if(timer != null){
             misLaunchAttention.cancel();
 
@@ -124,6 +126,7 @@ public class EmergencyCallActivity extends AppCompatActivity implements View.OnC
     }
 
     private void cancelEmergencyCall(){
+        // clear up timer
         if(timer != null){
 
             misLaunchAttention.cancel();
@@ -139,6 +142,7 @@ public class EmergencyCallActivity extends AppCompatActivity implements View.OnC
     }
 
     private void fireEmergencyNotification(){
+        // block actions those require internet connection
         if(!NetworkConnection.getConnection()){
             NetworkConnection.requestNetworkConnection(EmergencyCallActivity.this);
             backToLastActivity();
@@ -160,15 +164,11 @@ public class EmergencyCallActivity extends AppCompatActivity implements View.OnC
                             EmergencyMsg msg = new EmergencyMsg(
                                     UserAppVersionController.getUserAppVersionController()
                                             .getCurrentUserId(), this_device.getName());
-                            //ChatMessage ct = new ChatMessage("", this_device.getName());
 
                             // send emergency contents to all friends
                             for (String friendId : this_device.getFriends().keySet()) {
                                 sendNotification(friendId, msg);
-                                //sendNotification(friendId, ct);
                             }
-
-                            FirebaseDatabase.getInstance().getApp().getApplicationContext();
 
                             Toast.makeText(EmergencyCallActivity.this,
                                     "Emergency Notification is sent", Toast.LENGTH_SHORT).show();
@@ -187,19 +187,23 @@ public class EmergencyCallActivity extends AppCompatActivity implements View.OnC
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                backToLastActivity();
             }
+
         });
     }
 
+    // check if the assisted person has a caregiver
     private boolean checkHasFriends(){
         return (this_device != null
                 && this_device.getFriends() != null
                 && !this_device.getFriends().isEmpty());
     }
 
-    // caregiver will receive it if they have network connection and logged in
-    //private void sendNotification(String friendId, ChatMessage ct){
+    /* send the notification to the caregiver
+     * friendId: the user id of the caregiver
+     * msg: contains sender name and send time
+     */
     private void sendNotification(String friendId, EmergencyMsg msg){
         FirebaseDatabase.getInstance().getReference("EmergencyMsg")
                 .child(friendId).push().setValue(msg);

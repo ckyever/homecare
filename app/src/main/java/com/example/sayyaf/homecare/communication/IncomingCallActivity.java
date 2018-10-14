@@ -1,6 +1,7 @@
 package com.example.sayyaf.homecare.communication;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.sayyaf.homecare.ImageLoader;
 import com.example.sayyaf.homecare.R;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -87,13 +88,9 @@ public class IncomingCallActivity extends BaseActivity {
                         if(userImageUriString.equals("no Image"))
                             return;
 
-                        Glide.with(IncomingCallActivity.this)
-                                .load(userImageUriString)
-                                .apply(new RequestOptions()
-                                        .override(100, 100) // resize image in pixel
-                                        .centerCrop()
-                                        .dontAnimate())
-                                .into(profilePic);
+                        ImageLoader.getImageLoader().loadContactImageToView(
+                                IncomingCallActivity.this,
+                                profilePic, userImageUriString);
                     }
                 }
 
@@ -103,12 +100,6 @@ public class IncomingCallActivity extends BaseActivity {
                 }
             });
 
-
-            /*FirebaseStorage.getInstance()
-                    .getReference("UserProfileImage")
-                    .child(call.getRemoteUserId().split(",")[0])
-                    .getDownloadUrl()
-                    .addOnSuccessListener(onDownloadSuccess(profilePic));*/
         } else {
             Log.e(TAG, "Started with invalid callId, aborting");
             finish();
@@ -238,20 +229,4 @@ public class IncomingCallActivity extends BaseActivity {
 
     }
 
-    private OnSuccessListener<Uri> onDownloadSuccess(ImageView userImage){
-        return new OnSuccessListener<Uri>(){
-            @Override
-            public void onSuccess(Uri userImagePath) {
-
-                Glide.with(IncomingCallActivity.this)
-                        .load(userImagePath.toString())
-                        .apply(new RequestOptions()
-                                .override(100, 100) // resize image in pixel
-                                .centerCrop()
-                                .dontAnimate())
-                        .into(userImage);
-
-            }
-        };
-    }
 }

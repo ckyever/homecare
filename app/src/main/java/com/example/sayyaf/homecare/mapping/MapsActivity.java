@@ -144,13 +144,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onClick(View view) {
+        if(view == homeButton){
+            goToMenu();
+        }
+
+        // block actions those require internet connection
         if(!NetworkConnection.getConnection()){
             NetworkConnection.requestNetworkConnection(MapsActivity.this);
             return;
-        }
-
-        if(view == homeButton){
-            goToMenu();
         }
 
         if(view == helpButton){

@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.sayyaf.homecare.ImageLoader;
 import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.User;
 import com.example.sayyaf.homecare.communication.VideoCallScreenActivity;
@@ -32,6 +33,9 @@ import com.sinch.android.rtc.calling.Call;
 
 import java.util.ArrayList;
 
+/* This class maps contacts data from database to a list of contact blocks in view
+ * and maps communication actions (video, voice calling, text chatting) to the correct contact person
+ */
 public class ContactUserListAdapter extends ArrayAdapter<User>{
 
     private Activity activity;
@@ -52,12 +56,6 @@ public class ContactUserListAdapter extends ArrayAdapter<User>{
         this.ref = ref;
         this.sinchServiceInterface = sinchServiceInterface;
         this.context = context;
-    }
-
-    // not work probably due to database read behavior (will probably be removed)
-    public void addUser(ArrayList<User> users){
-        this.users = users;
-        notifyDataSetChanged();
     }
 
     @Override
@@ -83,18 +81,16 @@ public class ContactUserListAdapter extends ArrayAdapter<User>{
 
         // set profile image if there is one
         if(!users.get(i).getProfileImage().equals("no Image")){
-            loadImageToView(userImage, users.get(i).getProfileImage());
+            ImageLoader.getImageLoader().loadContactImageToView(
+                    context, userImage, users.get(i).getProfileImage());
         }
 
-        /*if(users.get(i).gethasProfileImage())
-            FirebaseStorage.getInstance()
-                    .getReference("UserProfileImage").child(users.get(i).getId()).getDownloadUrl()
-                    .addOnSuccessListener(onDownloadSuccess(userImage));*/
-
-        // assoicate button to private chat page
+        // associate button to private chat page
         chatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                // block actions those require internet connection
                 if(!NetworkConnection.getConnection()){
                     NetworkConnection.requestNetworkConnection(context);
                     return;
@@ -134,6 +130,7 @@ public class ContactUserListAdapter extends ArrayAdapter<User>{
     }
 
     private void videoCallButtonClicked(User user) {
+        // block actions those require internet connection
         if(!NetworkConnection.getConnection()){
             NetworkConnection.requestNetworkConnection(context);
             return;
@@ -161,6 +158,7 @@ public class ContactUserListAdapter extends ArrayAdapter<User>{
     }
 
     private void voiceCallButtonClicked(User user) {
+        // block actions those require internet connection
         if(!NetworkConnection.getConnection()){
             NetworkConnection.requestNetworkConnection(context);
             return;
@@ -187,33 +185,4 @@ public class ContactUserListAdapter extends ArrayAdapter<User>{
 
     }
 
-    private void loadImageToView(ImageView userImage, String profileImageUri){
-        Glide.with(context.getApplicationContext())
-                .load(profileImageUri)
-                .apply(new RequestOptions()
-                        .override(100, 100) // resize image in pixel
-                        .centerCrop()
-                        .dontAnimate()
-                        .skipMemoryCache(true)
-                        .error(R.mipmap.ic_launcher_round))
-                .into(userImage);
-    }
-
-    // load user image if download success
-    /*private OnSuccessListener<Uri> onDownloadSuccess(ImageView userImage){
-        return new OnSuccessListener<Uri>(){
-            @Override
-            public void onSuccess(Uri userImagePath) {
-
-                Glide.with(context.getApplicationContext())
-                        .load(userImagePath.toString())
-                        .apply(new RequestOptions()
-                                .override(100, 100) // resize image in pixel
-                                .centerCrop()
-                                .dontAnimate())
-                        .into(userImage);
-
-            }
-        };
-    }*/
 }

@@ -147,31 +147,6 @@
         app:layout_constraintEnd_toStartOf="@id/textInputs"
         app:layout_constraintTop_toTopOf="@id/sendMsg" />
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="100sp"
-        android:layout_height="100sp"
-        android:visibility="invisible"
-        android:indeterminate="true"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
-
-    <TextView
-        android:id="@+id/progressBarMsg"
-        android:text="Loading ..."
-        android:textAlignment="center"
-        android:textSize="30sp"
-        android:textColor="@color/colorAccent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/progressBar"/>
-
 </android.support.constraint.ConstraintLayout>
 
     <!-- -->

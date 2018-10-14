@@ -51,10 +51,11 @@ public class ContactUpdateActivity extends AppCompatActivity implements View.OnC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact_update);
+
+        // look for the UI elements
         mAddUserButton = (Button) findViewById(R.id.addContact);
         mUserEmail = (EditText) findViewById(R.id.contactEmail);
         mRemoveUserButton = (Button) findViewById(R.id.removeContact);
-
         helpButton = (Button) findViewById(R.id.optionHelp);
         homeButton = (Button) findViewById(R.id.optionMenu);
 
@@ -79,6 +80,7 @@ public class ContactUpdateActivity extends AppCompatActivity implements View.OnC
             goToMenu();
         }
 
+        // block actions those require internet connection
         if(!NetworkConnection.getConnection()){
             NetworkConnection.requestNetworkConnection(ContactUpdateActivity.this);
             return;

@@ -144,7 +144,7 @@
 
     <ProgressBar
         android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyle"
+        android:indeterminateTint="@color/progressBarColor"
         android:layout_width="100sp"
         android:layout_height="100sp"
         android:visibility="invisible"
@@ -159,7 +159,8 @@
         android:text="Loading ..."
         android:textAlignment="center"
         android:textSize="30sp"
-        android:textColor="@color/colorAccent"
+        android:textStyle="bold"
+        android:textColor="@color/progressBarColor"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="invisible"

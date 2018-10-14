@@ -49,6 +49,8 @@ public class UpdateEmailActivity extends AppCompatActivity implements View.OnCli
         optionsMenu = (Button) findViewById(R.id.optionMenuUpdateEmail);
         helpButton = (Button) findViewById(R.id.optionHelpUpdateEmail);
         changeEmailButton.setOnClickListener(this);
+
+        // activate help button on assisted person version
         UserAppVersionController.getUserAppVersionController().resetButton(helpButton);
 
     }
@@ -65,6 +67,7 @@ public class UpdateEmailActivity extends AppCompatActivity implements View.OnCli
             finish();
         }
 
+        // block actions those require internet connection
         if(!NetworkConnection.getConnection()){
             NetworkConnection.requestNetworkConnection(UpdateEmailActivity.this);
             return;
@@ -75,7 +78,7 @@ public class UpdateEmailActivity extends AppCompatActivity implements View.OnCli
         }
 
         if(v == helpButton) {
-        EmergencyCallActivity.setBackToActivity(MainActivity.class);
+        EmergencyCallActivity.setBackToActivity(UpdateEmailActivity.class);
 
         Intent intent = new Intent(UpdateEmailActivity.this, EmergencyCallActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

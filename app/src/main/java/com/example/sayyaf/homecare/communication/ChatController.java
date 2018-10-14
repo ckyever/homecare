@@ -43,6 +43,9 @@ import com.google.firebase.storage.UploadTask;
 
 import java.util.Date;
 
+/* This class handles display current chat messaging state
+ * validate text input and send text messages (with image)
+ */
 public class ChatController {
 
     private User this_device, contact_person;
@@ -63,8 +66,10 @@ public class ChatController {
     }
 
     /*  initialise ContentUpdateAdapter from database contents
-     *  msg_block_this_device: message block for contents are send by this user
-     *  msg_block_contact_person: message block for contents are send by your peer
+     *  msg_block_this_device: message block for contents are sent by this user
+     *  img_msg_block_this_device: message block (with an image) for contents are sent by this user
+     *  msg_block_contact_person: message block for contents are sent from your peer
+     *  img_msg_block_contact_person: message block (with an image) for contents are sent from your peer
      */
     public void initialiseContentUpdateAdapter(
             ChatActivity chatActivity,
@@ -80,8 +85,9 @@ public class ChatController {
 
                 ChatMessage ct = this.getItem(position);
 
-                // see if chat message has image source
+                // check if chat message has reference to an image source
                 if(ct.getImageSource().equals("no Image")){
+                    // check who is the sender
                     if(ct.getMessageSender().equals(this_device.getName())){
                         v = LayoutInflater.from(chatActivity.getApplicationContext()).
                                 inflate(msg_block_this_device, viewGroup, false);
@@ -92,6 +98,7 @@ public class ChatController {
                     }
                 }
                 else{
+                    // check who is the sender
                     if(ct.getMessageSender().equals(this_device.getName())){
                         v = LayoutInflater.from(chatActivity.getApplicationContext()).
                                 inflate(img_msg_block_this_device, viewGroup, false);
@@ -110,7 +117,7 @@ public class ChatController {
 
                     ImageView imageSrc = (ImageView) v.findViewById(R.id.imageSrc);
 
-                    // Set image
+                    // try to load the image (may fail if network speed is too slow)
                     loadImageToView(chatActivity, ct.getImageSource(), imageSrc,
                             progressBar, progressBarMsg);
                 }
@@ -122,13 +129,11 @@ public class ChatController {
 
             @Override
             protected void populateView(View v, ChatMessage ct, int position) {
-
-                // referencing text views
                 TextView messageText = (TextView) v.findViewById(R.id.messageText);
                 TextView messageUser = (TextView) v.findViewById(R.id.username);
                 TextView messageTime = (TextView) v.findViewById(R.id.sendTime);
 
-                // Set their text
+                // Show message text and the sender
                 messageText.setText(ct.getMessageText());
                 messageUser.setText(ct.getMessageSender());
 
@@ -140,12 +145,19 @@ public class ChatController {
         };
     }
 
+    /* load image to the corresponding message block
+     * chatActivity: the activity for text message communication
+     * imageUri: image uri link reference
+     * imageSrc: the image view in the message block
+     * progressBar: progress on loading current image
+     * progressBarMsg: progress bar text on loading current image
+     */
     private void loadImageToView(ChatActivity chatActivity,
-                                 String profileImageUri, ImageView imageSrc,
+                                 String imageUri, ImageView imageSrc,
                                  ProgressBar progressBar, TextView progressBarMsg){
 
         Glide.with(chatActivity.getApplicationContext())
-                .load(profileImageUri)
+                .load(imageUri)
                 .apply(new RequestOptions()
                         .fitCenter()
                         .dontAnimate()
@@ -155,11 +167,6 @@ public class ChatController {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model,
                                                 Target<Drawable> target, boolean isFirstResource) {
-
-                        Toast.makeText(chatActivity,
-                                "Unable to load the profile image",
-                                Toast.LENGTH_SHORT).show();
-
                         endProgress(progressBar, progressBarMsg);
                         return false;
                     }
@@ -168,7 +175,6 @@ public class ChatController {
                     public boolean onResourceReady(Drawable resource, Object model,
                                                    Target<Drawable> target,
                                                    DataSource dataSource, boolean isFirstResource) {
-
                         endProgress(progressBar, progressBarMsg);
                         return false;
                     }
@@ -223,6 +229,8 @@ public class ChatController {
 
     /*  post message to the chat database
      *  textMsg: holds text input
+     *  imagePath: image uri selected from the device
+     *  context: used to show error message
      */
     public void sendMsg(EditText textMsg, Uri imagePath, Context context){
         // handle click on sending when there is non-space texts
@@ -230,6 +238,7 @@ public class ChatController {
 
             if(imagePath != null){
 
+                // update the state of image upload
                 ChatActivity.setUploadComplete(false);
 
                 String fileName = this_device.getId() + new Date().getTime() + contact_person.getId();
@@ -249,7 +258,7 @@ public class ChatController {
         }
     }
 
-    // Upload success into Storage
+    // Handle upload success into Storage
     private OnCompleteListener<UploadTask.TaskSnapshot> onUploadCompleteAction(
             Context context, String fileName, String messageText){
 
@@ -261,14 +270,14 @@ public class ChatController {
                         .getReference("chatDB")
                         .child(fileName)
                         .getDownloadUrl()
-                        .addOnSuccessListener(onUploadedUriSuccess(context, messageText))
+                        .addOnSuccessListener(onUploadedUriSuccess(messageText))
                         .addOnFailureListener(onUploadedUriFailure(context));
 
             }
         };
     }
 
-    // Upload failed
+    // Handle upload failed (dismiss the sent)
     private OnFailureListener onUploadFailureAction(Context context){
 
         return new OnFailureListener(){
@@ -283,8 +292,8 @@ public class ChatController {
 
     }
 
-    // get reference to the image link
-    private OnSuccessListener<Uri> onUploadedUriSuccess(Context context, String messageText){
+    // get reference to the image link, send it with the text message component
+    private OnSuccessListener<Uri> onUploadedUriSuccess(String messageText){
         return new OnSuccessListener<Uri>(){
             @Override
             public void onSuccess(Uri imagePath) {
@@ -301,7 +310,7 @@ public class ChatController {
         };
     }
 
-    // unable to get the image link reference
+    // Handle unable to get the image link reference (dismiss the sent)
     private OnFailureListener onUploadedUriFailure(Context context){
         return new OnFailureListener() {
             @Override
@@ -331,16 +340,9 @@ public class ChatController {
         textMsg.setText("");
     }
 
-    // show peer's user name
+    // show peer's user name on the title bar
     public void displayReceiverName(TextView contactName) {
         contactName.setText(contact_person.getName());
-    }
-
-    // move back to contct page
-    public void returnToMenu(ChatActivity chatActivity){
-        Intent goToMenu = new Intent(chatActivity, ContactChatActivity.class);
-        chatActivity.startActivity(goToMenu);
-        chatActivity.finish();
     }
 
 

@@ -26,6 +26,7 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
+import com.example.sayyaf.homecare.ImageLoader;
 import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.UserAppVersionController;
@@ -114,6 +115,7 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
             goToMenu();
         }
 
+        // block actions those require internet connection
         if(!NetworkConnection.getConnection()){
             NetworkConnection.requestNetworkConnection(ProfileImageActivity.this);
             return;
@@ -227,6 +229,7 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
 
                 try{
 
+                    // get selected image file size
                     InputStream is = getContentResolver().openInputStream(imagePath);
                     getContentResolver().getType(imagePath);
                     int sizeInMB = is.available() / 1000000;
@@ -247,7 +250,8 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
                             .Media
                             .getBitmap(getContentResolver(), imagePath);
 
-                    bitmap = bitMapScaling(bitmap, bitmap.getWidth(), bitmap.getHeight());
+                    // rescale display image on device
+                    bitmap = ImageLoader.getImageLoader().bitMapScaling(bitmap, 1000);
 
                     profileImage.setImageBitmap(bitmap);
 
@@ -265,26 +269,6 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
 
         endProgress();
 
-    }
-
-    // lower resolution for performance
-    private Bitmap bitMapScaling(Bitmap bitmap, int originalX, int originalY){
-        // possible max size to display on phone
-        int maxSize = 1000;
-        // not need to resize if both sides are small
-        if(originalX < maxSize && originalY < maxSize) return bitmap;
-        int exportX;
-        int exportY;
-        // find the longest side
-        if(originalX > originalY){
-            exportX = maxSize;
-            exportY = (originalY * maxSize) / originalX;
-        }
-        else{
-            exportY = maxSize;
-            exportX = (originalX * maxSize) / originalY;
-        }
-        return Bitmap.createScaledBitmap(bitmap, exportX, exportY, false);
     }
 
     private void uploadProfileImage(){
@@ -315,21 +299,12 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
         }
     }
 
-    // Upload success into Storage
+    // Handle upload success into Storage
     private OnCompleteListener<UploadTask.TaskSnapshot> onUploadCompleteAction(){
 
         return new OnCompleteListener<UploadTask.TaskSnapshot>(){
             @Override
             public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-
-                if(!NetworkConnection.getConnection()){
-                    Toast.makeText(ProfileImageActivity.this, "Cannot update profile image",
-                            Toast.LENGTH_SHORT).show();
-
-                    uploadComplete = true;
-                    endProgress();
-                    return;
-                }
 
                 FirebaseStorage.getInstance()
                         .getReference("UserProfileImage")
@@ -342,7 +317,7 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
         };
     }
 
-    // Upload failed
+    // Handle upload failed
     private OnFailureListener onUploadFailureAction(){
 
         return new OnFailureListener(){
@@ -358,20 +333,11 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
 
     }
 
-    // get reference to the image link
+    // get reference to the image link, set reference to the user
     private OnSuccessListener<Uri> onUploadedUriSuccess(){
         return new OnSuccessListener<Uri>(){
                 @Override
                 public void onSuccess(Uri userImagePath) {
-
-                    if(!NetworkConnection.getConnection()){
-                        Toast.makeText(ProfileImageActivity.this, "Cannot update profile image",
-                                Toast.LENGTH_SHORT).show();
-
-                        uploadComplete = true;
-                        endProgress();
-                        return;
-                    }
 
                     FirebaseDatabase.getInstance()
                             .getReference("User")
@@ -388,7 +354,7 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
         };
     }
 
-    // unable to get the image link reference
+    // Handle unable to get the image link reference
     private OnFailureListener onUploadedUriFailure(){
         return new OnFailureListener() {
             @Override

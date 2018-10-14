@@ -71,9 +71,10 @@
         android:id="@+id/changeEmail"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="10sp"
+        android:layout_marginTop="10sp"
+        android:layout_marginBottom="10sp"
         android:layout_marginStart="10sp"
-        android:layout_marginTop="92dp"
+        android:layout_marginEnd="10sp"
         android:background="@android:color/white"
         android:onClick="onClick"
         android:paddingBottom="15sp"
@@ -83,18 +84,18 @@
         android:textColor="@color/colorAccent"
         android:textSize="20sp"
         android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/changeImage"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/titleBar" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/changePassword"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="10sp"
+        android:layout_marginTop="10sp"
+        android:layout_marginBottom="10sp"
         android:layout_marginStart="10sp"
-        android:layout_marginTop="174dp"
+        android:layout_marginEnd="10sp"
         android:background="@android:color/white"
         android:onClick="onClick"
         android:paddingBottom="15sp"
@@ -104,10 +105,9 @@
         android:textColor="@color/colorAccent"
         android:textSize="20sp"
         android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/changeEmail"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/titleBar" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/changeImageButton"

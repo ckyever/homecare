@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 
+//
 public class NotificationChannels extends Application {
     private static String chatNotificationCH = "chat notification";
     private static String foregroundCH = "foreground keeper";
