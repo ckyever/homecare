@@ -55,8 +55,9 @@ public class TrackingActivity extends AppCompatActivity implements OnMapReadyCal
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tracking);
 
-        mLocationButton = (ImageView) findViewById(R.id.ic_mylocation);
-        homeButton = (Button) findViewById(R.id.optionMenu);
+        // Setup buttons
+        mLocationButton = findViewById(R.id.ic_mylocation);
+        homeButton = findViewById(R.id.optionMenu);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -71,14 +72,23 @@ public class TrackingActivity extends AppCompatActivity implements OnMapReadyCal
         }
     }
 
+    /**
+     * Called when home button is pressed so the application returns to the main activity
+     */
     private void goToMenu(){
-        // back to menu page
         Intent goToMenu = new Intent(TrackingActivity.this, MainActivity.class);
         goToMenu.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(goToMenu);
         finish();
     }
 
+    /**
+     * Manipulates the map once available.
+     * This callback is triggered when the map is ready to be used.
+     * Here the behaviour is to display all the locations of user's friends, enable the "My
+     * Location" button, create listener for camera movements initiated by user, and create
+     * listener for map marker clicks.
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -255,6 +265,10 @@ public class TrackingActivity extends AppCompatActivity implements OnMapReadyCal
         }
     }
 
+    /**
+     * Add behaviour where tapping on a marker turns off the "My Location" button if it is on
+     * and causes the camera to zoom into the marker.
+     */
     @Override
     public boolean onMarkerClick(Marker marker) {
         // First turn off "My Location" button
