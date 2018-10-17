@@ -120,7 +120,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mDirectionsButton = findViewById(R.id.directions);
         mDirectionsButton.setOnClickListener(this);
         helpButton = findViewById(R.id.optionHelp);
-        homeButton = (Button) findViewById(R.id.optionMenu);
+        homeButton = findViewById(R.id.optionMenu);
 
         // Makes help button visible on assisted person's screen
         UserAppVersionController.getUserAppVersionController().resetButton(helpButton);
@@ -140,15 +140,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         filter = new AutocompleteFilter.Builder().setCountry("AU").build();
     }
 
-
-
     @Override
     public void onClick(View view) {
         if(view == homeButton){
             goToMenu();
         }
 
-        // block actions those require internet connection
+        // block actions that require internet connection
         if(!NetworkConnection.getConnection()){
             NetworkConnection.requestNetworkConnection(MapsActivity.this);
             return;
@@ -174,8 +172,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    /**
+     * Called when home button is pressed so the application returns to the main activity
+     */
     private void goToMenu(){
-        // back to menu page
         Intent goToMenu = new Intent(MapsActivity.this, MainActivity.class);
         goToMenu.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(goToMenu);
