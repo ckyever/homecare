@@ -62,11 +62,8 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
 
     private ImageView profileImage;
 
-    private TextView selectImage;
-    private FloatingActionButton selectImageButton;
-
-    private TextView confirmChange;
-    private FloatingActionButton confirmChangeButton;
+    private Button selectImage;
+    private Button confirmChange;
 
     private Button helpButton;
     private Button homeButton;
@@ -78,11 +75,8 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_photo);
 
-        selectImage = (TextView) findViewById(R.id.selectImage);
-        selectImageButton = (FloatingActionButton) findViewById(R.id.selectImageButton);
-
-        confirmChange = (TextView) findViewById(R.id.confirmChange);
-        confirmChangeButton = (FloatingActionButton) findViewById(R.id.confirmChangeButton);
+        selectImage = (Button) findViewById(R.id.selectImage);
+        confirmChange = (Button) findViewById(R.id.confirmChange);
 
         profileImage = (ImageView) findViewById(R.id.profileImage);
 
@@ -106,7 +100,7 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
     public void onClick(View v) {
 
         // select image
-        if(v == selectImage || v == selectImageButton){
+        if(v == selectImage){
             selectImage();
             return;
         }
@@ -131,7 +125,7 @@ public class ProfileImageActivity extends AppCompatActivity implements View.OnCl
         }
 
         // confirm change
-        if(v == confirmChange || v == confirmChangeButton){
+        if(v == confirmChange){
             uploadProfileImage();
         }
 
