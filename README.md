@@ -27,12 +27,13 @@ The end product of this project will be a smartphone application running on the 
 
 The application will enable an assisted person to reach their primary caregiver via text or voice chat and allow them to receive assistance with navigating the interface through written or verbal instructions. Meanwhile the assigned caregiver will be able to view their whereabouts via location tracking services for peace of mind. At any time the assisted user can initiate an emergency protocol, with a press of a button, flooding their listed carers with a request for immediate assistance in the form of a notification. Since the overall theme of the app is to help overcome the difficulties that assisted people often have with technology, all these features will be integrated into a user-friendly interface.
 
-### Testing
+## Testing
 Testing modules are located in the master branch under `Portugal_Homecare/app/src/androidTest` and `Portugal_Homecare/app/src/test`
 
-### Build Instructions
+## Build Instructions
 1. Download repository to local machine
 2. Open repository in AndroidStudio
 3. Select `Build` then `Make Project`
 4. Followed by `Run` then `Run 'app'`
+
 Note: Ensure device selected to run the app operates on Android API 24 or higher.
