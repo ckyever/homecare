@@ -14,7 +14,7 @@ Assisted person:
 - May have hearing loss
 - May have speech disorder (e.g. dysarthria, hard to pronounce words)
 
-- Caregiver:
+Caregiver:
 - Familiar with basic smartphone functionality
 - No functional disabilities (move easily, speak easily)
 - Age varies but mostly much more younger
