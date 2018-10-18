@@ -93,17 +93,18 @@ public class UpdateEmailActivity extends AppCompatActivity implements View.OnCli
      */
     public void updateEmail() {
         final String email = changeEmailText.getText().toString().trim();
+        mAuth = FirebaseAuth.getInstance();
 
         //Ensures entered email address follows requisite email string pattern
         if(isValidEmail(email)) {
             //Calls the Firebase Authentication user email update method
-            mAuth.getInstance().getCurrentUser().updateEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
+            mAuth.getCurrentUser().updateEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     //If successfully updated in Firebase Authentication, update in Real Time Database
                     if (task.isSuccessful()) {
                         Log.d(TAG, "User email address updated.");
-                        String userId = mAuth.getInstance().getCurrentUser().getUid();
+                        String userId = mAuth.getCurrentUser().getUid();
                         myRef.child("User").
                                 child(userId).
                                 child("email").
