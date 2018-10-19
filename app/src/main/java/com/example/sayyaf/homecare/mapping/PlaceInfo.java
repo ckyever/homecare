@@ -1,5 +1,9 @@
 package com.example.sayyaf.homecare.mapping;
 
+/**
+ * Class taken from: https://www.youtube.com/watch?v=VOl3gkHJf1Q
+ */
+
 import android.net.Uri;
 
 import com.google.android.gms.maps.model.LatLng;
