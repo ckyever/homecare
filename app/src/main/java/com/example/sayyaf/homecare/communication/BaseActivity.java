@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 /**
  * Acts as the base template for activities that need to use Sinch communication services
+ * Adapted from Sinch SDK Sample
  */
 public abstract class BaseActivity extends AppCompatActivity implements ServiceConnection {
 
@@ -125,7 +126,9 @@ public abstract class BaseActivity extends AppCompatActivity implements ServiceC
         getApplicationContext().bindService(serviceIntent, this, BIND_AUTO_CREATE);
     }
 
-    // test 2
+    /**
+     * Used to unbind the service from the activity
+     */
     public void unbindService(){
         getApplicationContext().unbindService(this);
     }

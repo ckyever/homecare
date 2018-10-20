@@ -30,6 +30,8 @@ import android.Manifest;
 /**
  * Class to handle the Sinch Backend to enable WebRTC video and voice calling.
  * Handles necessary security info, service initialisation and calling.
+ * Necessary for Sinch voice and video calls to work.
+ * Taken from Sinch SDK
  */
 public class SinchService extends Service {
 

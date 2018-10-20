@@ -29,6 +29,7 @@ import java.util.TimerTask;
 /**
  * Activity to handle video calling within the application. Uses WebRTC for calling
  * and runs on the Sinch backend
+ * Adapted from Sinch SDK sample
  */
 public class VideoCallScreenActivity extends BaseActivity {
 

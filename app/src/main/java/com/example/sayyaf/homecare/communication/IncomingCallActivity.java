@@ -35,30 +35,48 @@ import java.util.List;
 
 /**
  * Activity used to handle an incoming call to the app
+ * Adapted from Sinch SDK Sample 
  */
-public class IncomingCallActivity extends BaseActivity {
+public class IncomingCallActivity extends BaseActivity implements View.OnClickListener{
 
     static final String TAG = IncomingCallActivity.class.getSimpleName();
     private String mCallId;
     private AudioPlayer mAudioPlayer;
     private ImageView profilePic;
+    private Button answer;
+    private Button decline;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_incoming_call);
 
-        Button answer = (Button) findViewById(R.id.answerButton);
-        answer.setOnClickListener(mClickListener);
-        Button decline = (Button) findViewById(R.id.declineButton);
+        answer = (Button) findViewById(R.id.answerButton);
+        answer.setOnClickListener(this);
+       decline = (Button) findViewById(R.id.declineButton);
         profilePic = (ImageView) findViewById(R.id.profileImageIncoming);
-        decline.setOnClickListener(mClickListener);
+        decline.setOnClickListener(this);
 
         mAudioPlayer = new AudioPlayer(this);
         //play ringing tone of phone
         mAudioPlayer.playRingtone();
         mCallId = getIntent().getStringExtra(SinchService.CALL_ID);
+
     }
+    
+    
+    @Override
+    public void onClick(View v) {
+        
+        if(v == answer) {
+            callAccepted();
+        }
+        
+        else if (v == decline) {
+            callDeclined();
+        }
+    }
+    
 
     /**
      * When the sinch service is connected to the activity, this method is used to
@@ -70,11 +88,12 @@ public class IncomingCallActivity extends BaseActivity {
         if (call != null) {
             call.addCallListener(new SinchCallListener());
             TextView remoteUser = (TextView) findViewById(R.id.remoteUser);
-            //Break the caller id to get the name of the call sender
+            //Split the caller ID to get the name of the call sender. 
+            //An index of 0 would obtain the remote user's account ID
             String callerName= call.getRemoteUserId().split(",")[1];
             remoteUser.setText(callerName);
 
-            // speed up image download, old method try to download url for twice
+            // speed up image download, old method try to download url twice
             Query profilePicUriRef =  FirebaseDatabase.getInstance() .getReference("User")
                     .child(call.getRemoteUserId().split(",")[0])
                     .child("profileImage");
@@ -111,14 +130,15 @@ public class IncomingCallActivity extends BaseActivity {
      * The method called when the call has been accepted. Sends to appropriate activity
      * depending on type of call
      */
-    private void answerClicked() {
+    private void callAccepted() {
         mAudioPlayer.stopRingtone();
         Call call = getSinchServiceInterface().getCall(mCallId);
         if (call != null) {
             try {
                 call.answer();
+                //Check if video call or voice call and start the appropriate activity
                 if(call.getDetails().isVideoOffered()) {
-                    Intent intent = new Intent(this, VideoCallScreenActivity.class);
+                    Intent intent = new Intent(this, IncomingCallActivity.class);
                     intent.putExtra(SinchService.CALL_ID, mCallId);
                     startActivity(intent);
                 }
@@ -128,6 +148,8 @@ public class IncomingCallActivity extends BaseActivity {
                     intent.putExtra(SinchService.CALL_ID, mCallId);
                     startActivity(intent);
                 }
+                
+                //Checks if missing permissions to make the call. 
             } catch (MissingPermissionException e) {
                 ActivityCompat.requestPermissions(this, new String[]{e.getRequiredPermission()}, 0);
             }
@@ -154,21 +176,26 @@ public class IncomingCallActivity extends BaseActivity {
     /**
      * The method called when the call has been declined. Hangs up the call
      */
-    private void declineClicked() {
-        /*mAudioPlayer.stopRingtone();
+    private void callDeclined() {
+        mAudioPlayer.stopRingtone();
         Call call = getSinchServiceInterface().getCall(mCallId);
         if (call != null) {
             call.hangup();
-        }*/
+        }
         finish();
     }
 
+    
+    //Method used to avoid the call continuing if back pressed
     @Override
     public void onBackPressed() {
-        declineClicked();
+        callDeclined();
     }
 
-    // avoid call continue after swipe
+
+    /**
+     * Ensures that if activity destryoyed, call ends with it
+     */
     @Override
     protected void onDestroy(){
         mAudioPlayer.stopRingtone();
@@ -178,23 +205,7 @@ public class IncomingCallActivity extends BaseActivity {
         }
         super.onDestroy();
     }
-
-    /**
-     * OnClickListener listens for whether call was accepted or rejected
-     */
-    private OnClickListener mClickListener = new OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()) {
-                case R.id.answerButton:
-                    answerClicked();
-                    break;
-                case R.id.declineButton:
-                    declineClicked();
-                    break;
-            }
-        }
-    };
+    
 
     public class SinchCallListener implements CallListener {
 
@@ -202,11 +213,33 @@ public class IncomingCallActivity extends BaseActivity {
          * Asynchronous method that handles the call ending
          * @param call
          */
-        @Override
         public void onCallEnded(Call call) {
             CallEndCause cause = call.getDetails().getEndCause();
-            Log.d(TAG, "Call ended, cause: " + cause.toString());
+            Log.d(TAG, "Call ended. Reason: " + cause.toString());
             mAudioPlayer.stopRingtone();
+            String endMsg = "Call ended";
+
+            if(cause.toString().equals("TIMEOUT")) {
+                endMsg+= " because " + call.getRemoteUserId().split(",")[1] + " is unavailable";
+                Toast.makeText(IncomingCallActivity.this, endMsg, Toast.LENGTH_LONG).show();
+            }
+
+            else if(cause.toString().equals("ENDED")) {
+                Toast.makeText(IncomingCallActivity.this, endMsg, Toast.LENGTH_LONG).show();
+            }
+
+            else if(cause.toString().equals("DENIED")) {
+                Toast.makeText(IncomingCallActivity.this, endMsg + " " + " because user is busy. " +
+                        "Please try again later", Toast.LENGTH_LONG).show();
+            }
+
+            else if(cause.toString().equals("HUNG_UP") || cause.toString().equals("CANCELLED")) {
+
+            }
+
+            else {
+                Toast.makeText(IncomingCallActivity.this, endMsg + " " + cause.toString(), Toast.LENGTH_LONG).show();
+            }
             finish();
         }
 

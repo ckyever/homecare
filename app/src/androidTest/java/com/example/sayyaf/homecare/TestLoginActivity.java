@@ -46,11 +46,11 @@ public class TestLoginActivity {
 
     @Rule
     public IntentsTestRule<LoginActivity> mActivityRule = new IntentsTestRule<>(LoginActivity.class);
-    Activity activity;
-    TextView mRegisterTextView;
-    EditText mEmailEditText;
-    EditText mPasswordEditText;
-    Button mLoginButton;
+    private Activity activity;
+    private TextView mRegisterTextView;
+    private EditText mEmailEditText;
+    private EditText mPasswordEditText;
+    private Button mLoginButton;
     private FirebaseAuth mAuth;
 
     private ProgressBar progressBar;
@@ -77,7 +77,7 @@ public class TestLoginActivity {
     @Test
     public void checkButtonUnenabled() {
         onView(withId(R.id.emailEditText)).perform(ViewActions.clearText())
-                .perform(ViewActions.typeText("sayyaf17@hotmail.com"),closeSoftKeyboard());
+                .perform(ViewActions.typeText("test1@gmail.com"),closeSoftKeyboard());
         onView(withId(R.id.passwordEditText)).perform(ViewActions.clearText())
                 .perform(ViewActions.typeText(""),closeSoftKeyboard());
         onView(withId(R.id.loginButton)).perform(click());
@@ -94,7 +94,7 @@ public class TestLoginActivity {
     @Test
     public void checkButtonEnabled() {
         onView(withId(R.id.emailEditText)).perform(ViewActions.clearText())
-                .perform(ViewActions.typeText("sayyaf17@hotmail.com"),closeSoftKeyboard());
+                .perform(ViewActions.typeText("test1@gmail.com"),closeSoftKeyboard());
         onView(withId(R.id.passwordEditText)).perform(ViewActions.clearText())
                 .perform(ViewActions.typeText("friends12"),closeSoftKeyboard());
         onView(withId(R.id.loginButton)).perform(click());

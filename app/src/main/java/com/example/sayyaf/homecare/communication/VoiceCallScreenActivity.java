@@ -38,6 +38,7 @@ import java.util.TimerTask;
 /**
     * Activity to handle voice calling within the application. Uses WebRTC for calling
     * and runs on the Sinch backend
+    *  Adapted from Sinch SDK sample
     */
 public class VoiceCallScreenActivity extends BaseActivity {
     static final String TAG = VoiceCallScreenActivity.class.getSimpleName();
@@ -165,6 +166,9 @@ public class VoiceCallScreenActivity extends BaseActivity {
         super.onDestroy();
     }
 
+    /**
+     * Called when call is requested to end
+     */
     private void endCall() {
         mAudioPlayer.stopProgressTone();
         Call call = getSinchServiceInterface().getCall(mCallId);
