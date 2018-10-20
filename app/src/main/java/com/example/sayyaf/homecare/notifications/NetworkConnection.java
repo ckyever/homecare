@@ -18,7 +18,9 @@ import java.net.InetAddress;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
-// This class keep track on whether user's device is connected to the internet
+/* This class keep track on whether user's device is connected to the internet
+ * https://stackoverflow.com/questions/6169059/android-event-for-internet-connectivity-state-change
+ */
 public class NetworkConnection extends BroadcastReceiver {
 
     private static final int connectionID = 20;

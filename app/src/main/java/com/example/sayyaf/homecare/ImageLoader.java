@@ -20,6 +20,7 @@ public class ImageLoader {
     /* return lower resolution bitmap image for higher performance (memory)
      * bitmapSrc: the original bitmap image
      * maxSize: maximum side length to be resized
+     * https://stackoverflow.com/questions/17839388/creating-a-scaled-bitmap-with-createscaledbitmap-in-android
      */
     public Bitmap bitMapScaling(Bitmap bitmapSrc, int maxSize){
         // not need to resize if both sides are smaller than size to display

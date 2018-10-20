@@ -22,6 +22,7 @@ import com.example.sayyaf.homecare.contacts.ContactChatActivity;
 
 /* This class keep notification based services (network connection, emergency message listener)
  * works in background as well under logged in state (not include reboot and device crashes)
+ * https://www.youtube.com/watch?v=FbpD5RZtbCc
  */
 public class NotificationService extends Service {
 
