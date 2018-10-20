@@ -241,6 +241,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     /**
      * Attempts to get location permission of the device then initialise the map, if not a
      * permission request is sent and appears on the user's screen.
+     * Code adapted from: https://developers.google.com/maps/documentation/android-sdk/location
      */
     private void getLocationPermission() {
         String[] permissions = {FINE_LOCATION, COARSE_LOCATION};
@@ -267,6 +268,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     /**
      * Handles the result of the permission request, initialising the map if the user allows the
      * request.
+     * Code adapted from: https://developers.google.com/maps/documentation/android-sdk/location
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
@@ -310,6 +312,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      * Gets the current location of the device after checking for permissions
      * and represents it as a blue circle on the map. We hide the default "My Location" button
      * to implement a custom one with the ability to stay following the users location.
+     * Code adapted from: https://www.youtube.com/watch?v=fPFr0So1LmI
      */
     private void getDeviceLocation() {
 

@@ -32,6 +32,11 @@ import com.google.maps.android.ui.IconGenerator;
 
 import java.util.HashMap;
 
+/**
+ * Code adapted from:
+ * https://codelabs.developers.google.com/codelabs/realtime-asset-tracking/index.html
+ */
+
 public class TrackingActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleMap.OnCameraMoveStartedListener, GoogleMap.OnMarkerClickListener,
         View.OnClickListener {

@@ -30,6 +30,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+/**
+ * Code adapted from:
+ * https://codelabs.developers.google.com/codelabs/realtime-asset-tracking/index.html
+ */
+
 public class TrackingService extends Service {
     private static final String TAG = "TrackingService";
 
