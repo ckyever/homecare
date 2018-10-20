@@ -20,9 +20,12 @@ import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.UserAppVersionController;
 import com.example.sayyaf.homecare.contacts.ContactChatActivity;
 
+/* This class keep notification based services (network connection, emergency message listener)
+ * works in background as well under logged in state (not include reboot and device crashes)
+ * https://www.youtube.com/watch?v=FbpD5RZtbCc
+ */
 public class NotificationService extends Service {
 
-    // private boolean connectionState;
     private BroadcastReceiver connectivityReceiver;
 
     @Override
@@ -61,7 +64,7 @@ public class NotificationService extends Service {
                 new NotificationCompat.Builder(this, NotificationChannels.getForegroundCH())
                         .setSmallIcon(R.drawable.ic_notification)
                         .setContentTitle("Welcome to HomeCare")
-                        .setContentText("You have logged in")
+                        .setContentText("Click here to get to menu page")
                         .setDefaults(Notification.DEFAULT_ALL)
                         .setVisibility(Notification.VISIBILITY_PUBLIC)
                         .setCategory(NotificationCompat.CATEGORY_MESSAGE)

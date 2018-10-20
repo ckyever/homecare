@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.sayyaf.homecare.ImageLoader;
 import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.User;
 import com.example.sayyaf.homecare.notifications.NetworkConnection;
@@ -77,18 +78,16 @@ public class RequestUserListAdapter extends ArrayAdapter<User> {
 
         // set profile image if there is one
         if(!users.get(i).getProfileImage().equals("no Image")){
-            loadImageToView(userRequestImage, users.get(i).getProfileImage());
+            ImageLoader.getImageLoader().loadContactImageToView(
+                    context, userRequestImage, users.get(i).getProfileImage());
         }
-
-        /*if(users.get(i).gethasProfileImage())
-            FirebaseStorage.getInstance()
-                    .getReference("UserProfileImage").child(users.get(i).getId()).getDownloadUrl()
-                    .addOnSuccessListener(onDownloadSuccess(userRequestImage));*/
 
         //On click, current user has chosen to accept friend request
         acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                // block actions those require internet connection
                 if(!NetworkConnection.getConnection()){
                     NetworkConnection.requestNetworkConnection(context);
                     return;
@@ -103,6 +102,8 @@ public class RequestUserListAdapter extends ArrayAdapter<User> {
         declineButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                // block actions those require internet connection
                 if(!NetworkConnection.getConnection()){
                     NetworkConnection.requestNetworkConnection(context);
                     return;
@@ -121,35 +122,6 @@ public class RequestUserListAdapter extends ArrayAdapter<User> {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         activity.startActivity(intent);
         activity.finish();
-    }
-
-    private void loadImageToView(ImageView userImage, String profileImageUri){
-        Glide.with(context.getApplicationContext())
-                .load(profileImageUri)
-                .apply(new RequestOptions()
-                        .override(100, 100) // resize image in pixel
-                        .centerCrop()
-                        .dontAnimate())
-                .into(userImage);
-    }
-
-    // load user image if download success
-    private OnSuccessListener<Uri> onDownloadSuccess(ImageView userImage){
-        return new OnSuccessListener<Uri>(){
-            @Override
-            public void onSuccess(Uri userImagePath) {
-
-                Glide.with(context.getApplicationContext())
-                        .load(userImagePath.toString())
-                        .apply(new RequestOptions()
-                                .override(100, 100) // resize image in pixel
-                                .centerCrop()
-                                .dontAnimate()
-                                .skipMemoryCache(true))
-                        .into(userImage);
-
-            }
-        };
     }
 
 }

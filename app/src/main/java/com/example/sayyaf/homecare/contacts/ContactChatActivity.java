@@ -33,11 +33,13 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
+/* This class provide a list of contact added as friends
+ * and communication actions (video, voice calling, text chatting) with a specific contact person
+ */
 public class ContactChatActivity extends BaseActivity implements View.OnClickListener, ContactUserListCallback {
 
     private DatabaseReference ref;
     private User this_device;
-    // private User friend;
 
     private EditText textInputs;
     private Button searchUser;
@@ -94,6 +96,7 @@ public class ContactChatActivity extends BaseActivity implements View.OnClickLis
             goToMenu();
         }
 
+        // block actions those require internet connection
         if(!NetworkConnection.getConnection()){
             NetworkConnection.requestNetworkConnection(ContactChatActivity.this);
             showProgress();
@@ -110,7 +113,7 @@ public class ContactChatActivity extends BaseActivity implements View.OnClickLis
         if(v == searchUser){
 
             // ignore empty input
-            if(!vaildateInput(starter)) return;
+            if(!validateInput(starter)) return;
 
             showProgress();
             getFriends(starter, true);
@@ -213,7 +216,7 @@ public class ContactChatActivity extends BaseActivity implements View.OnClickLis
                                     if(starter == null)
                                         // add all friends
                                         friends.add(fd);
-                                    else if(matchstartingletters(fd.getName(), fd.getEmail(), starter))
+                                    else if(matchStartingLetters(fd.getName(), fd.getEmail(), starter))
                                         // add friend matches query
                                         friends.add(fd);
                                 }
@@ -230,14 +233,6 @@ public class ContactChatActivity extends BaseActivity implements View.OnClickLis
                     }
 
                     onContactsCallback(friends);
-                }
-                else{
-                    // user do not have a added friend
-                    if(showResult)
-                        Toast.makeText(ContactChatActivity.this,
-                                "No added contacts",
-                                Toast.LENGTH_SHORT).show();
-
                 }
             }
 
@@ -275,14 +270,19 @@ public class ContactChatActivity extends BaseActivity implements View.OnClickLis
         progressBarMsg.setVisibility(View.GONE);
     }
 
-    // check input is vaild
-    private boolean vaildateInput(String input){
+    // check input is valid
+    private boolean validateInput(String input){
         return !input.trim().isEmpty();
     }
 
-    // check input match starting letters of username or email
-    private boolean matchstartingletters(String username, String email, String starter){
-        return username.startsWith(starter) || email.startsWith(starter);
+    /* check input match starting letters of username or email
+     * username: friend's username
+     * email: friend's email
+     * starter: search text
+     */
+    private boolean matchStartingLetters(String username, String email, String starter){
+        return username.toLowerCase().startsWith(starter.toLowerCase())
+                || email.toLowerCase().startsWith(starter.toLowerCase());
     }
 
     private void goToMenu(){

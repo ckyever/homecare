@@ -6,9 +6,8 @@ import android.content.Intent;
 
 import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
 
-/* This class is used for activity that can be accessed from
- * various other activities, allowing current activity to set
- * itself as the returning activity
+/* This class is used for activity that can be accessed from various other activities,
+ * allow current activity to set itself as the returning activity
  */
 public class ActivityKeeper {
 
@@ -19,7 +18,7 @@ public class ActivityKeeper {
         this.backPressActivityClass = backPressActivityClass;
     }
 
-    /* return to previous activity
+    /* return to previous activity (backPressActivity)
      * context: current activity
      */
     public void returnToActivity(Context context){

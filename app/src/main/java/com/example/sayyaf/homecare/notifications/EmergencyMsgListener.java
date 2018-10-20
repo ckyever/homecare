@@ -30,6 +30,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
+// This class actively listen to any emergency messages are sent to the caregiver
 public class EmergencyMsgListener extends IntentService {
 
     private final int initEmergencyID = 10;
@@ -54,7 +55,6 @@ public class EmergencyMsgListener extends IntentService {
 
     @Override
     public void onDestroy() {
-
         //stop service
         stopSelf();
         super.onDestroy();
@@ -75,6 +75,7 @@ public class EmergencyMsgListener extends IntentService {
         emergencyRef.addValueEventListener(notificationListener);
     }
 
+    // database listener of emergency messages
     private ValueEventListener setUpNotificationListener(){
         return new ValueEventListener() {
             @Override
@@ -86,10 +87,10 @@ public class EmergencyMsgListener extends IntentService {
                         EmergencyMsg msg = s.getValue(EmergencyMsg.class);
 
                         setNotification(msg.getMessageSender(), msg.getMessageTime());
-                        // setNotification(msg.getMessageSender(), msg.getMessageSenderId(), msg.getMessageTime());
 
                     }
 
+                    // check if caregiver is looking at the device (monitor is on)
                     DisplayManager dm = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
 
                     for (Display display : dm.getDisplays()) {
@@ -101,7 +102,7 @@ public class EmergencyMsgListener extends IntentService {
                         }
                     }
 
-                    // remove calls when user receive the emergency calls
+                    // remove calls on the database when user receive the emergency calls
                     FirebaseDatabase.getInstance()
                             .getReference("EmergencyMsg")
                             .child(UserAppVersionController
@@ -118,7 +119,10 @@ public class EmergencyMsgListener extends IntentService {
         };
     }
 
-    // private void setNotification(String name, String id, long time){
+    /* generate notification based on emergency message from the database
+     * name: sender (assisted person) name
+     * time: time of the message is sent
+     */
     private void setNotification(String name, long time){
         NotificationCompat.Builder notificationbulider = null;
 
@@ -128,7 +132,6 @@ public class EmergencyMsgListener extends IntentService {
 
         Intent goToTracking = new Intent(this, TrackingActivity.class);
         goToTracking.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        // PendingIntent pendingGoToTracking = PendingIntent.getActivity(this, 0, goToTracking, 0);
         PendingIntent pendingGoToTracking = PendingIntent.getActivity(this, 0, goToTracking, 0);
 
 

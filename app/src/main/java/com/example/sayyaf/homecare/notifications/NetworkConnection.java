@@ -18,9 +18,21 @@ import java.net.InetAddress;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
+/* This class keep track on whether user's device is connected to the internet
+ * https://stackoverflow.com/questions/6169059/android-event-for-internet-connectivity-state-change
+ */
 public class NetworkConnection extends BroadcastReceiver {
 
     private static final int connectionID = 20;
+
+    private final String STATE_CONNECTED = "HomeCare is connected to the internet";
+    private final String STATE_NOT_CONNECTED = "HomeCare is not connected to the internet";
+
+    private final String CONTENT_CONNECTED = "Services are functioning";
+    private final String CONTENT_NOT_CONNECTED = "Some of the services may not functioning";
+
+    private final int COLOR_CONNECTED = 0xff00ff00;
+    private final int COLOR_NOT_CONNECTED = 0xff0000ff;
 
     private static boolean connection;
 
@@ -39,21 +51,9 @@ public class NetworkConnection extends BroadcastReceiver {
                 = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
 
-        if (activeNetwork != null) {
-            // connected to the internet
-            //
-            if(activeNetwork.isConnected()){
-                current_connection_state = true;
-            }
-            /*else{
-                current_connection_state = false;
-            }*/
-            //
-            // current_connection_state = true;
-        } /*else {
-            // not connected to the internet
-            current_connection_state = false;
-        }*/
+        // device is connected to the internet
+        if (activeNetwork != null && activeNetwork.isConnected())
+            current_connection_state = true;
 
         // detect state change
         if(current_connection_state != connection){
@@ -62,14 +62,14 @@ public class NetworkConnection extends BroadcastReceiver {
             int color;
 
             if(current_connection_state){
-                state = "HomeCare is connected to the internet";
-                content = "Services are functioning";
-                color = 0xff00ff00;
+                state = STATE_CONNECTED;
+                content = CONTENT_CONNECTED;
+                color = COLOR_CONNECTED;
             }
             else{
-                state = "HomeCare is not connected to the internet";
-                content = "Some of the services may not functioning";
-                color = 0xff0000ff;
+                state = STATE_NOT_CONNECTED;
+                content = CONTENT_NOT_CONNECTED;
+                color = COLOR_NOT_CONNECTED;
             }
 
             // inform user about the connection change
@@ -82,7 +82,7 @@ public class NetworkConnection extends BroadcastReceiver {
 
     }
 
-    /* inform user about the connection change
+    /* notification to inform user about the connection change
      * state: either connected or not connected to the internet
      * content: description of services under current connection state
      */
@@ -107,7 +107,7 @@ public class NetworkConnection extends BroadcastReceiver {
 
     }
 
-    // block access to avoid crash
+    // block access to avoid crash or not synced content sent
     public static void requestNetworkConnection(Context context){
         Toast.makeText(context,
                 "Wait for Network connection", Toast.LENGTH_SHORT).show();

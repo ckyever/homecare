@@ -1,13 +1,16 @@
 package com.example.sayyaf.homecare.mapping;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
+import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -29,8 +32,14 @@ import com.google.maps.android.ui.IconGenerator;
 
 import java.util.HashMap;
 
+/**
+ * Code adapted from:
+ * https://codelabs.developers.google.com/codelabs/realtime-asset-tracking/index.html
+ */
+
 public class TrackingActivity extends AppCompatActivity implements OnMapReadyCallback,
-        GoogleMap.OnCameraMoveStartedListener, GoogleMap.OnMarkerClickListener {
+        GoogleMap.OnCameraMoveStartedListener, GoogleMap.OnMarkerClickListener,
+        View.OnClickListener {
 
     private static final String TAG = "TrackingActivity";
     private static final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -43,6 +52,7 @@ public class TrackingActivity extends AppCompatActivity implements OnMapReadyCal
     LatLngBounds.Builder mBuilder;
 
     private ImageView mLocationButton;
+    private Button homeButton;
 
 
     @Override
@@ -50,7 +60,9 @@ public class TrackingActivity extends AppCompatActivity implements OnMapReadyCal
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tracking);
 
-        mLocationButton = (ImageView) findViewById(R.id.ic_mylocation);
+        // Setup buttons
+        mLocationButton = findViewById(R.id.ic_mylocation);
+        homeButton = findViewById(R.id.optionMenu);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -58,6 +70,30 @@ public class TrackingActivity extends AppCompatActivity implements OnMapReadyCal
         mapFragment.getMapAsync(this);
     }
 
+    @Override
+    public void onClick(View view) {
+        if(view == homeButton){
+            goToMenu();
+        }
+    }
+
+    /**
+     * Called when home button is pressed so the application returns to the main activity
+     */
+    private void goToMenu(){
+        Intent goToMenu = new Intent(TrackingActivity.this, MainActivity.class);
+        goToMenu.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(goToMenu);
+        finish();
+    }
+
+    /**
+     * Manipulates the map once available.
+     * This callback is triggered when the map is ready to be used.
+     * Here the behaviour is to display all the locations of user's friends, enable the "My
+     * Location" button, create listener for camera movements initiated by user, and create
+     * listener for map marker clicks.
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -234,6 +270,10 @@ public class TrackingActivity extends AppCompatActivity implements OnMapReadyCal
         }
     }
 
+    /**
+     * Add behaviour where tapping on a marker turns off the "My Location" button if it is on
+     * and causes the camera to zoom into the marker.
+     */
     @Override
     public boolean onMarkerClick(Marker marker) {
         // First turn off "My Location" button

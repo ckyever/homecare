@@ -6,6 +6,9 @@ import android.app.NotificationManager;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 
+/* The class is needed for notification working on device has api level >= 26
+ * https://www.youtube.com/watch?v=tTbd1Mfi-Sk
+ */
 public class NotificationChannels extends Application {
     private static String chatNotificationCH = "chat notification";
     private static String foregroundCH = "foreground keeper";

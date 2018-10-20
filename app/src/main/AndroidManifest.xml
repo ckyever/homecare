@@ -10,7 +10,6 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <uses-permission android:name="android.permission.CAMERA"/>
     <!-- permissions needed for google map api -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -83,12 +82,10 @@
 
         <activity
             android:name=".mapping.MapsActivity"
-            android:label="@string/title_activity_maps"
             android:screenOrientation="portrait" />
 
         <activity
             android:name=".mapping.TrackingActivity"
-            android:label="@string/title_activity_tracking"
             android:screenOrientation="portrait" />
 
         <activity

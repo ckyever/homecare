@@ -31,6 +31,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.UserAppVersionController;
 import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
@@ -60,7 +61,6 @@ import com.google.maps.GeoApiContext;
 import com.google.maps.PendingResult;
 import com.google.maps.internal.PolylineEncoding;
 import com.google.maps.model.DirectionsResult;
-import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.TravelMode;
 
 import java.io.IOException;
@@ -107,6 +107,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private AutoCompleteTextView mInputSearchTextView;
     private Button mDirectionsButton;
     private Button helpButton;
+    private Button homeButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +120,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mDirectionsButton = findViewById(R.id.directions);
         mDirectionsButton.setOnClickListener(this);
         helpButton = findViewById(R.id.optionHelp);
+        homeButton = findViewById(R.id.optionMenu);
 
         // Makes help button visible on assisted person's screen
         UserAppVersionController.getUserAppVersionController().resetButton(helpButton);
@@ -140,6 +142,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onClick(View view) {
+        if(view == homeButton){
+            goToMenu();
+        }
+
+        // block actions that require internet connection
         if(!NetworkConnection.getConnection()){
             NetworkConnection.requestNetworkConnection(MapsActivity.this);
             return;
@@ -166,6 +173,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     /**
+     * Called when home button is pressed so the application returns to the main activity
+     */
+    private void goToMenu(){
+        Intent goToMenu = new Intent(MapsActivity.this, MainActivity.class);
+        goToMenu.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(goToMenu);
+        finish();
+    }
+
+    /**
      * Initialises the map fragment.
      */
     private void initMap() {
@@ -173,6 +190,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        mapFragment.setRetainInstance(true);
 
     }
 
@@ -223,6 +241,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     /**
      * Attempts to get location permission of the device then initialise the map, if not a
      * permission request is sent and appears on the user's screen.
+     * Code adapted from: https://developers.google.com/maps/documentation/android-sdk/location
      */
     private void getLocationPermission() {
         String[] permissions = {FINE_LOCATION, COARSE_LOCATION};
@@ -249,6 +268,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     /**
      * Handles the result of the permission request, initialising the map if the user allows the
      * request.
+     * Code adapted from: https://developers.google.com/maps/documentation/android-sdk/location
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
@@ -292,6 +312,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      * Gets the current location of the device after checking for permissions
      * and represents it as a blue circle on the map. We hide the default "My Location" button
      * to implement a custom one with the ability to stay following the users location.
+     * Code adapted from: https://www.youtube.com/watch?v=fPFr0So1LmI
      */
     private void getDeviceLocation() {
 
@@ -381,7 +402,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    // Place marker and move camera to location
+    /**
+     * Places marker at latlng coordinates and moves camera to location. Adds the title to the
+     * marker.
+     */
     private void placeMarker(LatLng latlng, String title) {
         // remove old route
         removePolyline();
@@ -400,7 +424,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    // Hide keyboard
+    /**
+     * Hides the keyboard on the screen.
+     */
     private void hideKeyboard() {
         View view = this.getCurrentFocus();
         if (view != null) {
@@ -410,7 +436,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    // Search the location that has been input in the search bar
+    /**
+     * Search the location that has been input in the search bar. Suggestions for locations also
+     * appear depending on what has been input in the search bar.
+     * Code taken from: https://www.youtube.com/watch?v=MWowf5SkiOE
+     */
     private void initialiseSearch() {
         mGeoDataClient = Places.getGeoDataClient(this);
         mPlaceAutocompleteAdapter = new PlaceAutocompleteAdapter
@@ -430,7 +460,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-    // Place a marker and move the camera to the location that has been searched
+    /**
+     * Place a marker and move the camera to the location that has been searched.
+     * Code taken from: https://www.youtube.com/watch?v=MWowf5SkiOE
+     */
     private void geoLocate() {
 
         String searchString = mInputSearchTextView.getText().toString();
@@ -455,6 +488,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    /**
+     * Code taken from: https://www.youtube.com/watch?v=VOl3gkHJf1Q
+     */
     private AdapterView.OnItemClickListener mAutocompleteClickListener =
             new AdapterView.OnItemClickListener() {
                 @Override
@@ -471,6 +507,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
             };
 
+    /**
+     * Code taken from: https://www.youtube.com/watch?v=VOl3gkHJf1Q
+     */
     private OnCompleteListener<PlaceBufferResponse> mUpdatePlaceDetailsCallback =
             new OnCompleteListener<PlaceBufferResponse>() {
         @Override
@@ -498,7 +537,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     };
 
-    // Calculate directions from current location to marker
+    /**
+     * Calculate directions from current location to the marker. The travelMode specifies the mode
+     * of transport for the trip.
+     * Code taken from: https://www.youtube.com/watch?v=f47L1SL5S0o
+     */
     private void calculateDirections(Marker marker, TravelMode travelMode){
         // remove old route
         removePolyline();
@@ -510,7 +553,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         );
         DirectionsApiRequest directions = new DirectionsApiRequest(mGeoApiContext);
 
-        // directions.alternatives(true);
         directions.mode(travelMode);
         directions.origin(
                 new com.google.maps.model.LatLng(
@@ -519,7 +561,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 )
         );
         Log.d(TAG, "calculateDirections: destination: " + destination.toString());
-        directions.destination(destination).setCallback(new PendingResult.Callback<DirectionsResult>() {
+        directions.destination(destination).
+                setCallback(new PendingResult.Callback<DirectionsResult>() {
             @Override
             public void onResult(DirectionsResult result) {
                 Log.d(TAG, "calculateDirections: routes: " + result.routes[0].toString());
@@ -542,20 +585,22 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-    // Add route to map
+    /**
+     * Add route to the map.
+     * Code take from: https://www.youtube.com/watch?v=xl0GwkLNpNI
+     */
     private void addPolylineToMap(final DirectionsResult result){
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                Log.d(TAG, "run: result routes: " + result.routes.length);
 
-                for(DirectionsRoute route: result.routes){
-                    Log.d(TAG, "run: leg: " + route.legs[0].toString());
+                    Log.d(TAG, "run: leg: " + result.routes[0].legs[0].toString());
                     List<com.google.maps.model.LatLng> decodedPath =
-                            PolylineEncoding.decode(route.overviewPolyline.getEncodedPath());
+                            PolylineEncoding.decode(result.routes[0].overviewPolyline.getEncodedPath());
 
                     List<LatLng> newDecodedPath = new ArrayList<>();
 
+                    // This loops through all the LatLng coordinates of ONE polyline.
                     // This loops through all the LatLng coordinates of ONE polyline.
                     for(com.google.maps.model.LatLng latLng: decodedPath){
 
@@ -574,7 +619,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     // polyline.setClickable(true);
 
                     // add trip duration to marker
-                    locationSearched.setSnippet("Time: " + route.legs[0].duration.toString());
+                    locationSearched.setSnippet("Time: " + result.routes[0].legs[0].duration.toString());
 
                     // set camera so current location and destination can be seen
                     LatLngBounds.Builder builder = new LatLngBounds.Builder();
@@ -583,18 +628,23 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(),300));
 
                 }
-            }
         });
     }
 
-    // Remove route
+    /**
+     * If there is a route on the map, remove it.
+     */
     private void removePolyline() {
         if (polyline != null) {
             polyline.remove();
         }
     }
 
-    // Pop up window for mode of transport selection
+    /**
+     * Pop up window for mode of transport selection.
+     * Code taken from: https://stackoverflow.com/questions/16389581/
+     * android-create-a-popup-that-has-multiple-selection-options
+     */
     private void transportModePopUp() {
         String[] transportMode = {"Driving", "Walking"};
 
@@ -615,6 +665,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
         builder.show();
     }
+
+
 
     @Override
     protected void onStop() {

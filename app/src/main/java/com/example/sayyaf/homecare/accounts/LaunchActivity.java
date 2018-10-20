@@ -17,6 +17,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+/* This class keep the logged in state of user
+ * https://stackoverflow.com/questions/24009711/properly-skip-login-activity-if-already-logged-in
+ */
 public class LaunchActivity extends AppCompatActivity {
 
     @Override

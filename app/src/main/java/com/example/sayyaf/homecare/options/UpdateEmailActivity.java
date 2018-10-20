@@ -16,6 +16,7 @@ import com.example.sayyaf.homecare.R;
 
 import com.example.sayyaf.homecare.accounts.UserAppVersionController;
 import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
+import com.example.sayyaf.homecare.notifications.NetworkConnection;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -48,6 +49,8 @@ public class UpdateEmailActivity extends AppCompatActivity implements View.OnCli
         optionsMenu = (Button) findViewById(R.id.optionMenuUpdateEmail);
         helpButton = (Button) findViewById(R.id.optionHelpUpdateEmail);
         changeEmailButton.setOnClickListener(this);
+
+        // activate help button on assisted person version
         UserAppVersionController.getUserAppVersionController().resetButton(helpButton);
 
     }
@@ -56,19 +59,26 @@ public class UpdateEmailActivity extends AppCompatActivity implements View.OnCli
     @Override
     public void onClick(View v) {
 
-        if(v == changeEmailButton) {
-            updateEmail();
-        }
 
-        else if(v == optionsMenu){
+        if(v == optionsMenu){
             Intent intent = new Intent(UpdateEmailActivity.this, OptionActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();
         }
 
-        else if(v == helpButton) {
-        EmergencyCallActivity.setBackToActivity(MainActivity.class);
+        // block actions those require internet connection
+        if(!NetworkConnection.getConnection()){
+            NetworkConnection.requestNetworkConnection(UpdateEmailActivity.this);
+            return;
+        }
+
+        if(v == changeEmailButton) {
+            updateEmail();
+        }
+
+        if(v == helpButton) {
+        EmergencyCallActivity.setBackToActivity(UpdateEmailActivity.class);
 
         Intent intent = new Intent(UpdateEmailActivity.this, EmergencyCallActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -83,17 +93,18 @@ public class UpdateEmailActivity extends AppCompatActivity implements View.OnCli
      */
     public void updateEmail() {
         final String email = changeEmailText.getText().toString().trim();
+        mAuth = FirebaseAuth.getInstance();
 
         //Ensures entered email address follows requisite email string pattern
         if(isValidEmail(email)) {
             //Calls the Firebase Authentication user email update method
-            mAuth.getInstance().getCurrentUser().updateEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
+            mAuth.getCurrentUser().updateEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     //If successfully updated in Firebase Authentication, update in Real Time Database
                     if (task.isSuccessful()) {
                         Log.d(TAG, "User email address updated.");
-                        String userId = mAuth.getInstance().getCurrentUser().getUid();
+                        String userId = mAuth.getCurrentUser().getUid();
                         myRef.child("User").
                                 child(userId).
                                 child("email").

@@ -19,7 +19,7 @@ import android.widget.Toast;
 /**
  * Acts as the base template for activities that need to use Sinch communication services
  */
-public abstract class BaseActivity extends /*Activity*/AppCompatActivity implements ServiceConnection {
+public abstract class BaseActivity extends AppCompatActivity implements ServiceConnection {
 
     private SinchService.SinchServiceInterface mSinchServiceInterface;
 
@@ -47,6 +47,7 @@ public abstract class BaseActivity extends /*Activity*/AppCompatActivity impleme
             mSinchServiceInterface = (SinchService.SinchServiceInterface) iBinder;
             onServiceConnected();
         }
+
     }
 
     /**
@@ -102,12 +103,17 @@ public abstract class BaseActivity extends /*Activity*/AppCompatActivity impleme
             granted &= grantResult == PackageManager.PERMISSION_GRANTED;
         }
         if (granted) {
-            Toast.makeText(this, "You may now place a call", Toast.LENGTH_LONG).show();
         } else {
             Toast.makeText(this, "This application needs permission to use your microphone and camera to function properly.", Toast.LENGTH_LONG).show();
+
         }
-        //try to restart service after permissions granted
-        mSinchServiceInterface.retryStartAfterPermissionGranted();
+        if(!granted) {
+            Intent a = new Intent(Intent.ACTION_MAIN);
+            a.addCategory(Intent.CATEGORY_HOME);
+            a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(a);
+            finish();
+        }
     }
 
     /**

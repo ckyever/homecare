@@ -35,7 +35,7 @@
         android:paddingStart="10sp"
         android:paddingEnd="10sp"
         android:gravity="center_vertical"
-        android:text="Contact Name"
+        android:text="@string/contact_name"
         android:textAlignment="center"
         android:autoSizeTextType="uniform"
         android:autoSizeMaxTextSize="20sp"
@@ -66,7 +66,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="5sp"
-        android:text="Send\nMessage"
+        android:text="@string/send_message"
         android:onClick="onClick"
         android:textSize="15sp"
         android:textColor="@android:color/white"
@@ -85,7 +85,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/selectImage"
         app:layout_constraintEnd_toStartOf="@id/sendMsg"
-        android:hint="Write your message"
+        android:hint="@string/write_your_message"
         android:background="@android:color/white"/>
 
     <Button
@@ -100,7 +100,7 @@
         android:drawableTint="@color/blue"
         android:drawablePadding="5sp"
         android:onClick="onClick"
-        android:text="Menu"
+        android:text="@string/options_menu"
         android:textColor="@color/blue"
         android:textSize="15sp"
         app:layout_constraintStart_toStartOf="@id/titleBar"
@@ -119,7 +119,7 @@
         android:drawableTint="@color/emergencyText"
         android:drawablePadding="5sp"
         android:onClick="onClick"
-        android:text="Help !"
+        android:text="@string/help"
         android:enabled="false"
         android:textColor="@color/emergencyText"
         android:textSize="15sp"
@@ -146,31 +146,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/textInputs"
         app:layout_constraintTop_toTopOf="@id/sendMsg" />
-
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="100sp"
-        android:layout_height="100sp"
-        android:visibility="invisible"
-        android:indeterminate="true"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
-
-    <TextView
-        android:id="@+id/progressBarMsg"
-        android:text="Loading ..."
-        android:textAlignment="center"
-        android:textSize="30sp"
-        android:textColor="@color/colorAccent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/progressBar"/>
 
 </android.support.constraint.ConstraintLayout>
 

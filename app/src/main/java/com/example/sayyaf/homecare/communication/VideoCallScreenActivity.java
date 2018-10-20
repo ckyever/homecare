@@ -39,7 +39,6 @@ public class VideoCallScreenActivity extends BaseActivity {
     private Timer mTimer;
     private UpdateCallDurationTask mDurationTask;
     private Call call;
-    private boolean isPaused = false;
 
 
     private String mCallId;
@@ -49,7 +48,6 @@ public class VideoCallScreenActivity extends BaseActivity {
     private boolean mAddedListener = false;
     private boolean mLocalVideoViewAdded = false;
     private boolean mRemoteVideoViewAdded = false;
-    private String string;
 
     /**
      * Task to continuously update how long the call has been going
@@ -75,10 +73,8 @@ public class VideoCallScreenActivity extends BaseActivity {
         mAudioPlayer = new AudioPlayer(this);
         mCallDuration = (TextView) findViewById(R.id.callDuration);
         mCallerName = (TextView) findViewById(R.id.remoteUser);
-        mCallerName.setText(getIntent().getStringExtra("name"));
         mCallState = (TextView) findViewById(R.id.callState);
         Button endCallButton = (Button) findViewById(R.id.hangupButton);
-        string = getIntent().getStringExtra("name");
 
         endCallButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -115,7 +111,8 @@ public class VideoCallScreenActivity extends BaseActivity {
         if (call != null) {
             call.addCallListener(new SinchCallListener());
             mAddedListener = true;
-            mCallerName.setText(string);
+            String callerName= call.getRemoteUserId().split(",")[1];
+            mCallerName.setText(callerName);
             mCallState.setText(call.getState().toString());
         } else {
             Log.e(TAG, "Started with invalid callId, aborting.");
@@ -180,10 +177,7 @@ public class VideoCallScreenActivity extends BaseActivity {
     private void pauseCall() {
         if(call!=null) {
             call.pauseVideo();
-            RelativeLayout localView = (RelativeLayout) findViewById(R.id.localVideo);
-            RelativeLayout remoteView = (RelativeLayout) findViewById(R.id.remoteVideo);
-            localView.setVisibility(View.INVISIBLE);
-            remoteView.setVisibility(View.INVISIBLE);
+
         }
     }
 
@@ -204,7 +198,7 @@ public class VideoCallScreenActivity extends BaseActivity {
         }
 
         Call call = getSinchServiceInterface().getCall(mCallId);
-        if (call != null && isPaused) {
+        if (call != null) {
             mCallState.setText(call.getState().toString());
             if (call.getDetails().isVideoOffered()) {
                 addLocalView();
@@ -226,9 +220,8 @@ public class VideoCallScreenActivity extends BaseActivity {
         final VideoController vc = getSinchServiceInterface().getVideoController();
         if (vc != null) {
             RelativeLayout localView = (RelativeLayout) findViewById(R.id.localVideo);
-            localView.setEnabled(true);
-            localView.setVisibility(View.VISIBLE);
             localView.addView(vc.getLocalView());
+            mLocalVideoViewAdded = true;
             localView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -249,8 +242,6 @@ public class VideoCallScreenActivity extends BaseActivity {
         final VideoController vc = getSinchServiceInterface().getVideoController();
         if (vc != null) {
             RelativeLayout view = (RelativeLayout) findViewById(R.id.remoteVideo);
-            view.setEnabled(true);
-            view.setVisibility(View.VISIBLE);
             view.addView(vc.getRemoteView());
         }
     }
@@ -316,15 +307,34 @@ public class VideoCallScreenActivity extends BaseActivity {
         public void onCallEnded(Call call) {
             CallEndCause cause = call.getDetails().getEndCause();
             Log.d(TAG, "Call ended. Reason: " + cause.toString());
+            mAudioPlayer.stopProgressTone();
+            setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
+            String endMsg = "Call ended";
 
             removeRemoteView();
             removeLocalView();
 
-            mAudioPlayer.stopProgressTone();
-            setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
-            String endMsg = "Call ended";
-            Toast.makeText(VideoCallScreenActivity.this, endMsg, Toast.LENGTH_LONG).show();
+            if(cause.toString().equals("TIMEOUT")) {
+                endMsg+= " because " + call.getRemoteUserId().split(",")[1] + " is unavailable";
+                Toast.makeText(VideoCallScreenActivity.this, endMsg, Toast.LENGTH_LONG).show();
+            }
 
+            else if(cause.toString().equals("ENDED")) {
+                Toast.makeText(VideoCallScreenActivity.this, endMsg, Toast.LENGTH_LONG).show();
+            }
+
+            else if(cause.toString().equals("DENIED")) {
+                Toast.makeText(VideoCallScreenActivity.this, endMsg + " " + " because user is busy. " +
+                        "Please try again later", Toast.LENGTH_LONG).show();
+            }
+
+            else if(cause.toString().equals("HUNG_UP") || cause.toString().equals("CANCELLED")) {
+
+            }
+
+            else {
+                Toast.makeText(VideoCallScreenActivity.this, endMsg + " " + cause.toString(), Toast.LENGTH_LONG).show();
+            }
             endCall();
         }
 

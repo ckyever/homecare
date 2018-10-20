@@ -89,6 +89,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
 
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+        if(getSinchServiceInterface() != null && !getSinchServiceInterface().isStarted()) {
+            getSinchServiceInterface().retryStartAfterPermissionGranted();
+        }
+
+    }
+
     public void getCurrentUser() {
         Query query = ref.child("User").orderByChild("id")
                 .equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid());
@@ -149,6 +158,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
             return;
         }
 
+        // block actions those require internet connection
         if(!NetworkConnection.getConnection()){
             NetworkConnection.requestNetworkConnection(MainActivity.this);
             return;
@@ -159,10 +169,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
         }
 
         if (view == mContacts) {
-            Intent intent = new Intent(MainActivity.this, ContactChatActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
+            if(!getSinchServiceInterface().isStarted()) {
+                getSinchServiceInterface().retryStartAfterPermissionGranted();
+            }
+
+            else {
+                Intent intent = new Intent(MainActivity.this, ContactChatActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
+            }
         }
 
         if (view == mContactsUpdate) {
@@ -216,11 +232,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
 
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
     }
 
     // Launches the TrackingActivity if current user is a caregiver and the MapsActivity if current
@@ -278,6 +289,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,S
     @Override
     public void onStartFailed(SinchError error) {
         Toast.makeText(this, error.toString(), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent a = new Intent(Intent.ACTION_MAIN);
+        a.addCategory(Intent.CATEGORY_HOME);
+        a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(a);
     }
 
 }

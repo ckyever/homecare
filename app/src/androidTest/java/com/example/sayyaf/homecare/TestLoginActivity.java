@@ -59,7 +59,7 @@ public class TestLoginActivity {
     @Before
     public void setUp() {
         activity = mActivityRule.getActivity();
-        mRegisterTextView = (TextView) activity.findViewById(R.id.registerTextView);
+        mRegisterTextView = (TextView) activity.findViewById(R.id.registerButton);
         mEmailEditText = (EditText) activity.findViewById(R.id.emailEditText);
         mPasswordEditText = (EditText)activity.findViewById(R.id.passwordEditText);
         mLoginButton = (Button) activity.findViewById(R.id.loginButton);
@@ -86,7 +86,7 @@ public class TestLoginActivity {
 
     @Test
     public void checkActivityChangedOnClick() {
-        onView(withId(R.id.registerTextView)).perform(click());
+        onView(withId(R.id.registerButton)).perform(click());
         intended(hasComponent(new ComponentName(getTargetContext(), AccountRegisterActivity.class)));
 
     }

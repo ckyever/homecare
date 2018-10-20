@@ -1,6 +1,9 @@
 package com.example.sayyaf.homecare.accounts;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -16,7 +19,6 @@ import android.widget.Toast;
 
 import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
-import com.example.sayyaf.homecare.notifications.NotificationService;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthResult;
@@ -31,7 +33,7 @@ import com.google.firebase.database.ValueEventListener;
 /** Class for handling user login to app
  */
 public class LoginActivity  extends AppCompatActivity implements View.OnClickListener{
-    TextView mRegisterTextView;
+    Button mRegisterButton;
     EditText mEmailEditText;
     EditText mPasswordEditText;
     Button mLoginButton;
@@ -44,14 +46,14 @@ public class LoginActivity  extends AppCompatActivity implements View.OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        mRegisterTextView = (TextView) findViewById(R.id.registerTextView);
+        mRegisterButton = (Button) findViewById(R.id.registerButton);
         mEmailEditText = (EditText) findViewById(R.id.emailEditText);
         mPasswordEditText = (EditText) findViewById(R.id.passwordEditText);
         mLoginButton = (Button) findViewById(R.id.loginButton);
         mAuth = FirebaseAuth.getInstance();
 
         mLoginButton.setEnabled(false);
-        mRegisterTextView.setOnClickListener(this);
+        mRegisterButton.setOnClickListener(this);
         mLoginButton.setOnClickListener(this);
 
         mEmailEditText.addTextChangedListener(textWatcher);
@@ -98,11 +100,17 @@ public class LoginActivity  extends AppCompatActivity implements View.OnClickLis
     public void onClick(View view) {
 
         //Redirects user to the account registration activity
-        if(view == mRegisterTextView) {
+        if(view == mRegisterButton) {
             Intent intent = new Intent(LoginActivity.this, AccountRegisterActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();
+        }
+
+        else if (!isNetworkAvailable()) {
+            Toast.makeText(LoginActivity.this, "No internet connection",
+                    Toast.LENGTH_SHORT).show();
+            return;
         }
 
         //Authenticates the given user details in preparation for signin
@@ -191,15 +199,23 @@ public class LoginActivity  extends AppCompatActivity implements View.OnClickLis
     }
 
     public void onBackPressed() {
-        Intent intent = new Intent(LoginActivity.this, AccountRegisterActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
+        Intent a = new Intent(Intent.ACTION_MAIN);
+        a.addCategory(Intent.CATEGORY_HOME);
+        a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(a);
         finish();
     }
 
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
 
-    public TextView getmRegisterTextView() {
-        return mRegisterTextView;
+
+    public TextView getmRegisterButton() {
+        return mRegisterButton;
     }
 
     public EditText getmEmailEditText() {

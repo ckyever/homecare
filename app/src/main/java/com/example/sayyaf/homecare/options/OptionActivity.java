@@ -15,6 +15,7 @@ import com.example.sayyaf.homecare.accounts.UserAppVersionController;
 import com.example.sayyaf.homecare.notifications.EmergencyCallActivity;
 import com.example.sayyaf.homecare.notifications.NetworkConnection;
 
+// This class has the access of the additional features
 public class OptionActivity extends AppCompatActivity implements View.OnClickListener {
 
     private FloatingActionButton changeImageButton;
@@ -37,7 +38,7 @@ public class OptionActivity extends AppCompatActivity implements View.OnClickLis
         changeEmailButton = (FloatingActionButton) findViewById(R.id.changeEmailButton);
         changeEmailText = (TextView) findViewById(R.id.changeEmail);
         changePasswordButton = (FloatingActionButton) findViewById(R.id.changePasswordButton);
-        //changePasswordText = (TextView) findViewById(R.id.updatePassword);
+        changePasswordText = (TextView) findViewById(R.id.changePassword);
 
         helpButton = (Button) findViewById(R.id.optionHelp);
         homeButton = (Button) findViewById(R.id.optionMenu);
@@ -53,6 +54,7 @@ public class OptionActivity extends AppCompatActivity implements View.OnClickLis
             goToMenu();
         }
 
+        // block actions those require internet connection
         if(!NetworkConnection.getConnection()){
             NetworkConnection.requestNetworkConnection(OptionActivity.this);
             return;
@@ -60,6 +62,7 @@ public class OptionActivity extends AppCompatActivity implements View.OnClickLis
 
         // go to image upload
         if(v == changeImageButton || v == changeImageText){
+            // block access until image upload finish
             if(ProfileImageActivity.isUploading()){
                 Toast.makeText(OptionActivity.this,
                         "Wait for upload complete", Toast.LENGTH_SHORT).show();

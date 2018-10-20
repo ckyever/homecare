@@ -30,6 +30,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+/**
+ * Code adapted from:
+ * https://codelabs.developers.google.com/codelabs/realtime-asset-tracking/index.html
+ */
+
 public class TrackingService extends Service {
     private static final String TAG = "TrackingService";
 
@@ -124,6 +129,11 @@ public class TrackingService extends Service {
     }
 
     // Allows the MapsActivity to add a listener for this service and obtain real time latlng values
+
+    /**
+     * Allows the MapsActivity to add a listener for this service and obtain real time latlng
+     * values via Intent extras holding the individual Latitude and Longitude values.
+     */
     private void sendBroadcast (Location location) {
         Intent intent = new Intent (TAG);
         intent.putExtra("Latitude", location.getLatitude());
@@ -131,6 +141,7 @@ public class TrackingService extends Service {
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
+    // Ensure that location updates have been stopped
     @Override
     public void onDestroy() {
         if (mClient != null) {

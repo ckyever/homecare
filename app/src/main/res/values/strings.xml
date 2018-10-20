@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">HomeCare</string>
+
+    <!-- Mapping -->
     <string name="title_activity_maps">Navigation</string>
     <string name="tracking_title">Caregivers can view your location</string>
     <string name="tracking_notification">Tap to disable tracking</string>
@@ -13,6 +15,12 @@
     <string name="firebase_location_path">/location</string>
     <string name="firebase_friends_path">/friends</string>
     <string name="firebase_name_path">/name</string>
+    <string name="search_box_hint">Enter Location</string>
+    <string name="directions_button_text">Directions</string>
+    <string name="map_title_text">Map</string>
+    <string name="tracking_title_text">Tracking</string>
+
+    <!-- Call -->
     <string name="decline">Decline</string>
     <string name="accept">Accept</string>
     <string name="sample_call_name">Sample User</string>
@@ -20,18 +28,19 @@
     <string name="end_call">End Call</string>
     <string name="call_duration">00:00</string>
     <string name="call_status">Ringing</string>
+
+    <!-- Contact Update -->
     <string name="new_contact">New Contact</string>
     <string name="contact_email_hint">Contact Email</string>
     <string name="add_contact">Add Contact</string>
     <string name="remove_contact">Remove Contact</string>
-    <string name="options_menu">Menu</string>
-    <string name="help">Help !</string>
+
+    <!-- Login/Registration -->
     <string name="login_email">Email</string>
     <string name="login_password">Password</string>
     <string name="login_button">Log In</string>
     <string name="login_to_register_transition">Don\'t have an account? Sign up here!</string>
     <string name="login_title">Login</string>
-    <string name="progress_bar_msg">Loading &#8230;</string>
     <string name="register_name">Name</string>
     <string name="register_email">Email</string>
     <string name="register_password">Password</string>
@@ -39,8 +48,40 @@
     <string name="register_assisted">Are you an assisted person?</string>
     <string name="register_caregiver">Are you a caregiver?</string>
     <string name="register_complete">Sign up</string>
-    <string name="register_to_login_transition">Already have an account? Log in here!</string>
+    <string name="register_to_login_transition"><u>Already have an account? Log in here!</u></string>
     <string name="requests_title">Requests</string>
+
+    <!-- Misc -->
+    <string name="options_menu">Menu</string>
+    <string name="help">Help !</string>
+    <string name="progress_bar_msg">Loading &#8230;</string>
+
+    <!-- Chat -->
+    <string name="contact_name">Contact Name</string>
+    <string name="send_message">Send\nMessage</string>
+    <string name="write_your_message">Write your message</string>
+
+    <!-- Contacts -->
+    <string name="contacts">Contacts</string>
+    <string name="search_user">Search\nUser</string>
+    <string name="refresh_list">Refresh\nList</string>
+    <string name="enter_the_email">Enter the email</string>
+
+    <!-- Emergency -->
+    <string name="emergency_send_1">Emergency call will\nbe fired after</string>
+    <string name="emergency_send_2">seconds\n\nPress cancel\nto dismiss the call</string>
+    <string name="emergency_receive_1">You have received\n an emergency\n notification from an\n assisted person</string>
+    <string name="emergency_receive_2">Read the notifications\nfor more details</string>
+    <string name="emergency_cancel">Cancel</string>
+    <string name="emergency_ok">Ok</string>
+
+    <!-- Options -->
+    <string name="options">Options</string>
+    <string name="options_profile_image">Profile image</string>
+    <string name="options_update_email_address">Update Email Address</string>
+    <string name="options_update_password">Update Password</string>
+
+    <!-- Email/Password Update -->
     <string name="update_email_title">Update Email</string>
     <string name="update_email_new_email">Enter new email address</string>
     <string name="update_password_title">Update Password</string>
@@ -48,6 +89,10 @@
     <string name="update_password_current">Enter Current Password</string>
     <string name="update_password_new">Enter New Password</string>
 
+    <!-- Profile Image -->
+    <string name="profile_image">Profile Image</string>
+    <string name="profile_image_confirm_change">confirm change</string>
+    <string name="profile_image_select">Select profile image</string>
 
 
 </resources>

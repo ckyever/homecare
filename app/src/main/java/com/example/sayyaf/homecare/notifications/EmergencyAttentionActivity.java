@@ -12,6 +12,9 @@ import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.contacts.ContactChatActivity;
 import com.example.sayyaf.homecare.mapping.TrackingActivity;
 
+/* This class is used get the attention of caregiver to read the emergency message from the assisted person
+ * (only being called when monitor is off)
+ */
 public class EmergencyAttentionActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Button done;
@@ -21,6 +24,7 @@ public class EmergencyAttentionActivity extends AppCompatActivity implements Vie
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_emergency_attention);
 
+        // look for the UI elements
         done = (Button) findViewById(R.id.done);
 
         getWindow().addFlags(
@@ -33,7 +37,7 @@ public class EmergencyAttentionActivity extends AppCompatActivity implements Vie
     @Override
     public void onClick(View v) {
         if(v == done){
-            // back to menu page
+            // dismiss current activity
             finish();
         }
     }

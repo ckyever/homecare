@@ -7,6 +7,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.sayyaf.homecare.ImageLoader;
 import com.example.sayyaf.homecare.R;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -51,7 +52,6 @@ public class VoiceCallScreenActivity extends BaseActivity {
     private TextView mCallDuration;
     private TextView mCallState;
     private TextView mCallerName;
-    String name;
 
     private class UpdateCallDurationTask extends TimerTask {
 
@@ -79,7 +79,6 @@ public class VoiceCallScreenActivity extends BaseActivity {
         mCallState = (TextView) findViewById(R.id.callStateVoice);
         profilePic = (ImageView) findViewById(R.id.profileImageVoice);
         Button endCallButton = (Button) findViewById(R.id.hangupButtonVoice);
-        name = getIntent().getStringExtra("name");
 
         endCallButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -99,7 +98,8 @@ public class VoiceCallScreenActivity extends BaseActivity {
         Call call = getSinchServiceInterface().getCall(mCallId);
         if (call != null) {
             call.addCallListener(new SinchCallListener());
-            mCallerName.setText(name);
+            String callerName= call.getRemoteUserId().split(",")[1];
+            mCallerName.setText(callerName);
             mCallState.setText(call.getState().toString());
 
             // speed up image download, old method try to download url for twice
@@ -116,13 +116,9 @@ public class VoiceCallScreenActivity extends BaseActivity {
                         if(userImageUriString.equals("no Image"))
                             return;
 
-                        Glide.with(VoiceCallScreenActivity.this)
-                                .load(userImageUriString)
-                                .apply(new RequestOptions()
-                                        .override(100, 100) // resize image in pixel
-                                        .centerCrop()
-                                        .dontAnimate())
-                                .into(profilePic);
+                        ImageLoader.getImageLoader().loadContactImageToView(
+                                VoiceCallScreenActivity.this,
+                                profilePic, userImageUriString);
                     }
                 }
 
@@ -231,7 +227,27 @@ public class VoiceCallScreenActivity extends BaseActivity {
             mAudioPlayer.stopProgressTone();
             setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
             String endMsg = "Call ended";
-            Toast.makeText(VoiceCallScreenActivity.this, endMsg, Toast.LENGTH_LONG).show();
+            if(cause.toString().equals("TIMEOUT")) {
+                endMsg+= " because " + call.getRemoteUserId().split(",")[1] + " is unavailable";
+                Toast.makeText(VoiceCallScreenActivity.this, endMsg, Toast.LENGTH_LONG).show();
+            }
+
+            else if(cause.toString().equals("ENDED")) {
+                Toast.makeText(VoiceCallScreenActivity.this, endMsg, Toast.LENGTH_LONG).show();
+            }
+
+            else if(cause.toString().equals("DENIED")) {
+                Toast.makeText(VoiceCallScreenActivity.this, endMsg + " " + " because user is busy. " +
+                        "Please try again later", Toast.LENGTH_LONG).show();
+            }
+
+            else if(cause.toString().equals("HUNG_UP")  || cause.toString().equals("CANCELLED")) {
+
+            }
+
+            else {
+                Toast.makeText(VoiceCallScreenActivity.this, endMsg + " " + cause.toString(), Toast.LENGTH_LONG).show();
+            }
             endCall();
         }
 

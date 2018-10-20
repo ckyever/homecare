@@ -18,6 +18,8 @@ import android.widget.TextView;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.sayyaf.homecare.ImageLoader;
+import com.example.sayyaf.homecare.MainActivity;
 import com.example.sayyaf.homecare.R;
 import com.example.sayyaf.homecare.accounts.User;
 import com.example.sayyaf.homecare.accounts.UserAppVersionController;
@@ -32,6 +34,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+/* This class has controller to handle display current chat messaging state
+ * validate text input and send text messages (with image). It handles selecting image uri from device as well
+ */
 public class ChatActivity extends AppCompatActivity implements View.OnClickListener{
 
     private static ChatController chatController;
@@ -45,8 +50,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private Button helpButton;
 
     private Button homeButton;
-    private ProgressBar progressBar;
-    private TextView progressBarMsg;
     private ImageView selectImage;
     private Uri imagePath;
 
@@ -60,18 +63,15 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         textMsg = (EditText) findViewById(R.id.textInputs);
         msgView = (ListView) findViewById(R.id.msgView);
         contactName = (TextView) findViewById(R.id.contactName);
-
         sendMsg = (Button) findViewById(R.id.sendMsg);
         helpButton = (Button) findViewById(R.id.optionHelp);
-
         homeButton = (Button) findViewById(R.id.optionMenu);
-
         selectImage = (ImageView) findViewById(R.id.selectImage);
 
         // activate help button on assisted person version
         UserAppVersionController.getUserAppVersionController().resetButton(helpButton);
 
-        // show the chat peer name
+        // show the chat peer name on the title bar
         chatController.displayReceiverName(contactName);
 
         // setup listener between chat database and the UI elements
@@ -82,7 +82,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         // setup listener between chat database and user view
         chatController.setContentUpdateAdapter(msgView);
 
-        // actively listen to chat database change
+        // actively listen to chat messages updates
         chatController.listenToChatChanges();
 
     }
@@ -92,11 +92,16 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         uploadComplete = isComplete;
     }
 
+    // get the state of image upload
     public static boolean isUploading(){
         return !uploadComplete;
     }
 
-    // set up chat pair from the account list
+    /* set up chat pair from the contact list
+     * this_device: user of this device
+     * contact_person: the user being selected from the contact list
+     * chatDB: the 1 to 1 chat message storage
+     */
     public static void setUpChatController(User this_device, User contact_person, DatabaseReference chatDB){
         chatController = new ChatController(this_device, contact_person, chatDB);
     }
@@ -119,9 +124,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         if(v == homeButton){
-            chatController.returnToMenu(this);
+            goToMenu();
         }
 
+        // block actions those require internet connection
         if(!NetworkConnection.getConnection()){
             NetworkConnection.requestNetworkConnection(ChatActivity.this);
             return;
@@ -171,6 +177,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
        }
     }
 
+    // Provide reason of image cannot be selected and clear out selection
     private void showSendImgNotice(String noticeMsg){
         Toast.makeText(ChatActivity.this, noticeMsg, Toast.LENGTH_SHORT).show();
 
@@ -204,10 +211,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 File file = new File(imagePath.getPath());
 
                 try{
+
+                    // get selected image file size
                     InputStream is = getContentResolver().openInputStream(imagePath);
                     getContentResolver().getType(imagePath);
                     int sizeInMB = is.available() / 1000000;
 
+                    // limit the size of image that user can send (since there is the limit at firebase storage as well)
                     if(sizeInMB > 4){
                         showSendImgNotice("File size is too large, " +
                                 "should be less than 5 MB");
@@ -220,7 +230,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                             .Media
                             .getBitmap(getContentResolver(), imagePath);
 
-                    bitmap = bitMapScaling(bitmap, bitmap.getWidth(), bitmap.getHeight());
+                    // rescale display image on device
+                    bitmap = ImageLoader.getImageLoader().bitMapScaling(bitmap, 500);
 
                     selectImage.setImageBitmap(bitmap);
 
@@ -238,55 +249,35 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    // lower resolution for performance
-    private Bitmap bitMapScaling(Bitmap bitmap, int originalX, int originalY){
-        // possible max size to display on phone
-        int maxSize = 500;
-        // not need to resize if both sides are small
-        if(originalX < maxSize && originalY < maxSize) return bitmap;
-        int exportX;
-        int exportY;
-        // find the longest side
-        if(originalX > originalY){
-            exportX = maxSize;
-            exportY = (originalY * maxSize) / originalX;
-        }
-        else{
-            exportY = maxSize;
-            exportX = (originalX * maxSize) / originalY;
-        }
-        return Bitmap.createScaledBitmap(bitmap, exportX, exportY, false);
-    }
-
     // get rid of spaces before and after string
     private String trimmedContent(){
         return textMsg.getText().toString().trim();
     }
 
-    /*@Override
-    protected void onStart() {
-        // listen to chat database changes and update the view
-        super.onStart();
-        chatController.listenToChatChanges();
-    }*/
-
-    /*@Override
-    protected void onPause(){
-        // stop listen to chat database and update view
-        chatController.stopListenToChatChanges();
-        super.onPause();
-    }*/
-
     @Override
     protected void onDestroy(){
+        // end listening chat messages updates when leaving current page
         chatController.stopListenToChatChanges();
         super.onDestroy();
     }
 
-    @Override
-    public void onBackPressed() {
-        // go back to the contact page
-        chatController.returnToMenu(this);
+    public void goToMenu(){
+        // back to menu page
+        Intent goToMenu = new Intent(ChatActivity.this, MainActivity.class);
+        goToMenu.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(goToMenu);
+        finish();
     }
+
+    public void goToContact(){
+        // back to contact page
+        Intent goToContact = new Intent(ChatActivity.this, ContactChatActivity.class);
+        goToContact.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(goToContact);
+        finish();
+    }
+
+    @Override
+    public void onBackPressed() { goToContact(); }
 
 }
