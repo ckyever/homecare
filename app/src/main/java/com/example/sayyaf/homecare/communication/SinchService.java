@@ -35,8 +35,8 @@ import android.Manifest;
  */
 public class SinchService extends Service {
 
-    private static final String APP_KEY = "6e708d90-e302-4740-a3ab-5a44b08465a7";
-    private static final String APP_SECRET = "8BTddItnUUO9NxqUQZV2dQ==";
+    private static final String APP_KEY = "";
+    private static final String APP_SECRET = "";
     private static final String ENVIRONMENT = "sandbox.sinch.com";
 
     public static final int MESSAGE_PERMISSIONS_NEEDED = 1;
