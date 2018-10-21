@@ -33,8 +33,8 @@ Testing modules are located in the master branch under `Portugal_Homecare/app/sr
 ## Build Instructions
 1. Download repository to local machine
 2. Open repository in AndroidStudio
-3. Add Sinch API keys to the constants `APP_KEY` and `APP_SECRET` at the top of the `SinchService.java` class
-4. Add Google Map API key to the string value in `google_maps_api.xml`
+3. Add Sinch API keys to the constants `APP_KEY` and `APP_SECRET` at the top of the `Portugal_Homecare/app/src/main/java/com/example/sayyaf/homecare/communication/SinchService.java` class
+4. Add Google Map API key to the string value in `Portugal_Homecare/app/src/debug/res/values/google_maps_api.xml`
 5. Select `Build` then `Make Project`
 
 Note: API keys have been emailed to william.v@unimelb.edu.au with subject line "Team Portugal API Keys". Ensure device selected to run the app operates on Android API 24 or higher.
